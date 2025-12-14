@@ -76,7 +76,9 @@ export function useChat(initialSystemPrompt?: string) {
     }
     let toRemove = nonSystemCount - HISTORY_LIMIT
     for (let i = 0; i < history.length && toRemove > 0; i += 1) {
-      if (history[i].role !== 'system') {
+      const entry = history[i]
+      if (!entry) break
+      if (entry.role !== 'system') {
         history.splice(i, 1)
         i -= 1
         toRemove -= 1
@@ -135,8 +137,11 @@ export function useChat(initialSystemPrompt?: string) {
         body: JSON.stringify(payload),
       })
 
-      const assistantContent =
-        response.reply?.trim() ?? response.choices?.[0]?.message?.content?.trim()
+      const firstChoice = Array.isArray(response.choices) && response.choices.length > 0
+        ? response.choices[0]
+        : undefined
+      const choiceContent = firstChoice?.message?.content?.trim()
+      const assistantContent = response.reply?.trim() ?? choiceContent
       if (response.error) {
         error.value = response.error
       }
