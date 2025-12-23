@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import TopNav from './components/TopNav.vue'
 import HomePage from './pages/HomePage.vue'
 import ChatPage from './pages/ChatPage.vue'
-import MetaCapturePage from './pages/MetaCapturePage.vue'
+import MetaShopPage from './pages/MetaShopPage.vue'
 import LibraryPage from './pages/LibraryPage.vue'
 import HelpPage from './pages/HelpPage.vue'
 import AdminPage from './pages/AdminPage.vue'
@@ -17,7 +17,7 @@ import { useAccount } from './composables/useAccount'
 const ROUTES: Record<PageKey, any> = {
   home: HomePage,
   chat: ChatPage,
-  metacapture: MetaCapturePage,
+  metacapture: MetaShopPage,
   library: LibraryPage,
   help: HelpPage,
   admin: AdminPage,

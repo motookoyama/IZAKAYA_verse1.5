@@ -7,6 +7,10 @@ export default defineConfig(({ command }) => ({
   plugins: [vue() as any],
   // GitHub Pages serves this repo under /IZAKAYA_verse1.5/
   base: command === 'build' ? '/IZAKAYA_verse1.5/' : '/',
+  server: {
+    port: 1398,
+    strictPort: true,
+  },
   build: {
     outDir: 'docs',
     emptyOutDir: true,

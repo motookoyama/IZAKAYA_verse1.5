@@ -7,7 +7,7 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase1.4",
+      "phase": "phase1.5",
       "title": "IZAKAYA verse",
       "slogans": [
         "ー冒険もー夢もー恋もー",
@@ -141,9 +141,10 @@ export default {
         "title": "V2 Chatbot とは？",
         "description": "キャラクターカードを使って動くチャットAI。プロフィールや話し方のルールを読み込むと、そのキャラになりきって会話できます。",
         "bullets": [
-          "複数のキャラカードを切り替えながら会話できる",
-          "Slot1（メイン）、Slot2（サブ）、Slot3（世界観）で構成",
-          "Rankモードは主役が立った安定対話、Normalモードは自然で自由な会話"
+          "＊スロットごとにバイアスが違います＊",
+          "例：Slot1（メイン）、Slot2（サブ）、Slot3（世界観）",
+          "他の運用（キャラ3枚など）も可能です",
+          "※他のガイドは今後追加"
         ]
       },
       {
@@ -242,7 +243,7 @@ export default {
         "attachHint": "PNG/JPG/TXT/JSONなどの素材を登録できます（送信処理は後で追加予定）。",
         "filesLabel": "添付ファイル",
         "removeFileLabel": "削除",
-        "enterToSendHint": "Enterで送信 / Shift+Enterで改行"
+        "enterToSendHint": "送信：⌘/Ctrl+Enter"
       },
       "resetLabel": "履歴をリセット",
       "loadingMessage": "返答を準備しています...",
@@ -356,7 +357,8 @@ export default {
   },
   "pages": {
     "chat": {
-      "title": "V2チャット画面",
+      "title": "IZAKAYA chat",
+      "quickHint": "すぐに会話できます",
       "lead": [
         "キャラクターカードを読み込んで、LLMがキャラクターになりきる応答を提供する専用ビューです。",
         "BFFを経由してローカル（Ollama 等）または外部APIと接続できます。"
@@ -369,10 +371,10 @@ export default {
       ],
       "notesTitle": "ヒント",
       "notes": [
-        "Chromeで表示が崩れた場合はキャッシュとサービスワーカーをクリアしてください。",
-        "ローカルLLMを使うときは`.env`の`PROVIDER`とベースURLを環境に合わせて調整します。",
-        "管理者・翻訳カードはヘルプ & サポートページから利用できます。",
-        "各カードの初回メッセージで雰囲気を確認してから話しかけましょう。"
+        "＊スロットごとにバイアスが違います＊",
+        "例：Slot1（メイン）、Slot2（ワールド）、Slot3（シナリオ）",
+        "他の運用（キャラ3枚など）も可能です",
+        "※他のガイドは今後追加"
       ],
       "extraSlots": "その他のカード",
       "workspace": {

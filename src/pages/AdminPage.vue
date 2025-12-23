@@ -57,6 +57,11 @@ const adminChatContent = computed<ChatContent>(() => {
     systemPrompt,
   }
 })
+const adminTension = ref(50)
+
+function onAdminTensionChange(value: number) {
+  adminTension.value = Math.min(100, Math.max(0, Math.round(value)))
+}
 
 async function handleCharge() {
   if (busy.value || chargeAmount.value <= 0) return
@@ -163,7 +168,11 @@ async function handleSpend() {
 
     <section class="admin__chat">
       <h2>{{ page.chatTitle }}</h2>
-      <ChatConsole :content="adminChatContent" />
+      <ChatConsole
+        :content="adminChatContent"
+        :tension="adminTension"
+        @update:tension="onAdminTensionChange"
+      />
     </section>
   </div>
 </template>

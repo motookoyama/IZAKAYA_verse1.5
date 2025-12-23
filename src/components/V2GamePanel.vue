@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import ChatConsole from './ChatConsole.vue'
 import type { ChatContent } from '../types/home'
 
@@ -49,6 +49,11 @@ const statusClass = computed(() => {
 })
 
 const hasChatConsole = computed(() => Boolean(!props.useMockChat && props.chatContent))
+const panelTension = ref(50)
+
+function onUpdateTension(value: number) {
+  panelTension.value = Math.min(100, Math.max(0, Math.round(value)))
+}
 </script>
 
 <template>
@@ -118,7 +123,11 @@ const hasChatConsole = computed(() => Boolean(!props.useMockChat && props.chatCo
         </div>
 
         <div class="chat-dock__body" v-if="hasChatConsole">
-          <ChatConsole :content="chatContent!" />
+          <ChatConsole
+            :content="chatContent!"
+            :tension="panelTension"
+            @update:tension="onUpdateTension"
+          />
         </div>
         <div v-else class="chat-dock__mock">
           <div class="chat-dock__log" role="log">

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import V2ChatLog from './V2ChatLog.vue'
 import V2ChatComposer from './V2ChatComposer.vue'
+import SyncHUD from './SyncHUD.vue'
 import { useChat, type ChatAttachment, type ChatMessage, type ChatSlotPayload } from '../composables/useChat'
 import type { ChatContent } from '../types/home'
 
@@ -13,6 +14,7 @@ const props = defineProps<{
   userTone?: { background?: string; text?: string; font?: string }
   greeting?: string
   slots?: ChatSlotPayload
+  tension: number
 }>()
 
 const emits = defineEmits<{
@@ -22,6 +24,7 @@ const emits = defineEmits<{
   (e: 'message-bookmark', message: ChatMessage): void
   (e: 'attachments-added', files: File[]): void
   (e: 'attachment-removed', attachment: ChatAttachment): void
+  (e: 'update:tension', value: number): void
 }>()
 
 const input = ref('')
@@ -53,6 +56,44 @@ const payloadFlags = computed(() => ({
   slot2: Boolean(props.slots?.slot2 && props.slots.slot2.trim().length),
   slot3: Boolean(props.slots?.slot3 && props.slots.slot3.trim().length),
 }))
+
+const SYNC_RATE = 50
+const tensionRate = computed(() => {
+  const numeric = typeof props.tension === 'number' ? props.tension : 50
+  if (Number.isNaN(numeric)) return 50
+  return Math.min(100, Math.max(0, Math.round(numeric)))
+})
+
+function clampPercentage(value: number) {
+  if (Number.isNaN(value)) return 0
+  return Math.min(100, Math.max(0, Math.round(value)))
+}
+
+function onTensionInput(event: Event) {
+  const inputEl = event.target as HTMLInputElement
+  const next = Number(inputEl.value)
+  const clamped = clampPercentage(Number.isFinite(next) ? next : 0)
+  emits('update:tension', clamped)
+}
+
+function downloadTranscript() {
+  if (!history.length) return
+  const lines = history.map((message) => {
+    const timestamp = new Date(message.createdAt || Date.now()).toISOString()
+    const role = message.role.toUpperCase()
+    return `[${timestamp}] ${role}: ${message.content}`
+  })
+  const footer = `---\nTotal messages: ${history.length}`
+  const payload = `${lines.join('\n')}\n${footer}\n`
+  const filename = `izakaya-log_${new Date().toISOString().replace(/[:T]/g, '-').slice(0, 16)}.txt`
+  const blob = new Blob([payload], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.click()
+  URL.revokeObjectURL(url)
+}
 
 async function onSubmit() {
   if (!input.value.trim()) return
@@ -137,17 +178,37 @@ function onBookmark(message: ChatMessage) {
     />
 
     <div v-if="props.slots" class="chat-console__payload">
-      <span>Payload:</span>
-      <span class="chat-console__payload-flag is-active">Text</span>
-      <span :class="['chat-console__payload-flag', { 'is-active': payloadFlags.slot1 }]" :title="props.slots?.slot1">
-        Slot1
-      </span>
-      <span :class="['chat-console__payload-flag', { 'is-active': payloadFlags.slot2 }]" :title="props.slots?.slot2">
-        Slot2
-      </span>
-      <span :class="['chat-console__payload-flag', { 'is-active': payloadFlags.slot3 }]" :title="props.slots?.slot3">
-        Slot3
-      </span>
+      <div class="chat-console__payload-flags">
+        <span>Payload:</span>
+        <span class="chat-console__payload-flag is-active">Text</span>
+        <span :class="['chat-console__payload-flag', { 'is-active': payloadFlags.slot1 }]" :title="props.slots?.slot1">
+          Slot1
+        </span>
+        <span :class="['chat-console__payload-flag', { 'is-active': payloadFlags.slot2 }]" :title="props.slots?.slot2">
+          Slot2
+        </span>
+        <span :class="['chat-console__payload-flag', { 'is-active': payloadFlags.slot3 }]" :title="props.slots?.slot3">
+          Slot3
+        </span>
+      </div>
+      <div class="chat-console__payload-tools">
+        <SyncHUD :sync="SYNC_RATE" :tension="tensionRate" />
+        <label class="chat-console__tension-control">
+          <span>Tension</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            :value="tensionRate"
+            @input="onTensionInput"
+          />
+          <span class="chat-console__tension-value">{{ tensionRate }}%</span>
+        </label>
+        <button type="button" class="chat-console__save" @click="downloadTranscript">
+          ログ保存
+        </button>
+      </div>
     </div>
 
     <p v-if="loading" class="chat-console__status">{{ content.loadingMessage }}</p>
@@ -198,12 +259,27 @@ function onBookmark(message: ChatMessage) {
 
 .chat-console__payload {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
+  justify-content: space-between;
   font-size: 0.8rem;
-  opacity: 0.75;
+  opacity: 0.85;
+  flex-wrap: wrap;
 }
 
+.chat-console__payload-flags {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chat-console__payload-tools {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 .chat-console__payload-flag {
   padding: 2px 8px;
   border-radius: 999px;
@@ -213,6 +289,31 @@ function onBookmark(message: ChatMessage) {
 .chat-console__payload-flag.is-active {
   border-color: #9ef5ff;
   color: #9ef5ff;
+}
+
+.chat-console__tension-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.chat-console__tension-control input {
+  width: 120px;
+}
+
+.chat-console__tension-value {
+  min-width: 36px;
+  text-align: right;
+}
+
+.chat-console__save {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
 }
 
 @media (max-width: 720px) {

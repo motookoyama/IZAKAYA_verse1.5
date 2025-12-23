@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ChatConsole from './ChatConsole.vue'
 import type { ChatContent } from '../types/home'
 import type { AccountAction } from '../types/home'
 import type { ChatAttachment, ChatMessage, ChatSlotPayload } from '../composables/useChat'
+import type { CardRole } from '../utils/cardRoles'
 
 const props = defineProps<{
   chatContent: ChatContent
@@ -37,6 +38,20 @@ const props = defineProps<{
   wallpaperSelected?: string
   wallpaperCustomValue?: string
   slotPayload?: ChatSlotPayload
+  slotAssignments?: Array<{
+    slotIndex: number
+    cardId: string | null
+    card?: { id: string; title: string; tags?: string[]; summary?: string; avatar?: string }
+  }>
+  cardRoster?: Array<{ id: string; title: string; summary?: string; avatar?: string }>
+  apiOnline?: boolean
+  tension: number
+  freeTalkEnabled?: boolean
+  slotEventNotes?: string[]
+  cardRoles?: Record<string, CardRole>
+  selectedCardRole?: CardRole
+  referentialResponse?: { role: CardRole; text: string; cardId: string } | null
+  roleOverrides?: Record<string, CardRole>
 }>()
 
 const emits = defineEmits<{
@@ -52,6 +67,12 @@ const emits = defineEmits<{
   (e: 'attachment-removed', attachment: ChatAttachment): void
   (e: 'eject-card', id: string): void
   (e: 'activate-card', id: string): void
+  (e: 'assign-slot', payload: { slotIndex: number; cardId: string }): void
+  (e: 'clear-slot', slotIndex: number): void
+  (e: 'update:tension', value: number): void
+  (e: 'toggle-free-talk', value: boolean): void
+  (e: 'card-reference', payload: { id: string; role: CardRole }): void
+  (e: 'set-card-role', payload: { id: string; role: CardRole | 'AUTO' }): void
 }>()
 
 const hasExtra = computed(() => (props.extraCards?.length ?? 0) > 0)
@@ -61,7 +82,18 @@ const wallpaperStyle = computed(() => ({
 const hasCustomWallpaper = computed(() => (props.wallpaperCustomValue?.trim().length ?? 0) > 0)
 const dockSide = ref<'left' | 'right'>('right')
 const sidebarOpen = ref(true)
+const activeSlotIndex = ref(0)
 const { t } = useI18n({ useScope: 'global' })
+const actionsDisabled = computed(() => props.busy || props.apiOnline === false)
+const actionStatusLabel = computed(() => {
+  if (props.apiOnline === false) return '未接続（準備中）'
+  return props.error ?? ''
+})
+const freeTalkState = computed(() => Boolean(props.freeTalkEnabled))
+const currentRoleSelectValue = computed(() => {
+  if (!props.selectedId) return 'AUTO'
+  return props.roleOverrides?.[props.selectedId] ?? 'AUTO'
+})
 
 const layoutClass = computed(() => [
   'v2chat',
@@ -71,6 +103,10 @@ const layoutClass = computed(() => [
 
 function handleSelect(id: string) {
   emits('select-card', id)
+  const role = props.cardRoles?.[id]
+  if (role === 'WORLD' || role === 'SCENARIO') {
+    emits('card-reference', { id, role })
+  }
 }
 
 function onAction(action: AccountAction) {
@@ -137,6 +173,56 @@ function onSelectExtra(event: Event) {
   activateCard(value)
   select.value = ''
 }
+
+function handleSlotSelect(index: number) {
+  activeSlotIndex.value = index
+  const slot = props.slotAssignments?.[index]
+  if (slot?.cardId) {
+    emits('select-card', slot.cardId)
+  }
+}
+
+function assignRosterCard(cardId: string) {
+  emits('assign-slot', { slotIndex: activeSlotIndex.value, cardId })
+}
+
+function clearSlot(index: number, event?: Event) {
+  if (event) event.stopPropagation()
+  emits('clear-slot', index)
+  if (activeSlotIndex.value === index) {
+    activeSlotIndex.value = 0
+  }
+}
+
+function onTensionChange(value: number) {
+  emits('update:tension', value)
+}
+
+function onToggleFreeTalk(event: Event) {
+  const input = event.target as HTMLInputElement
+  emits('toggle-free-talk', input.checked)
+}
+
+function onRoleSelect(event: Event) {
+  if (!props.selectedId) return
+  const select = event.target as HTMLSelectElement
+  const value = select.value as CardRole | 'AUTO'
+  emits('set-card-role', { id: props.selectedId, role: value })
+}
+
+watch(
+  () => [props.slotAssignments, props.selectedId] as const,
+  () => {
+    const slots = props.slotAssignments ?? []
+    const matchIndex = slots.findIndex((slot) => slot.cardId === props.selectedId)
+    if (matchIndex !== -1) {
+      activeSlotIndex.value = matchIndex
+    } else if (activeSlotIndex.value >= slots.length) {
+      activeSlotIndex.value = 0
+    }
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <template>
@@ -168,12 +254,14 @@ function onSelectExtra(event: Event) {
         :user-tone="userTone"
         :greeting="navigator?.firstMessage"
         :slots="slotPayload"
+        :tension="tension"
         @message-rerun="proxyMessage('message-rerun', $event)"
         @message-edit="proxyMessage('message-edit', $event)"
         @message-fork="proxyMessage('message-fork', $event)"
         @message-bookmark="proxyMessage('message-bookmark', $event)"
         @attachments-added="onAttachmentsAdded"
         @attachment-removed="onAttachmentRemoved"
+        @update:tension="onTensionChange"
       />
     </section>
 
@@ -219,10 +307,85 @@ function onSelectExtra(event: Event) {
         <label v-if="hasExtra" class="cards__select">
           <span>+</span>
           <select @change="onSelectExtra($event)">
-            <option value="" selected disabled>{{ t('pages.chat.workspace.addCard') }}</option>
+            <option value="" selected disabled>カードを追加</option>
             <option v-for="card in extraCards" :key="card.id" :value="card.id">{{ card.title }}</option>
           </select>
         </label>
+        <div class="cards__free-talk">
+          <label class="cards__free-talk-toggle">
+            <input
+              type="checkbox"
+              :checked="freeTalkState"
+              @change="onToggleFreeTalk"
+            />
+            <span>自由発言スイッチ</span>
+            <strong>{{ freeTalkState ? 'ON' : 'OFF' }}</strong>
+          </label>
+          <p class="cards__free-talk-hint">
+            {{ freeTalkState ? 'カード間の自然会話モードです。' : '指名したカードのみが発言します。' }}
+          </p>
+          <div v-if="selectedId" class="cards__role-select">
+            <label>
+              <span>カード種別</span>
+              <select :value="currentRoleSelectValue" @change="onRoleSelect">
+                <option value="AUTO">自動判定</option>
+                <option value="WORLD">Worldカード</option>
+                <option value="SCENARIO">Scenarioカード</option>
+                <option value="CHARACTER">キャラカード</option>
+              </select>
+            </label>
+            <small>World/Scenarioはクリック時に描写/あらすじを表示します。</small>
+          </div>
+          <p v-if="referentialResponse" class="cards__free-talk-response">
+            <span class="cards__free-talk-tag">{{ referentialResponse.role === 'WORLD' ? 'WORLD' : 'SCENARIO' }}</span>
+            {{ referentialResponse.text }}
+          </p>
+          <ul v-if="slotEventNotes?.length" class="cards__free-talk-events">
+            <li v-for="note in slotEventNotes" :key="note">{{ note }}</li>
+          </ul>
+        </div>
+      </section>
+
+      <section v-if="slotAssignments && cardRoster?.length" class="slots-panel">
+        <h3>＊プロフィール＊</h3>
+        <div class="slots-panel__slots">
+          <button
+            v-for="slot in slotAssignments"
+            :key="slot.slotIndex"
+            type="button"
+            :class="['slots-panel__slot', { active: slot.slotIndex === activeSlotIndex }]"
+            @click="handleSlotSelect(slot.slotIndex)"
+          >
+            <div>
+              <span>Slot {{ slot.slotIndex + 1 }}</span>
+              <span class="slots-panel__name-label">＊名前＊</span>
+              <strong>{{ slot.card?.title ?? '未選択' }}</strong>
+              <small v-if="slot.card?.summary">{{ slot.card.summary }}</small>
+            </div>
+            <button
+              v-if="slot.cardId"
+              type="button"
+              class="slots-panel__slot-eject"
+              @click="clearSlot(slot.slotIndex, $event)"
+            >
+              空にする
+            </button>
+          </button>
+        </div>
+        <div class="slots-panel__catalog">
+          <h4>カード一覧</h4>
+          <div class="slots-panel__catalog-grid">
+            <button
+              v-for="card in cardRoster"
+              :key="card.id"
+              type="button"
+              class="slots-panel__card"
+              @click="assignRosterCard(card.id)"
+            >
+              <span>{{ card.title }}</span>
+            </button>
+          </div>
+        </div>
       </section>
 
       <section v-if="navigator" class="navigator">
@@ -274,12 +437,13 @@ function onSelectExtra(event: Event) {
           :key="action.id"
           type="button"
           class="actions__button"
-          :disabled="busy"
+          :disabled="actionsDisabled"
+          :title="actionsDisabled ? '準備中' : undefined"
           @click="onAction(action)"
         >
           {{ action.label }}
         </button>
-        <p v-if="error" class="actions__error">{{ error }}</p>
+        <p v-if="actionStatusLabel" class="actions__error">{{ actionStatusLabel }}</p>
       </section>
 
       <section v-if="notes?.length" class="notes">
@@ -487,6 +651,83 @@ function onSelectExtra(event: Event) {
   padding: 8px 10px;
 }
 
+.cards__free-talk {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 6px;
+}
+
+.cards__free-talk-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.cards__free-talk-toggle input {
+  width: 18px;
+  height: 18px;
+}
+
+.cards__free-talk-toggle strong {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.cards__free-talk-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cards__free-talk-events {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.8);
+  display: grid;
+  gap: 4px;
+}
+
+.cards__role-select {
+  display: grid;
+  gap: 4px;
+  font-size: 0.78rem;
+}
+
+.cards__role-select select {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  padding: 6px 10px;
+}
+
+.cards__role-select small {
+  opacity: 0.7;
+}
+
+.cards__free-talk-response {
+  margin: 0;
+  font-size: 0.82rem;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.cards__free-talk-tag {
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 0 6px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
 .wallpaper__hint {
   margin: 0;
   font-size: 0.8rem;
@@ -537,6 +778,89 @@ function onSelectExtra(event: Event) {
 .wallpaper__custom.active input {
   border-color: var(--brand-2, #58cff5);
   box-shadow: 0 0 0 2px rgba(88, 207, 245, 0.2);
+}
+
+.slots-panel {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 18, 32, 0.35);
+}
+
+.slots-panel__slots {
+  display: grid;
+  gap: 8px;
+}
+
+.slots-panel__slot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.slots-panel__slot.active {
+  border-color: rgba(158, 245, 255, 0.6);
+  box-shadow: 0 0 8px rgba(158, 245, 255, 0.25);
+}
+
+.slots-panel__slot span {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.75;
+  letter-spacing: 0.05em;
+}
+
+.slots-panel__name-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.slots-panel__slot strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.slots-panel__slot small {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.65;
+}
+
+.slots-panel__slot-eject {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+
+.slots-panel__catalog {
+  display: grid;
+  gap: 6px;
+}
+
+.slots-panel__catalog-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.slots-panel__card {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
 }
 
 .navigator__header {

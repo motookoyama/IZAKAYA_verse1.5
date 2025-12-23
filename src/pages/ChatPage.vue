@@ -8,11 +8,13 @@ import { navigatorCards, findNavigatorCard } from '../data/sampleCards'
 import type { FeatureContent, ChatContent, AccountAction, AccountContent } from '../types/home'
 import type { ChatMessage } from '../composables/useChat'
 import chatIcon from '../assets/icons/chat-frame.png'
+import { determineCardRole, loadRoleOverrides, persistRoleOverrides, type CardRole } from '../utils/cardRoles'
 
 const { tm } = useI18n({ useScope: 'global' })
 
 const page = computed(() => tm('pages.chat') as {
   title: string
+  quickHint?: string
   lead: string[]
   workflowTitle: string
   workflow: string[]
@@ -32,12 +34,18 @@ const {
   fetchAccount,
   loading,
   error,
+  apiOnline,
 } = useAccount()
 
 const adminTagPattern = /(管理|管理者|翻訳|経理)/
+const preferredCardIds = ['dr-orb', 'miss-madi', 'ekubo']
 const playerNavigatorCards = computed(() => {
   const filtered = navigatorCards.filter((card) => !card.tags.some((tag) => adminTagPattern.test(tag)))
-  return filtered.length ? filtered : navigatorCards
+  const guaranteed = navigatorCards.filter((card) => preferredCardIds.includes(card.id))
+  const merged = [...guaranteed, ...(filtered.length ? filtered : navigatorCards)]
+  const map = new Map<string, (typeof navigatorCards)[number]>()
+  merged.forEach((card) => map.set(card.id, card))
+  return Array.from(map.values())
 })
 
 const cardLookup = computed(() => {
@@ -46,49 +54,235 @@ const cardLookup = computed(() => {
   return map
 })
 
-const activeSlots = ref<string[]>([])
-const benchSlots = ref<string[]>([])
+const cardRoleMap = computed<Record<string, CardRole>>(() => {
+  const bucket: Record<string, CardRole> = {}
+  playerNavigatorCards.value.forEach((card) => {
+    bucket[card.id] = determineCardRole(card, cardRoleOverrides.value)
+  })
+  return bucket
+})
+
+const DEFAULT_SLOT_ORDER = ['dr-orb', 'miss-madi', 'ekubo']
+const SLOT_STORAGE_KEY = 'izakaya-chat-slots'
+const slotAssignments = ref<Array<string | null>>([null, null, null])
 const selectedCard = ref<string>('')
+const TENSION_STORAGE_KEY = 'izakaya-chat-tension'
+const FREE_TALK_STORAGE_KEY = 'izakaya-chat-free-talk'
 
-const activeCards = computed(() => activeSlots.value
-  .map((id) => cardLookup.value.get(id))
-  .filter((card): card is typeof navigatorCards[number] => Boolean(card))
+type SlotEventKind = 'enter' | 'leave' | 'swap' | 'world' | 'scenario'
+type SlotEvent = {
+  id: string
+  slotIndex: number
+  kind: SlotEventKind
+  cardId?: string | null
+  prevCardId?: string | null
+  cardName?: string
+  prevCardName?: string
+  at: number
+  summary?: string
+}
+
+const SLOT_EVENT_LIMIT = 5
+
+function loadStoredTension(): number {
+  if (typeof window === 'undefined') return 50
+  const raw = window.localStorage.getItem(TENSION_STORAGE_KEY)
+  if (raw === null) return 50
+  const parsed = Number(raw)
+  if (!Number.isFinite(parsed)) return 50
+  return Math.min(100, Math.max(0, Math.round(parsed)))
+}
+
+function loadStoredFreeTalk(): boolean {
+  if (typeof window === 'undefined') return true
+  const raw = window.localStorage.getItem(FREE_TALK_STORAGE_KEY)
+  if (raw === null) return true
+  return raw === '1'
+}
+
+const tensionRate = ref(loadStoredTension())
+const freeTalkEnabled = ref(loadStoredFreeTalk())
+const slotEvents = ref<SlotEvent[]>([])
+const referentialResponse = ref<{ role: CardRole; text: string; cardId: string } | null>(null)
+const cardRoleOverrides = ref<Record<string, CardRole>>(loadRoleOverrides())
+
+function clampPercentage(value: number) {
+  if (!Number.isFinite(value)) return 0
+  return Math.min(100, Math.max(0, Math.round(value)))
+}
+
+const activeCards = computed(() =>
+  slotAssignments.value
+    .map((id) => (id ? cardLookup.value.get(id) : undefined))
+    .filter((card): card is typeof navigatorCards[number] => Boolean(card))
 )
 
-const benchCards = computed(() => benchSlots.value
-  .map((id) => cardLookup.value.get(id))
-  .filter((card): card is typeof navigatorCards[number] => Boolean(card))
-)
+const benchCards = computed(() => {
+  const assigned = new Set(slotAssignments.value.filter((id): id is string => Boolean(id)))
+  return playerNavigatorCards.value.filter((card) => !assigned.has(card.id))
+})
+
+function loadStoredSlots(): Array<string | null> {
+  if (typeof window === 'undefined') return [null, null, null]
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(SLOT_STORAGE_KEY) ?? '[]')
+    if (Array.isArray(stored)) {
+      return [stored[0] ?? null, stored[1] ?? null, stored[2] ?? null]
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [null, null, null]
+}
+
+function persistSlots(slots: Array<string | null>) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(SLOT_STORAGE_KEY, JSON.stringify(slots))
+  } catch {
+    // ignore quota errors
+  }
+}
+
+function sanitizeSlots(cardIds: string[], slots: Array<string | null>) {
+  const normalized: Array<string | null> = [null, null, null]
+  const used = new Set<string>()
+  slots.forEach((id, index) => {
+    if (typeof id === 'string' && cardIds.includes(id) && index < normalized.length && !used.has(id)) {
+      normalized[index] = id
+      used.add(id)
+    }
+  })
+  for (const preferred of DEFAULT_SLOT_ORDER) {
+    if (!cardIds.includes(preferred)) continue
+    if (used.has(preferred)) continue
+    const emptyIndex = normalized.findIndex((value) => !value)
+    if (emptyIndex === -1) break
+    normalized[emptyIndex] = preferred
+    used.add(preferred)
+  }
+  for (let i = 0; i < normalized.length; i += 1) {
+    if (normalized[i]) continue
+    const next = cardIds.find((id) => !used.has(id))
+    if (!next) break
+    normalized[i] = next
+    used.add(next)
+  }
+  return normalized
+}
 
 watch(
   playerNavigatorCards,
   (cards) => {
     const ids = cards.map((card) => card.id)
     if (ids.length === 0) {
-      activeSlots.value = []
-      benchSlots.value = []
+      slotAssignments.value = [null, null, null]
       selectedCard.value = ''
       return
     }
-    const nextActive: string[] = []
-    for (const id of activeSlots.value) {
-      if (ids.includes(id) && nextActive.length < 3) {
-        nextActive.push(id)
-      }
-    }
-    for (const id of ids) {
-      if (!nextActive.includes(id) && nextActive.length < 3) {
-        nextActive.push(id)
-      }
-    }
-    activeSlots.value = nextActive
-    benchSlots.value = ids.filter((id) => !nextActive.includes(id))
-    if (!activeSlots.value.includes(selectedCard.value)) {
-      selectedCard.value = activeSlots.value[0] ?? ''
+    const stored = loadStoredSlots()
+    slotAssignments.value = sanitizeSlots(ids, stored)
+    if (!slotAssignments.value.includes(selectedCard.value)) {
+      selectedCard.value = (slotAssignments.value.find((id): id is string => Boolean(id)) ?? '')
     }
   },
   { immediate: true }
 )
+
+watch(
+  slotAssignments,
+  (slots) => {
+    persistSlots(slots)
+    if (!slots.includes(selectedCard.value)) {
+      selectedCard.value = (slots.find((id): id is string => Boolean(id)) ?? '')
+    }
+  },
+  { deep: true }
+)
+
+watch(
+  tensionRate,
+  (value) => {
+    if (typeof window === 'undefined') return
+    try {
+      window.localStorage.setItem(TENSION_STORAGE_KEY, String(clampPercentage(value)))
+    } catch {
+      // ignore storage errors
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  freeTalkEnabled,
+  (value) => {
+    if (typeof window === 'undefined') return
+    try {
+      window.localStorage.setItem(FREE_TALK_STORAGE_KEY, value ? '1' : '0')
+    } catch {
+      // ignore storage errors
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  cardRoleOverrides,
+  (value) => {
+    persistRoleOverrides(value)
+  },
+  { deep: true }
+)
+
+watch(
+  slotAssignments,
+  (slots, previous) => {
+    const prevSlots = Array.isArray(previous) ? previous : [null, null, null]
+    for (let i = 0; i < slots.length; i += 1) {
+      const next = slots[i]
+      const prev = prevSlots[i] ?? null
+      if (next === prev) continue
+      if (!prev && next) {
+        recordSlotEvent('enter', i, next, prev)
+      } else if (prev && !next) {
+        recordSlotEvent('leave', i, null, prev)
+      } else if (prev && next && prev !== next) {
+        recordSlotEvent('swap', i, next, prev)
+      }
+    }
+  },
+  { deep: true }
+)
+
+function recordSlotEvent(kind: SlotEventKind, slotIndex: number, nextId: string | null, prevId: string | null, summary?: string) {
+  const nextCard = nextId ? cardLookup.value.get(nextId) : undefined
+  const prevCard = prevId ? cardLookup.value.get(prevId) : undefined
+  const entry: SlotEvent = {
+    id: `${Date.now()}-${slotIndex}-${kind}`,
+    slotIndex,
+    kind,
+    cardId: nextId,
+    prevCardId: prevId,
+    cardName: nextCard?.name,
+    prevCardName: prevCard?.name,
+    at: Date.now(),
+    summary,
+  }
+  slotEvents.value = [...slotEvents.value.slice(-(SLOT_EVENT_LIMIT - 1)), entry]
+}
+
+function recordReferenceEvent(kind: 'world' | 'scenario', card: (typeof navigatorCards)[number], summary: string) {
+  const entry: SlotEvent = {
+    id: `${Date.now()}-${card.id}-${kind}`,
+    slotIndex: -1,
+    kind,
+    cardId: card.id,
+    cardName: card.name,
+    at: Date.now(),
+    summary,
+  }
+  slotEvents.value = [...slotEvents.value.slice(-(SLOT_EVENT_LIMIT - 1)), entry]
+}
 
 const cardSlots = computed(() =>
   activeCards.value.map((card) => ({
@@ -107,7 +301,74 @@ const extraSlots = computed(() =>
   }))
 )
 
+const slotAssignmentsDetail = computed(() =>
+  slotAssignments.value.map((cardId, index) => {
+    const card = cardId ? cardLookup.value.get(cardId) : undefined
+    return {
+      slotIndex: index,
+      cardId,
+      card: card
+        ? {
+            id: card.id,
+            title: card.name,
+            tags: card.tags,
+            summary: card.summary,
+            avatar: card.avatar,
+          }
+        : undefined,
+    }
+  })
+)
+
+const rosterCards = computed(() =>
+  playerNavigatorCards.value.map((card) => ({
+    id: card.id,
+    title: card.name,
+    summary: card.summary,
+    avatar: card.avatar,
+  }))
+)
+
 const selectedNavigator = computed(() => (selectedCard.value ? findNavigatorCard(selectedCard.value) : undefined))
+const selectedCardRole = computed<CardRole>(() => cardRoleMap.value[selectedCard.value] ?? 'UNKNOWN')
+
+function slotLabel(index: number) {
+  switch (index) {
+    case 0:
+      return 'Slot1（メイン）'
+    case 1:
+      return 'Slot2（ワールド）'
+    case 2:
+      return 'Slot3（シナリオ）'
+    default:
+      return `Slot${index + 1}`
+  }
+}
+
+function describeSlotEvent(event: SlotEvent) {
+  const label = slotLabel(event.slotIndex)
+  switch (event.kind) {
+    case 'enter':
+      return `${label}: ${event.cardName ?? 'カード'} が登場（挨拶は短く）`
+    case 'leave':
+      return `${label}: ${event.prevCardName ?? 'カード'} を退避`
+    case 'swap':
+      return `${label}: ${event.prevCardName ?? 'カード'} → ${event.cardName ?? 'カード'} に切り替え`
+    case 'world':
+      return `[WORLD] ${event.cardName ?? 'カード'}: ${truncateLine(event.summary ?? '状況描写を参照', 60)}`
+    case 'scenario':
+      return `[SCENARIO] ${event.cardName ?? 'カード'}`
+    default:
+      return undefined
+  }
+}
+
+const slotEventNotes = computed(() =>
+  slotEvents.value
+    .slice(-3)
+    .map((event) => describeSlotEvent(event))
+    .filter((note): note is string => Boolean(note))
+)
 
 const navigatorChatContent = computed<ChatContent>(() => {
   const base = baseChat.value
@@ -181,12 +442,104 @@ function summarizeCardSlot(card?: (typeof navigatorCards)[number]) {
   return parts.filter(Boolean).join(' / ')
 }
 
+function truncateLine(text: string, limit = 160) {
+  if (!text) return ''
+  return text.length <= limit ? text : `${text.slice(0, limit - 1)}…`
+}
+
+function splitSentences(source?: string | null, take = 3) {
+  if (!source) return []
+  const fragments = source
+    .split(/[\n。！？!?]+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+  return fragments.slice(0, take)
+}
+
+function buildWorldDescription(card: (typeof navigatorCards)[number]) {
+  const raw = (card.raw?.data ?? card.raw ?? {}) as Record<string, any>
+  const candidates = [
+    normalizeMultiline(raw?.world),
+    normalizeMultiline(raw?.setting),
+    normalizeMultiline(raw?.description),
+    normalizeMultiline(card.summary),
+  ]
+  const joined = candidates.filter(Boolean).join('\n')
+  const sentences = splitSentences(joined || card.name, 3).map((line) => truncateLine(line, 140))
+  if (!sentences.length) {
+    return `${card.name} の環境情報は準備中です。`
+  }
+  return sentences.join(' ')
+}
+
+function buildScenarioDigest(card: (typeof navigatorCards)[number]) {
+  const raw = (card.raw?.data ?? card.raw ?? {}) as Record<string, any>
+  const scenario = normalizeMultiline(raw?.scenario ?? raw?.story ?? raw?.outline)
+  const summary = normalizeMultiline(card.summary)
+  const sentences = splitSentences(scenario || summary || card.name, 3).map((line) => truncateLine(line, 120))
+  const [intro, current, next] = sentences
+  return [
+    `・ここまで: ${intro ?? '情報収集中'}`,
+    `・現在地: ${current ?? '状況整理中'}`,
+    `・次: ${next ?? '分岐を選んでください'}`,
+  ].join('\n')
+}
+
+function slotRuleByIndex(index: number) {
+  switch (index) {
+    case 0:
+      return [
+        '【Slot1ガイド：キャラクター】',
+        '・初回ドロップでは一言の挨拶のみ。長文自己紹介は禁止。',
+        '・再ドロップ時は感情や立ち位置を短く伝える。',
+        '・会話中はユーザーのテンポに合わせ、人格の没入感を最優先する。',
+      ].join('\n')
+    case 1:
+      return [
+        '【Slot2ガイド：World Bias】',
+        '・ドロップ時に世界観や空気感を1行で提示（長文禁止）。',
+        '・状況変化があれば一言で更新し、Slot1の解釈を支援する。',
+      ].join('\n')
+    case 2:
+      return [
+        '【Slot3ガイド：Scenario Bias】',
+        '・現在のフェーズや課題を短く示し、次に進むための条件を整理する。',
+        '・差し替え時はシーン転換として扱い、新たな行動候補を示す。',
+      ].join('\n')
+    default:
+      return ''
+  }
+}
+
+const conversationGuide = computed(() => {
+  const lines = [
+    '【会話進行ルール】',
+    '1. カードを初めて置いたら、本人・世界・シナリオが一言だけ挨拶/状況説明を行う。',
+    '2. 再配置・切替時は「今の気分」「空気」「フェーズ変化」を短く共有する。',
+    `3. 自由発言スイッチ: ${freeTalkEnabled.value ? 'ON（意見を持つカードだけが自然に参加）' : 'OFF（指名したカードのみ応答）'}`,
+    '4. キャラ名で呼ぶ or カードをクリックすると、そのカードが優先的に発言する。',
+    `5. Tension=${tensionRate.value}%（0で静か、100で全員参加）。値に応じて発言人数を変える。`,
+  ]
+  if (slotEventNotes.value.length) {
+    lines.push('最近のスロット操作:')
+    slotEventNotes.value.forEach((note) => lines.push(`- ${note}`))
+  }
+  return lines.join('\n')
+})
+
 const slotPayload = computed(() => {
-  const slots = activeCards.value.slice(0, 3).map((card) => summarizeCardSlot(card))
+  const slots = slotAssignments.value.map((cardId, index) => {
+    const card = cardId ? cardLookup.value.get(cardId) : undefined
+    const summary = summarizeCardSlot(card)
+    const rule = slotRuleByIndex(index)
+    const sections = [summary, rule].filter((section): section is string => Boolean(section))
+    return sections.length ? sections.join('\n\n') : undefined
+  })
+  const scenarioSection = [slots[2], conversationGuide.value].filter((section): section is string => Boolean(section))
   return {
     slot1: slots[0],
     slot2: slots[1],
-    slot3: slots[2],
+    slot3: scenarioSection.length ? scenarioSection.join('\n\n') : undefined,
   }
 })
 
@@ -267,28 +620,87 @@ function onAttachmentRemoved(attachment: { name: string }) {
 }
 
 function onEjectCard(id: string) {
-  activeSlots.value = activeSlots.value.filter((slot) => slot !== id)
-  benchSlots.value = Array.from(new Set([id, ...benchSlots.value]))
-  if (selectedCard.value === id) {
-    selectedCard.value = activeSlots.value[0] ?? ''
-  }
-  if (!selectedCard.value) {
-    const fallback = benchSlots.value.find((slot) => slot !== id)
-    if (fallback) {
-      promoteCard(fallback)
-    }
+  const next = slotAssignments.value.map((slotId) => (slotId === id ? null : slotId))
+  slotAssignments.value = next
+  if (!next.includes(selectedCard.value)) {
+    selectedCard.value = (next.find((slotId): slotId is string => Boolean(slotId)) ?? '')
   }
 }
 
 function promoteCard(id: string) {
-  if (activeSlots.value.includes(id)) {
+  const slots = [...slotAssignments.value]
+  const existingIndex = slots.findIndex((slotId) => slotId === id)
+  if (existingIndex !== -1) {
     selectedCard.value = id
     return
   }
-  const nextActive = Array.from(new Set([id, ...activeSlots.value])).slice(0, 3)
-  activeSlots.value = nextActive
-  benchSlots.value = benchSlots.value.filter((slot) => slot !== id)
+  const emptyIndex = slots.findIndex((slotId) => !slotId)
+  if (emptyIndex !== -1) {
+    slots[emptyIndex] = id
+  } else {
+    slots.pop()
+    slots.unshift(id)
+  }
+  slotAssignments.value = slots
   selectedCard.value = id
+}
+
+function onAssignSlot(payload: { slotIndex: number; cardId: string }) {
+  const slots = [...slotAssignments.value]
+  if (payload.slotIndex < 0 || payload.slotIndex >= slots.length) return
+  for (let i = 0; i < slots.length; i += 1) {
+    if (slots[i] === payload.cardId) {
+      slots[i] = null
+    }
+  }
+  slots[payload.slotIndex] = payload.cardId
+  slotAssignments.value = slots
+  selectedCard.value = payload.cardId
+}
+
+function onClearSlot(slotIndex: number) {
+  const slots = [...slotAssignments.value]
+  if (slotIndex < 0 || slotIndex >= slots.length) return
+  slots[slotIndex] = null
+  slotAssignments.value = slots
+  if (!slots.includes(selectedCard.value)) {
+    selectedCard.value = (slots.find((slotId): slotId is string => Boolean(slotId)) ?? '')
+  }
+}
+
+function onUpdateTension(value: number) {
+  tensionRate.value = clampPercentage(value)
+}
+
+function onToggleFreeTalk(value: boolean) {
+  freeTalkEnabled.value = Boolean(value)
+}
+
+function onCardReference(payload: { id: string; role: CardRole }) {
+  const card = payload.id ? cardLookup.value.get(payload.id) : undefined
+  if (!card) return
+  if (payload.role === 'WORLD') {
+    const description = buildWorldDescription(card)
+    referentialResponse.value = { role: 'WORLD', text: description, cardId: card.id }
+    recordReferenceEvent('world', card, description)
+  } else if (payload.role === 'SCENARIO') {
+    const digest = buildScenarioDigest(card)
+    referentialResponse.value = { role: 'SCENARIO', text: digest, cardId: card.id }
+    recordReferenceEvent('scenario', card, digest.split('\n')[0] ?? digest)
+  }
+}
+
+function onSetCardRole(payload: { id: string; role: CardRole | 'AUTO' }) {
+  if (!payload.id) return
+  if (payload.role === 'AUTO' || payload.role === 'UNKNOWN') {
+    if (payload.id in cardRoleOverrides.value) {
+      const next = { ...cardRoleOverrides.value }
+      delete next[payload.id]
+      cardRoleOverrides.value = next
+    }
+    return
+  }
+  cardRoleOverrides.value = { ...cardRoleOverrides.value, [payload.id]: payload.role }
 }
 </script>
 
@@ -298,9 +710,11 @@ function promoteCard(id: string) {
       <div class="chat-page__intro-header">
         <img class="chat-page__intro-icon" :src="chatIcon" alt="Chat" />
         <div>
-          <p class="chat-page__intro-label">{{ page.title }}</p>
+          <p class="chat-page__intro-label">
+            <span class="chat-page__intro-label-main">{{ page.title }} &lt;&lt;</span>
+          </p>
           <p class="chat-page__intro-note">
-            {{ $t('pages.chat.quickHint') || 'すぐに会話できます' }}
+            {{ page.quickHint ?? 'すぐに会話できます' }}
           </p>
         </div>
       </div>
@@ -335,12 +749,28 @@ function promoteCard(id: string) {
       :wallpaper-selected="wallpaperId"
       :wallpaper-custom-value="wallpaperCustom"
       :slot-payload="slotPayload"
+      :slot-assignments="slotAssignmentsDetail"
+      :card-roster="rosterCards"
+      :api-online="apiOnline"
+      :card-roles="cardRoleMap"
+      :selected-card-role="selectedCardRole"
+      :referential-response="referentialResponse"
+      :role-overrides="cardRoleOverrides"
+      :tension="tensionRate"
+      :free-talk-enabled="freeTalkEnabled"
+      :slot-event-notes="slotEventNotes"
       @select-card="selectedCard = $event"
       @run-action="onQuickAction"
       @change-wallpaper="onWallpaperOption"
       @update-wallpaper-custom="onWallpaperCustom"
       @eject-card="onEjectCard"
       @activate-card="promoteCard"
+      @assign-slot="onAssignSlot"
+      @clear-slot="onClearSlot"
+      @update:tension="onUpdateTension"
+      @toggle-free-talk="onToggleFreeTalk"
+      @card-reference="onCardReference"
+      @set-card-role="onSetCardRole"
       @message-rerun="onMessageAction('rerun', $event)"
       @message-edit="onMessageAction('edit', $event)"
       @message-fork="onMessageAction('fork', $event)"
@@ -380,10 +810,16 @@ function promoteCard(id: string) {
 
 .chat-page__intro-label {
   margin: 0;
-  font-size: 1rem;
-  letter-spacing: 0.1em;
+}
+
+.chat-page__intro-label-main {
+  display: inline-block;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-family: 'Zen Kaku Gothic Antique', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .chat-page__intro-note {

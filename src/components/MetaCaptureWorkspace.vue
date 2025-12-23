@@ -2,9 +2,10 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCode from 'qrcode'
-import pako from 'pako'
+import { generateQrAssets } from '../utils/qrToolkit'
 import type { MetacaptureEventPayload, V2Draft } from '../types/metacapture'
 import type { MetacaptureStoredDraft } from '../utils/metacaptureLibrary'
+import { apiRequest } from '../utils/api'
 
 defineProps<{
   featureTitle?: string
@@ -54,6 +55,12 @@ const WORKSPACE_COPY = {
     qrPreview: 'QR Preview',
     qrRaw: 'raw',
     qrEmbedded: 'embedded',
+    urlLabel: '世界 (URL)',
+    urlPh: '参照したいURLを入力 (Wikipedia等)',
+    wishLabel: '願い (Wish)',
+    wishPh: '例: この場所に住む羊飼いの少年と友達になりたい',
+    deepScanLabel: 'Deep Scan (画像解析を有効にする)',
+    reincarnationLabel: 'QR転生コード',
   },
   en: {
     dropPanelKicker: 'MetaCapture',
@@ -89,6 +96,12 @@ const WORKSPACE_COPY = {
     qrPreview: 'QR Preview',
     qrRaw: 'raw',
     qrEmbedded: 'embedded',
+    urlLabel: 'World (URL)',
+    urlPh: 'Enter URL (e.g., Wikipedia, News)',
+    wishLabel: 'Wish',
+    wishPh: 'e.g., I want to be friends with a shepherd boy here',
+    deepScanLabel: 'Deep Scan (Enable Image Analysis)',
+    reincarnationLabel: 'QR Reincarnation Code',
   },
 } as const
 
@@ -107,6 +120,8 @@ const error = ref<string | null>(null)
 const qrImage = ref<string | null>(null)
 const qrEmbedded = ref<string | null>(null)
 const qrSize = ref<number | null>(null)
+const reincarnationCode = ref<string | null>(null)
+const reincarnationQr = ref<string | null>(null)
 
 const form = reactive({
   title: '',
@@ -115,6 +130,9 @@ const form = reactive({
   firstMessage: '',
   behavior: '',
   links: '',
+  url: '',
+  wish: '',
+  deepScan: false,
 })
 
 const hasFile = computed(() => Boolean(previewSrc.value))
@@ -138,7 +156,9 @@ function resetCapture() {
   qrImage.value = null
   qrEmbedded.value = null
   qrSize.value = null
-  code.value = '画像を読み込んで「解析」を押してください。'
+  reincarnationCode.value = null
+  reincarnationQr.value = null
+  code.value = labels.value.analyzeIdle
   Object.assign(form, {
     title: '',
     role: '',
@@ -174,7 +194,7 @@ function handleFileList(list: FileList | null) {
   qrImage.value = null
   qrEmbedded.value = null
   qrSize.value = null
-  code.value = '画像を読み込みました。「解析」を押してAIカードの草案を生成します。'
+  code.value = labels.value.analyzeReady
 }
 
 function onFileChange(event: Event) {
@@ -191,117 +211,6 @@ function onDragOver(event: DragEvent) {
   event.preventDefault()
 }
 
-const textEncoder = new TextEncoder()
-const textDecoder = new TextDecoder()
-
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binary = atob(base64)
-  const len = binary.length
-  const bytes = new Uint8Array(len)
-  for (let i = 0; i < len; i += 1) {
-    bytes[i] = binary.charCodeAt(i)
-  }
-  return bytes
-}
-
-function uint8ArrayToBase64(bytes: Uint8Array): string {
-  let binary = ''
-  bytes.forEach((b) => {
-    binary += String.fromCharCode(b)
-  })
-  return btoa(binary)
-}
-
-function createChunk(type: string, data: Uint8Array): Uint8Array {
-  const length = data.length
-  const chunk = new Uint8Array(12 + length)
-  const view = new DataView(chunk.buffer)
-  view.setUint32(0, length, false)
-
-  const typeAndData = new Uint8Array(4 + length)
-  for (let i = 0; i < 4; i += 1) {
-    const code = type.charCodeAt(i)
-    chunk[i + 4] = code
-    typeAndData[i] = code
-  }
-  chunk.set(data, 8)
-  typeAndData.set(data, 4)
-
-  const crc = crc32(typeAndData)
-  view.setUint32(8 + length, crc, false)
-  return chunk
-}
-
-function crc32(bytes: Uint8Array): number {
-  let crc = ~0
-  for (let i = 0; i < bytes.length; i += 1) {
-    const value = bytes[i] ?? 0
-    crc ^= value
-    for (let k = 0; k < 8; k += 1) {
-      const mask = -(crc & 1)
-      crc = (crc >>> 1) ^ (0xedb88320 & mask)
-    }
-  }
-  return (crc ^ -1) >>> 0
-}
-
-function embedITxtChunk(base64Png: string, keyword: string, text: string): string {
-  const pngBytes = base64ToUint8Array(base64Png)
-  const signature = [137, 80, 78, 71, 13, 10, 26, 10]
-  for (let i = 0; i < signature.length; i += 1) {
-    if (pngBytes[i] !== signature[i]) {
-      throw new Error('PNG signature mismatch')
-    }
-  }
-
-  let offset = 8
-  let iendIndex = -1
-  while (offset < pngBytes.length) {
-    const view = new DataView(pngBytes.buffer, offset)
-    const length = view.getUint32(0, false)
-    const type = textDecoder.decode(pngBytes.slice(offset + 4, offset + 8))
-    if (type === 'IEND') {
-      iendIndex = offset
-      break
-    }
-    offset += 12 + length
-  }
-  if (iendIndex < 0) throw new Error('IEND chunk not found')
-
-  const before = pngBytes.slice(0, iendIndex)
-  const iendChunk = pngBytes.slice(iendIndex)
-
-  const keywordBytes = textEncoder.encode(keyword)
-  const textBytes = textEncoder.encode(text)
-  const chunkData = new Uint8Array(keywordBytes.length + 5 + textBytes.length)
-  let idx = 0
-  chunkData.set(keywordBytes, idx); idx += keywordBytes.length
-  chunkData[idx++] = 0
-  chunkData[idx++] = 0
-  chunkData[idx++] = 0
-  chunkData[idx++] = 0
-  chunkData[idx++] = 0
-  chunkData.set(textBytes, idx)
-
-  const itxtChunk = createChunk('iTXt', chunkData)
-
-  const combined = new Uint8Array(before.length + itxtChunk.length + iendChunk.length)
-  combined.set(before, 0)
-  combined.set(itxtChunk, before.length)
-  combined.set(iendChunk, before.length + itxtChunk.length)
-
-  return `data:image/png;base64,${uint8ArrayToBase64(combined)}`
-}
-
-async function generateQrAssets(payload: string) {
-  const baseDataUrl = await QRCode.toDataURL(payload, { errorCorrectionLevel: 'M', margin: 1, width: 512 })
-  const [, base64 = ''] = baseDataUrl.split(',')
-  const compressed = pako.deflate(payload, { to: 'string' })
-  const encoded = uint8ArrayToBase64(compressed)
-  const embedded = embedITxtChunk(base64, 'chara', encoded)
-  const size = Math.round(payload.length / 1024 * 100) / 100
-  return { baseDataUrl, embedded, sizeKb: size }
-}
 
 function buildDraft(): V2Draft {
   return {
@@ -326,8 +235,8 @@ function buildDraft(): V2Draft {
 }
 
 async function analyze() {
-  if (!previewSrc.value) {
-    error.value = '解析には画像が必要です。'
+  if (!form.url && !form.wish && !previewSrc.value) {
+    error.value = '解析には URL または願い、あるいは画像が必要です。'
     return
   }
   error.value = null
@@ -337,18 +246,53 @@ async function analyze() {
   qrSize.value = null
   code.value = '解析中...'
 
-  await new Promise((resolve) => setTimeout(resolve, 800))
-
-  const draft = buildDraft()
-  const draftJson = JSON.stringify(draft, null, 2)
   try {
-    const { baseDataUrl, embedded, sizeKb } = await generateQrAssets(draftJson)
+    // MetaCapture 2.0 flow: Call BFF /chat/v1 with encounter payload
+    const response = await apiRequest<{
+      reply: string,
+      meta: {
+        metacapture: boolean,
+        persona_payload: any,
+        reincarnation_code?: string
+      }
+    }>('/chat/v1', {
+      method: 'POST',
+      body: JSON.stringify({
+        urls: form.url ? [form.url] : [],
+        wish: form.wish,
+        gap: 'mid',
+        deepScan: form.deepScan
+      })
+    })
+
+    if (response.meta?.metacapture && response.meta.persona_payload) {
+      const card = response.meta.persona_payload
+      form.title = card.name || ''
+      form.role = card.tags?.[0] || 'MetaCapture Character'
+      form.summary = card.description || ''
+      form.firstMessage = card.first_mes || response.reply
+      form.behavior = card.personality || ''
+      form.links = form.url
+      
+      if (response.meta.reincarnation_code) {
+        reincarnationCode.value = response.meta.reincarnation_code
+        reincarnationQr.value = await QRCode.toDataURL(reincarnationCode.value, {
+          width: 320,
+          margin: 2,
+        })
+      }
+    }
+
+    const draft = buildDraft()
+    const draftJson = JSON.stringify(draft, null, 2)
+    const { raw, embedded, sizeKb } = await generateQrAssets(draftJson)
+    
     code.value = draftJson
-    qrImage.value = baseDataUrl
+    qrImage.value = raw
     qrEmbedded.value = embedded
     qrSize.value = sizeKb
     analyzing.value = false
-    emits('preview', { draft, json: draftJson, qrImage: baseDataUrl, qrEmbedded: embedded })
+    emits('preview', { draft, json: draftJson, qrImage: raw, qrEmbedded: embedded })
   } catch (err) {
     analyzing.value = false
     error.value = err instanceof Error ? err.message : String(err)
@@ -449,10 +393,25 @@ defineExpose({
 
         <div class="actions">
           <button type="button" class="btn" @click="triggerBrowse">ファイルを選択</button>
-          <button type="button" class="btn btn-primary" :disabled="!hasFile || analyzing" @click="analyze">
+          <button type="button" class="btn btn-primary" :disabled="analyzing" @click="analyze">
             {{ analyzing ? '解析中...' : '解析' }}
           </button>
-          <button type="button" class="btn btn-ghost" :disabled="!hasFile" @click="resetCapture">リセット</button>
+          <button type="button" class="btn btn-ghost" @click="resetCapture">リセット</button>
+        </div>
+
+        <div class="fields" style="margin-top: 20px;">
+          <label class="full">
+            <span>{{ labels.urlLabel }}</span>
+            <input v-model="form.url" type="text" :placeholder="labels.urlPh" />
+          </label>
+          <label class="full">
+            <span>{{ labels.wishLabel }}</span>
+            <textarea v-model="form.wish" rows="2" :placeholder="labels.wishPh"></textarea>
+          </label>
+          <label class="checkbox">
+            <input v-model="form.deepScan" type="checkbox" />
+            <span>{{ labels.deepScanLabel }}</span>
+          </label>
         </div>
 
         <p v-if="error" class="panel__error">{{ error }}</p>
@@ -527,6 +486,10 @@ defineExpose({
           <figure class="qr-preview" v-if="qrEmbedded">
             <img :src="qrEmbedded" alt="QR embedded" />
             <figcaption>embedded ({{ qrSize ?? 0 }} KB)</figcaption>
+          </figure>
+          <figure class="qr-preview" v-if="reincarnationQr">
+            <img :src="reincarnationQr" alt="QR Reincarnation" />
+            <figcaption>{{ labels.reincarnationLabel }}</figcaption>
           </figure>
         </section>
       </aside>

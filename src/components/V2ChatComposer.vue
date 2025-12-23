@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { ChatAttachment } from '../composables/useChat'
+import { useTextInputControls } from '../composables/useTextInputControls'
 
-defineProps<{
+const props = defineProps<{
   modelValue: string
   disabled?: boolean
   placeholder: string
@@ -23,7 +24,20 @@ const emits = defineEmits<{
 }>()
 
 const fileInput = ref<HTMLInputElement | null>(null)
-const isComposing = ref(false)
+const textValue = computed({
+  get: () => props.modelValue,
+  set: (value: string) => emits('update:modelValue', value),
+})
+
+const {
+  handleKeydown: handleComposerKeydown,
+  onCompositionStart: onComposerCompositionStart,
+  onCompositionEnd: onComposerCompositionEnd,
+  toggleMic: toggleComposerMic,
+  listening,
+  speechSupported,
+  speechError,
+} = useTextInputControls(textValue, { lang: 'ja-JP' })
 
 function onInput(event: Event) {
   emits('update:modelValue', (event.target as HTMLTextAreaElement).value)
@@ -56,19 +70,19 @@ function handleDragOver(event: DragEvent) {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key !== 'Enter') return
-  if (event.shiftKey) return
-  if (isComposing.value || event.isComposing) return
-  event.preventDefault()
-  emits('send')
+  handleComposerKeydown(event, onSubmit)
 }
 
 function onCompositionStart() {
-  isComposing.value = true
+  onComposerCompositionStart()
 }
 
 function onCompositionEnd() {
-  isComposing.value = false
+  onComposerCompositionEnd()
+}
+
+function onMicClick() {
+  toggleComposerMic()
 }
 
 function removeAttachment(attachment: ChatAttachment) {
@@ -96,6 +110,8 @@ function removeAttachment(attachment: ChatAttachment) {
       <div class="composer__hints">
         <small>{{ enterHint }}</small>
         <small>{{ attachHint }}</small>
+        <small v-if="speechSupported">音声入力対応</small>
+        <small v-else>音声入力は未対応</small>
       </div>
       <div class="composer__controls">
         <input
@@ -108,11 +124,22 @@ function removeAttachment(attachment: ChatAttachment) {
         <button type="button" class="composer__attach" @click="triggerFileDialog" :disabled="disabled">
           {{ attachLabel }}
         </button>
+        <button
+          v-if="speechSupported"
+          type="button"
+          class="composer__mic"
+          :class="{ 'is-active': listening }"
+          :disabled="disabled"
+          @click="onMicClick"
+        >
+          🎤
+        </button>
         <button type="submit" class="composer__send" :disabled="disabled || !modelValue.trim()">
           {{ sendLabel }}
         </button>
       </div>
     </div>
+    <p v-if="speechError" class="composer__error">{{ speechError }}</p>
 
     <div v-if="attachments.length" class="composer__attachments">
       <p class="composer__attachments-title">{{ filesLabel }}</p>
@@ -174,7 +201,8 @@ function removeAttachment(attachment: ChatAttachment) {
 }
 
 .composer__attach,
-.composer__send {
+.composer__send,
+.composer__mic {
   appearance: none;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 12px;
@@ -194,14 +222,29 @@ function removeAttachment(attachment: ChatAttachment) {
   font-weight: 600;
 }
 
+.composer__mic {
+  width: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.composer__mic.is-active {
+  background: rgba(34, 197, 94, 0.4);
+  border-color: rgba(34, 197, 94, 0.65);
+}
+
 .composer__attach:disabled,
-.composer__send:disabled {
+.composer__send:disabled,
+.composer__mic:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .composer__attach:hover:not(:disabled),
-.composer__send:hover:not(:disabled) {
+.composer__send:hover:not(:disabled),
+.composer__mic:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
@@ -251,6 +294,12 @@ function removeAttachment(attachment: ChatAttachment) {
   font-size: 0.8rem;
   cursor: pointer;
   text-decoration: underline;
+}
+
+.composer__error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #f87171;
 }
 
 .sr-only {

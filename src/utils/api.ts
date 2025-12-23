@@ -1,5 +1,6 @@
 const ENV_API_BASE = ((import.meta.env.VITE_API_BASE as string | undefined) ?? '').trim()
-export const API_BASE = (ENV_API_BASE.length > 0 ? ENV_API_BASE : 'http://localhost:4117').replace(/\/$/, '')
+const FALLBACK_API_BASE = 'https://izakaya-bff.onrender.com'
+export const API_BASE = (ENV_API_BASE.length > 0 ? ENV_API_BASE : FALLBACK_API_BASE).replace(/\/$/, '')
 
 export function resolveApiUrl(path: string): string {
   return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`

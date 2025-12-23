@@ -7,7 +7,7 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase1.4",
+      "phase": "phase1.5",
       "title": "IZAKAYA verse",
       "slogans": [
         "Adventure, dreams, and love—",
@@ -141,9 +141,10 @@ export default {
         "title": "V2 Chatbot とは？",
         "description": "キャラクターカードを使って動くチャットAI。プロフィールや話し方のルールを読み込むと、そのキャラになりきって会話できます。",
         "bullets": [
-          "複数のキャラカードを切り替えながら会話できる",
-          "Slot1（メイン）、Slot2（サブ）、Slot3（世界観）で構成",
-          "Rankモードは主役が立った安定対話、Normalモードは自然で自由な会話"
+          "＊Each slot carries its own bias＊",
+          "Example: Slot1 (Main), Slot2 (Support), Slot3 (World)",
+          "You can also try layouts like three characters at once",
+          "More guides will be added over time"
         ]
       },
       {
@@ -242,7 +243,7 @@ export default {
         "attachHint": "Drop PNG, JPG, TXT, or JSON assets here (upload hook coming soon).",
         "filesLabel": "Attachments",
         "removeFileLabel": "Remove",
-        "enterToSendHint": "Enter to send / Shift+Enter for newline"
+        "enterToSendHint": "Send: Cmd/Ctrl+Enter"
       },
       "resetLabel": "Reset history",
       "loadingMessage": "Preparing a reply...",
@@ -356,7 +357,8 @@ export default {
   },
   "pages": {
     "chat": {
-      "title": "V2 Chat Console",
+      "title": "IZAKAYA chat",
+      "quickHint": "Ready to chat instantly",
       "lead": [
         "Load a character card and let the LLM role-play the persona in real time.",
         "Connect through the BFF to either a local Ollama instance or a hosted API."
@@ -369,9 +371,10 @@ export default {
       ],
       "notesTitle": "Tips",
       "notes": [
-        "If Chrome still shows stale content, clear cache and registered service workers.",
-        "Adjust `.env` (`PROVIDER`, base URLs, API keys) to match the LLM you are targeting.",
-        "Admin and translator cards live under Help & Support."
+        "＊Each slot carries a different bias＊",
+        "Example: Slot1 (main), Slot2 (world), Slot3 (scenario)",
+        "Feel free to try other layouts such as three characters at once",
+        "※ Additional guides will arrive later"
       ],
       "extraSlots": "More cards",
       "workspace": {
