@@ -2,6 +2,8 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ChatConsole from '../components/ChatConsole.vue'
+import SessionPanel from '../components/SessionPanel.vue'
+import AdminBulkUploader from '../components/AdminBulkUploader.vue'
 import { useAccount } from '../composables/useAccount'
 import { findNavigatorCard } from '../data/sampleCards'
 import type { ChatContent } from '../types/home'
@@ -109,6 +111,10 @@ async function handleSpend() {
       </div>
     </section>
 
+    <section class="admin__session">
+      <SessionPanel />
+    </section>
+
     <section class="admin__controls">
       <div class="control-card">
         <h3>{{ page.chargeLabel }}</h3>
@@ -135,6 +141,10 @@ async function handleSpend() {
         <button type="button" @click="handleSpend" :disabled="busy">{{ page.updateButton }}</button>
       </div>
       <p v-if="error" class="admin__error">{{ error }}</p>
+    </section>
+
+    <section class="admin__bulk">
+      <AdminBulkUploader />
     </section>
 
     <section class="admin__ledger">
@@ -194,6 +204,7 @@ async function handleSpend() {
 
 .admin__stats,
 .admin__controls,
+.admin__session,
 .admin__ledger,
 .admin__chat {
   border-radius: 24px;
@@ -202,6 +213,12 @@ async function handleSpend() {
   padding: clamp(20px, 3vw, 36px);
   display: grid;
   gap: 18px;
+}
+
+.admin__bulk {
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .stats-grid {

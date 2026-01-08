@@ -1,6 +1,9 @@
+import { getAccessToken } from '../stores/sessionStore'
+
 const ENV_API_BASE = ((import.meta.env.VITE_API_BASE as string | undefined) ?? '').trim()
 const FALLBACK_API_BASE = 'https://izakaya-bff.onrender.com'
 export const API_BASE = (ENV_API_BASE.length > 0 ? ENV_API_BASE : FALLBACK_API_BASE).replace(/\/$/, '')
+const GATE_KEY = ((import.meta.env.VITE_API_GATE_KEY as string | undefined) ?? '').trim()
 
 export function resolveApiUrl(path: string): string {
   return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`
@@ -22,9 +25,16 @@ function previewPayload(payload: unknown) {
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const url = resolveApiUrl(path)
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...(init?.headers ?? {}),
+  const headers = new Headers(init?.headers ?? {})
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+  if (GATE_KEY.length > 0 && !headers.has('X-IZAKAYA-GATE')) {
+    headers.set('X-IZAKAYA-GATE', GATE_KEY)
+  }
+  const token = getAccessToken()
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`)
   }
 
   let response: Response

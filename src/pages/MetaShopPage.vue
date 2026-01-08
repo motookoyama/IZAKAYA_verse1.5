@@ -166,23 +166,25 @@ const qrImage = ref<string | null>(null)
 const qrEmbedded = ref<string | null>(null)
 const qrSize = ref<number | null>(null)
 const soulSeedJson = ref('')
+const debugVisible = ref(false)
+const debugLogs = ref<{ id: string; message: string; timestamp: string }[]>([])
 
 const sampleScript = ref<string>(
-  'Scene 01: Neon bar counter, soft rain outside.\n- Character greets patron with a weary smile.\n- Promise: keep secrets safe, but hint at hidden power.'
+  'シーン01: ネオンのカウンター、外には静かな雨。\n- 店主は疲れをにじませつつ柔らかく迎える。\n- 約束: 秘密は守るが、内に潜む力を匂わせる。'
 )
 const sampleJson = ref<string>(
   JSON.stringify(
     {
-      name: 'Prototype Spirit',
-      description: 'A placeholder card exported from the Meta Shop mock.',
-      tags: ['mock', 'atelier'],
-      persona: 'Calm, reliable, slightly sarcastic.',
+      name: '未確定',
+      description: 'Meta Shop モックから出した仮サンプルカード。',
+      tags: ['モック', 'アトリエ'],
+      persona: '穏やかで頼れるが、少し皮肉屋。',
       safety: { consume: 'ignite_only' },
       source: {
         provider: 'mock',
         endpoint: '/chat/v1',
         createdAt: new Date().toISOString(),
-        orderSummary: 'Sample prompt',
+        orderSummary: 'サンプル注文',
       },
       visibility: 'private',
       role: 'Meta Shop Prototype',
@@ -296,9 +298,23 @@ const hasOrder = computed(() => orderMemo.value.trim().length > 0)
 const igniteDisabled = computed(() => isIgniting.value || !(providerConnected.value && hasOrder.value))
 const igniteLockReason = computed(() => {
   if (isIgniting.value) return '🔥 生成中...'
-  if (!providerConnected.value) return '🔒 Provider未接続：Access Gateで接続してください'
+  if (!providerConnected.value) return '🔒 Provider未接続：Gateで接続してください'
   if (!hasOrder.value) return '🔒 オーダーが空です：店主に話しかけて注文を作ってください'
   return ''
+})
+
+const connectionBadge = computed(() => {
+  return {
+    ok: providerConnected.value,
+    label: providerConnected.value ? '🟢 接続中' : '🔴 未接続',
+    provider: provider.value,
+    endpoint: providerConnected.value ? '/chat/v1' : '未接続',
+  }
+})
+
+const connectionSummary = computed(() => {
+  const status = connectionBadge.value.ok ? '● 接続中' : '● 未接続'
+  return `${status} / プロバイダ: ${connectionBadge.value.provider} / エンドポイント: ${connectionBadge.value.endpoint}`
 })
 
 function handleGate() {
@@ -310,6 +326,11 @@ function handleConnect() {
     providerConnected.value = true
     gateOpen.value = false
     pushMessage('npc', LOG_TEXT.connected)
+    debugLogs.value.unshift({
+      id: `debug-${Date.now()}`,
+      message: 'BFFに接続しました。',
+      timestamp: new Date().toLocaleString(),
+    })
   }
 }
 
@@ -697,12 +718,12 @@ function handleDownload() {
   <section class="meta-shop">
     <header class="meta-shop__header">
       <div>
-        <p class="meta-shop__kicker">META SHOP</p>
-        <h1>Order Workshop</h1>
+        <p class="meta-shop__kicker">メタショップ</p>
+        <h1>オーダー工房</h1>
       </div>
       <div class="meta-shop__hint">
-        <strong>入口は会話。消費はIGNITEのみ。</strong>
-        <span>Gate で接続するまではプレビュー専用モードです。</span>
+        <strong>入口は会話。消費は「生成開始」のみ。</strong>
+        <span>Gate 接続まではプレビュー専用モードです。</span>
       </div>
     </header>
 
@@ -756,8 +777,8 @@ function handleDownload() {
               </div>
               <p v-if="speechError" class="chat-panel__mic-error">{{ speechError }}</p>
               <div class="chat-panel__actions">
-                <button type="button" class="ghost-btn" @click="handleGate">Access Gate</button>
-                <button type="button" class="primary-btn" @click="handleSend">Send</button>
+                <button type="button" class="ghost-btn" @click="handleGate">Gate接続</button>
+                <button type="button" class="primary-btn" @click="handleSend">送信</button>
               </div>
             </div>
           </div>
@@ -768,7 +789,7 @@ function handleDownload() {
       <section class="meta-shop__section">
         <div class="meta-shop__section-header">
           <span>オーダー確認</span>
-          <small>Quote → Confirm → Ignite</small>
+          <small>見積もり → 内容確認 → 生成開始</small>
         </div>
         <div class="order-panel">
           <div class="order-panel__summary">
@@ -799,7 +820,7 @@ function handleDownload() {
               </select>
             </label>
             <label>
-              <span>種別 (Type)</span>
+              <span>種別（Type）</span>
               <select v-model="adjustments.type">
                 <option v-for="type in typeOptions" :key="type.value" :value="type.value">
                   {{ type.label }}
@@ -818,17 +839,17 @@ function handleDownload() {
             <span>URL</span>
             <input v-model="captureInput.url" type="url" placeholder="参考にしたい世界のURL" />
           </label>
-          <label class="order-panel__full">
-            <span>願い (Wish)</span>
+            <label class="order-panel__full">
+              <span>願い（Wish）</span>
             <textarea v-model="captureInput.wish" rows="2" :placeholder="wishPlaceholder"></textarea>
           </label>
         </div>
           <div class="order-panel__actions">
-            <button type="button">Quote</button>
-            <button type="button">Confirm</button>
+            <button type="button">見積もり</button>
+            <button type="button">内容確認</button>
             <div class="order-panel__ignite">
               <button type="button" :disabled="igniteDisabled" @click="handleIgnite">
-                <span>IGNITE ▶</span>
+                <span>生成開始 ▶</span>
               </button>
               <small>{{ igniteLockReason }}</small>
             </div>
@@ -944,7 +965,7 @@ function handleDownload() {
 
       <section class="meta-shop__section">
         <div class="meta-shop__section-header">
-          <span>Library</span>
+          <span>ライブラリ</span>
           <small>直近の生成を保存</small>
         </div>
         <div v-if="libraryEntries.length" class="library-list">
@@ -958,32 +979,48 @@ function handleDownload() {
               <small>{{ new Date(entry.createdAt).toLocaleString() }}</small>
             </div>
             <button type="button" class="ghost-btn" @click="loadLibraryEntry(entry)">
-              Load
+              読み込む
             </button>
           </article>
         </div>
         <p v-else class="library-empty">まだ保存はありません。</p>
       </section>
     </div>
+    <footer class="meta-shop__footer">
+      <p class="connection-pill" :class="{ 'is-ok': connectionBadge.ok }">
+        {{ connectionSummary }}
+      </p>
+      <button type="button" class="ghost-btn ghost-btn--tiny" @click="debugVisible = !debugVisible">
+        {{ debugVisible ? '接続詳細を閉じる' : '接続詳細' }}
+      </button>
+    </footer>
+    <section v-if="debugVisible" class="telemetry-drawer">
+      <p v-if="!debugLogs.length" class="telemetry-note">接続ログはありません。</p>
+      <ul v-else class="debug-log">
+        <li v-for="entry in debugLogs" :key="entry.id">
+          <strong>{{ entry.timestamp }}</strong> - {{ entry.message }}
+        </li>
+      </ul>
+    </section>
   </section>
   <transition name="gate-fade">
     <div v-if="gateOpen" class="gate-overlay">
       <div class="gate-sheet">
         <header>
-          <h3>Access Gate</h3>
+          <h3>Gate接続</h3>
           <button type="button" @click="gateOpen = false">×</button>
         </header>
-        <p class="gate-sheet__hint">接続先を選んで Connect を押してください。</p>
+        <p class="gate-sheet__hint">接続先を選んで「接続」を押してください。</p>
         <label>
-          <span>Provider</span>
+          <span>プロバイダ</span>
           <select v-model="provider">
             <option value="bff">IZAKAYA BFF（推奨）</option>
           </select>
         </label>
-        <button type="button" class="primary-btn" @click="handleConnect">Connect</button>
+        <button type="button" class="primary-btn" @click="handleConnect">接続</button>
         <p class="gate-sheet__status">
           状態:
-          <strong>{{ providerConnected ? 'CONNECTED' : 'NOT CONNECTED' }}</strong>
+          <strong>{{ providerConnected ? '接続済み' : '未接続' }}</strong>
         </p>
       </div>
     </div>
@@ -1111,6 +1148,55 @@ function handleDownload() {
 .chat-panel__bubble.is-user {
   background: rgba(129, 140, 248, 0.15);
   border: 1px solid rgba(129, 140, 248, 0.35);
+}
+
+.meta-shop__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 8px;
+}
+
+.connection-pill {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.connection-pill.is-ok {
+  color: #79f4b2;
+}
+
+.ghost-btn--tiny {
+  font-size: 0.75rem;
+  padding: 4px 12px;
+}
+
+.telemetry-drawer {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.85rem;
+  background: rgba(8, 10, 18, 0.8);
+}
+
+.debug-log {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.debug-log li {
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 10px;
 }
 
 .chat-panel__controls {

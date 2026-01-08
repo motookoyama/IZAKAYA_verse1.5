@@ -1,20 +1,4 @@
-import drOrb from './v2cards/dr-orb.json'
-import ekaterina from './v2cards/ekaterina-menter.json'
-import ladyMaholo from './v2cards/lady-maholo.json'
-import missMadi from './v2cards/miss-madi.json'
-import mammonManager from './v2cards/mammon-manager.json'
-import teamOzanari from './v2cards/team-ozanari-dungeon.json'
-import ekubo from './v2cards/ekubo.json'
-import hanasoKawari from './v2cards/hanaso-kawari.json'
-
-import drOrbAvatar from '../assets/v2cards/dr-orb.png'
-import ekaterinaAvatar from '../assets/v2cards/ekaterina-menter.png'
-import ladyMaholoAvatar from '../assets/v2cards/lady-maholo.png'
-import missMadiAvatar from '../assets/v2cards/miss-madi.png'
-import mammonManagerAvatar from '../assets/v2cards/mammon-manager.png'
-import teamOzanariAvatar from '../assets/v2cards/team-ozanari-dungeon.png'
-import ekuboAvatar from '../assets/v2cards/ekubo.png'
-import hanasoKawariAvatar from '../assets/v2cards/hanaso-kawari.png'
+import fallbackAvatar from '../assets/persona-default.svg'
 
 export type SampleCard = {
   id: string
@@ -25,12 +9,28 @@ export type SampleCard = {
   raw: any
 }
 
-function createSampleCard(
-  id: string,
-  payload: any,
-  avatar: string,
-  tags: string[]
-): SampleCard {
+const cardJsonModules = import.meta.glob('./v2cards/*.json', { eager: true })
+const cardImageModules = import.meta.glob('../assets/v2cards/*.{png,jpg,jpeg,webp,svg}', {
+  eager: true,
+  import: 'default',
+})
+
+const resolvePayload = (module: unknown): any => {
+  if (module && typeof module === 'object' && 'default' in module) {
+    return (module as { default: any }).default
+  }
+  return module
+}
+
+const resolveAvatar = (cardId: string): string => {
+  const entry = Object.entries(cardImageModules).find(([path]) => path.includes(`/${cardId}.`))
+  if (entry) {
+    return entry[1] as string
+  }
+  return fallbackAvatar
+}
+
+function createSampleCard(id: string, payload: any, tags: string[]): SampleCard {
   const name: string = payload?.name ?? payload?.data?.name ?? id
   const description: string =
     payload?.description ?? payload?.data?.description ?? ''
@@ -45,21 +45,28 @@ function createSampleCard(
     name,
     summary,
     tags,
-    avatar,
+    avatar: resolveAvatar(id),
     raw: payload,
   }
 }
 
-export const navigatorCards: SampleCard[] = [
-  createSampleCard('dr-orb', drOrb, drOrbAvatar, ['管理者', 'ナビゲータ']),
-  createSampleCard('ekaterina-menter', ekaterina, ekaterinaAvatar, ['管理者', '翻訳']),
-  createSampleCard('lady-maholo', ladyMaholo, ladyMaholoAvatar, ['管理', 'コミュニティ']),
-  createSampleCard('miss-madi', missMadi, missMadiAvatar, ['管理', 'サポート']),
-  createSampleCard('mammon-manager', mammonManager, mammonManagerAvatar, ['経理', '管理者']),
-  createSampleCard('team-ozanari-dungeon', teamOzanari, teamOzanariAvatar, ['チーム', 'ストーリー']),
-  createSampleCard('ekubo', ekubo, ekuboAvatar, ['サンプル', 'ギャグ']),
-  createSampleCard('hanaso-kawari', hanasoKawari, hanasoKawariAvatar, ['案内', '文化']),
-]
+const defaultTags: Record<string, string[]> = {
+  'dr-orb': ['管理者', 'ナビゲータ'],
+  'ekaterina-menter': ['管理者', '翻訳'],
+  'lady-maholo': ['管理', 'コミュニティ'],
+  'miss-madi': ['管理', 'サポート'],
+  'mammon-manager': ['経理', '管理者'],
+  'team-ozanari-dungeon': ['チーム', 'ストーリー'],
+  ekubo: ['サンプル', 'ギャグ'],
+  'hanaso-kawari': ['案内', '文化'],
+}
+
+export const navigatorCards: SampleCard[] = Object.entries(cardJsonModules).map(([path, mod]) => {
+  const id = path.split('/').pop()!.replace('.json', '')
+  const payload = resolvePayload(mod)
+  const tags = defaultTags[id] ?? ['公式', 'カード']
+  return createSampleCard(id, payload, tags)
+})
 
 export const primaryNavigatorId = 'dr-orb'
 

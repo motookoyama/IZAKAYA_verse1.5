@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "png2json": "node tools/png2json/index.mjs"
   },
   "dependencies": {
+    "jszip": "^3.10.1",
     "pako": "^2.1.0",
     "qrcode": "^1.5.4",
     "vue": "^3.5.21",

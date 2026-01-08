@@ -11,6 +11,10 @@ import {
   saveMetacaptureDraft,
   type MetacaptureStoredDraft,
 } from '../utils/metacaptureLibrary'
+import SessionPanel from '../components/SessionPanel.vue'
+import { useSession } from '../composables/useSession'
+import { FEATURE_USER_SHARE } from '../core/featureFlags'
+import { apiRequest } from '../utils/api'
 
 const { tm } = useI18n({ useScope: 'global' })
 
@@ -27,11 +31,19 @@ const knowledge = computed(() => {
   return content.topics.find((topic) => topic.id === 'meta')
 })
 
+const session = useSession()
+const shareFeatureEnabled = FEATURE_USER_SHARE
+
 const workspaceRef = ref<InstanceType<typeof MetaCaptureWorkspace> | null>(null)
 const library = ref<MetacaptureStoredDraft[]>([])
 const loadingLibrary = ref(false)
 const lastSavedId = ref<string | null>(null)
 const statusMessage = ref<string | null>(null)
+const remotePayload = ref<MetacaptureEventPayload | null>(null)
+const remoteCardId = ref<string | null>(null)
+const remoteStatus = ref<string | null>(null)
+const savingRemote = ref(false)
+const sharingRemote = ref(false)
 let statusTimer: number | undefined
 
 function setStatus(message: string) {
@@ -119,6 +131,9 @@ async function handleSave(payload: MetacaptureEventPayload) {
       library.value.unshift(saved)
     }
     setStatus(`${saved.name} をローカルに保存しました`)
+    remotePayload.value = payload
+    remoteCardId.value = null
+    remoteStatus.value = null
   } catch (err) {
     console.error('[MetaCapture:save]', err)
     setStatus('ローカル保存に失敗しました')
@@ -147,6 +162,63 @@ async function deleteDraft(record: MetacaptureStoredDraft) {
     setStatus('削除に失敗しました')
   }
 }
+
+async function saveToBff() {
+  if (!shareFeatureEnabled) return
+  if (session.state.status !== 'ready') {
+    remoteStatus.value = 'ログインするとBFFに保存できます'
+    return
+  }
+  if (!remotePayload.value) {
+    remoteStatus.value = '最新の解析結果がありません'
+    return
+  }
+  savingRemote.value = true
+  remoteStatus.value = null
+  try {
+    const response = await apiRequest<{ ok: boolean; cardId: string; displayName: string; savedAt: string }>(
+      '/cards/save',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          card: remotePayload.value.draft,
+          originalFileName: remotePayload.value.draft.assets?.image ?? null,
+        }),
+      }
+    )
+    remoteCardId.value = response.cardId
+    remoteStatus.value = `${response.displayName} をBFFに保存しました`
+  } catch (error) {
+    remoteStatus.value = error instanceof Error ? error.message : 'BFF保存に失敗しました'
+  } finally {
+    savingRemote.value = false
+  }
+}
+
+async function shareCardToLibrary() {
+  if (!shareFeatureEnabled) return
+  if (session.state.status !== 'ready') {
+    remoteStatus.value = '共有にはログインが必要です'
+    return
+  }
+  if (!remoteCardId.value) {
+    remoteStatus.value = '先にBFFへ保存してください'
+    return
+  }
+  sharingRemote.value = true
+  remoteStatus.value = null
+  try {
+    await apiRequest('/cards/share', {
+      method: 'POST',
+      body: JSON.stringify({ cardId: remoteCardId.value }),
+    })
+    remoteStatus.value = '共有リクエストを送信しました'
+  } catch (error) {
+    remoteStatus.value = error instanceof Error ? error.message : '共有に失敗しました'
+  } finally {
+    sharingRemote.value = false
+  }
+}
 </script>
 
 <template>
@@ -167,6 +239,26 @@ async function deleteDraft(record: MetacaptureStoredDraft) {
       @save="handleSave"
       @preview="handlePreview"
     />
+
+    <section v-if="shareFeatureEnabled" class="metacapture__share">
+      <header class="metacapture__share-header">
+        <div>
+          <h2>IZAKAYA Share</h2>
+          <p>解析したカードをBFFへ保存し、共有ライブラリへ投稿します。</p>
+        </div>
+        <SessionPanel />
+      </header>
+      <div class="metacapture__share-actions">
+        <button type="button" :disabled="savingRemote" @click="saveToBff">
+          {{ savingRemote ? 'BFFへ保存中...' : 'BFFに保存' }}
+        </button>
+        <button type="button" :disabled="sharingRemote" @click="shareCardToLibrary">
+          {{ sharingRemote ? '共有中...' : '共有ライブラリへ送信' }}
+        </button>
+      </div>
+      <p v-if="remoteStatus" class="metacapture__share-status">{{ remoteStatus }}</p>
+      <p v-else class="metacapture__share-hint">最新の解析結果をローカル保存するとBFF保存が有効になります。</p>
+    </section>
 
     <section class="metacapture__library">
       <header class="library__header">
@@ -255,6 +347,56 @@ async function deleteDraft(record: MetacaptureStoredDraft) {
   padding: clamp(24px, 3vw, 32px);
   display: grid;
   gap: 16px;
+}
+
+.metacapture__share {
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background: rgba(8, 12, 24, 0.7);
+  padding: clamp(20px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.metacapture__share-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.metacapture__share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.metacapture__share-actions button {
+  flex: 1 1 220px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(90deg, #63e6ff, #5c7cfa);
+  color: #030713;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.metacapture__share-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.metacapture__share-status {
+  color: #b2f5ea;
+}
+
+.metacapture__share-hint {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
 }
 
 .library__header {

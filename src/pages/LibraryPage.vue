@@ -4,10 +4,21 @@ import { useI18n } from 'vue-i18n'
 import libraryIcon from '../assets/icons/library.png'
 import { navigatorCards } from '../data/sampleCards'
 import { determineCardRole, type CardRole } from '../utils/cardRoles'
+import SessionPanel from '../components/SessionPanel.vue'
+import { useSession } from '../composables/useSession'
+import { FEATURE_USER_SHARE, FEATURE_USER_DOWNLOAD } from '../core/featureFlags'
+import { apiRequest } from '../utils/api'
+import { POINTS_PRICING } from '../constants/points'
 
 const { tm } = useI18n({ useScope: 'global' })
 
 const page = computed(() => tm('pages.library') as { title: string; lead: string[] })
+
+const session = useSession()
+const shareFeatureEnabled = FEATURE_USER_SHARE
+const downloadFeatureEnabled = FEATURE_USER_DOWNLOAD
+type LibraryTab = 'official' | 'shared'
+const activeTab = ref<LibraryTab>('official')
 
 type ProductType = 'character' | 'world' | 'scenario' | 'game'
 type PriceKind = 'free' | 'points' | 'private'
@@ -28,6 +39,15 @@ type LibraryProduct = {
   author: string
   price: PriceInfo
   updated?: string
+}
+
+type SharedCardEntry = {
+  cardId: string
+  ownerId: string
+  displayName: string
+  sharedAt: string
+  downloads: number
+  lastDownloadAt: string | null
 }
 
 const typeLabels: Record<ProductType, string> = {
@@ -88,6 +108,11 @@ const sortKey = ref<'title' | 'recent'>('title')
 const typeFilter = ref<'all' | ProductType>('all')
 const originFilter = ref<'all' | 'official' | 'community'>('all')
 const priceFilter = ref<'all' | PriceKind>('all')
+const sharedEntries = ref<SharedCardEntry[]>([])
+const sharedLoading = ref(false)
+const sharedError = ref<string | null>(null)
+const sharedMessage = ref<string | null>(null)
+const downloadCost = POINTS_PRICING.library.baseDownload
 
 const filteredProducts = computed(() => {
   const text = searchQuery.value.trim().toLowerCase()
@@ -124,6 +149,12 @@ watch(filteredProducts, (items) => {
   }
 })
 
+watch(activeTab, (tab) => {
+  if (tab === 'shared' && shareFeatureEnabled && !sharedEntries.value.length) {
+    fetchSharedLibrary()
+  }
+})
+
 function selectProduct(product: LibraryProduct) {
   selectedProduct.value = product
   overlayOpen.value = true
@@ -131,6 +162,64 @@ function selectProduct(product: LibraryProduct) {
 
 function closeOverlay() {
   overlayOpen.value = false
+}
+
+async function fetchSharedLibrary() {
+  if (!shareFeatureEnabled) return
+  sharedLoading.value = true
+  sharedError.value = null
+  try {
+    const response = await apiRequest<{ ok: boolean; entries: SharedCardEntry[] }>('/library/shared')
+    sharedEntries.value = response.entries.map((entry) => ({
+      cardId: entry.cardId,
+      ownerId: entry.ownerId,
+      displayName: entry.displayName,
+      sharedAt: entry.sharedAt,
+      downloads: entry.downloads ?? 0,
+      lastDownloadAt: entry.lastDownloadAt ?? null,
+    }))
+  } catch (error) {
+    sharedError.value = error instanceof Error ? error.message : '共有ライブラリの取得に失敗しました'
+  } finally {
+    sharedLoading.value = false
+  }
+}
+
+async function downloadSharedCard(entry: SharedCardEntry) {
+  if (!shareFeatureEnabled || !downloadFeatureEnabled) {
+    sharedMessage.value = 'この機能は現在利用できません'
+    return
+  }
+  if (session.state.status !== 'ready') {
+    sharedMessage.value = 'ログインしてください'
+    return
+  }
+  try {
+    const response = await apiRequest<{ ok: boolean; cardId: string; card: any; balance: number; downloads: number }>(
+      `/library/shared/${entry.cardId}/download`,
+      {
+        method: 'POST',
+      }
+    )
+    const blob = new Blob([JSON.stringify(response.card, null, 2)], { type: 'application/json' })
+    triggerDownload(`${entry.displayName || entry.cardId}.json`, blob)
+    entry.downloads = response.downloads ?? entry.downloads + 1
+    entry.lastDownloadAt = new Date().toISOString()
+    sharedMessage.value = `ダウンロードしました（残高: ${response.balance}pt）`
+  } catch (error) {
+    sharedMessage.value = error instanceof Error ? error.message : 'ダウンロードに失敗しました'
+  }
+}
+
+function triggerDownload(filename: string, blob: Blob) {
+  const href = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = href
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(href)
 }
 
 const typeFilterOptions: Array<{ label: string; value: typeof typeFilter.value }> = [
@@ -162,7 +251,16 @@ const priceFilterOptions: Array<{ label: string; value: typeof priceFilter.value
       <h1>{{ page.title }}</h1>
     </header>
 
-    <section class="controls">
+    <div v-if="shareFeatureEnabled" class="library__tabs">
+      <button type="button" :class="{ active: activeTab === 'official' }" @click="activeTab = 'official'">
+        Official
+      </button>
+      <button type="button" :class="{ active: activeTab === 'shared' }" @click="activeTab = 'shared'">
+        User Shared
+      </button>
+    </div>
+
+    <section v-if="activeTab === 'official'" class="controls">
       <label class="controls__field">
         <span>Search</span>
         <input v-model="searchQuery" type="search" :placeholder="$t('pages.library.search', 'キーワード検索')" />
@@ -200,7 +298,7 @@ const priceFilterOptions: Array<{ label: string; value: typeof priceFilter.value
       </label>
     </section>
 
-    <section class="catalogue">
+    <section v-if="activeTab === 'official'" class="catalogue">
       <p v-if="!filteredProducts.length" class="catalogue__empty">
         {{ $t('pages.library.empty', '条件に一致するカードがありません。フィルターを緩めてください。') }}
       </p>
@@ -238,6 +336,30 @@ const priceFilterOptions: Array<{ label: string; value: typeof priceFilter.value
           <button type="button">{{ $t('pages.library.open', '開く') }}</button>
         </footer>
       </article>
+    </section>
+
+    <section v-if="shareFeatureEnabled && activeTab === 'shared'" class="shared-library">
+      <SessionPanel />
+      <p class="shared-library__note">ダウンロードには {{ downloadCost }}pt 消費します。</p>
+      <p v-if="sharedError" class="shared-library__error">{{ sharedError }}</p>
+      <p v-if="sharedMessage" class="shared-library__status">{{ sharedMessage }}</p>
+      <p v-if="sharedLoading" class="shared-library__status">共有ライブラリを読み込み中...</p>
+      <p v-else-if="!sharedEntries.length" class="shared-library__empty">共有カードはまだありません。</p>
+      <ul v-else class="shared-library__list">
+        <li v-for="entry in sharedEntries" :key="entry.cardId" class="shared-library__item">
+          <div>
+            <h3>{{ entry.displayName }}</h3>
+            <p>提供者: {{ entry.ownerId }}</p>
+            <p>
+              共有: {{ new Date(entry.sharedAt).toLocaleString() }} / DL: {{ entry.downloads }} /
+              最終DL: {{ entry.lastDownloadAt ? new Date(entry.lastDownloadAt).toLocaleString() : '---' }}
+            </p>
+          </div>
+          <button type="button" class="shared-library__btn" @click="downloadSharedCard(entry)">
+            {{ downloadFeatureEnabled ? `${downloadCost}ptでDL` : 'DL停止中' }}
+          </button>
+        </li>
+      </ul>
     </section>
 
     <teleport to="body">
@@ -316,6 +438,28 @@ const priceFilterOptions: Array<{ label: string; value: typeof priceFilter.value
   right: clamp(12px, 3vw, 32px);
   width: clamp(60px, 7vw, 92px);
   height: auto;
+}
+
+.library__tabs {
+  display: flex;
+  gap: 12px;
+  margin: 1.5rem 0;
+}
+
+.library__tabs button {
+  flex: 1 1 160px;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.library__tabs button.active {
+  background: linear-gradient(90deg, #63e6ff, #5c7cfa);
+  color: #030812;
+  font-weight: 600;
 }
 
 .controls {
@@ -613,5 +757,60 @@ const priceFilterOptions: Array<{ label: string; value: typeof priceFilter.value
   .product-detail__actions {
     flex-direction: column;
   }
+}
+
+.shared-library {
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: clamp(18px, 3vw, 28px);
+  background: rgba(7, 10, 22, 0.78);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shared-library__note,
+.shared-library__status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.shared-library__error {
+  color: #ff8e8e;
+}
+
+.shared-library__empty {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.shared-library__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shared-library__item {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shared-library__btn {
+  padding: 0.65rem 1.3rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(90deg, #63e6ff, #5c7cfa);
+  color: #041021;
+  font-weight: 600;
+  cursor: pointer;
 }
 </style>
