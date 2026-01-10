@@ -28,6 +28,10 @@ export default {
           "label": "メタキャプチャー"
         },
         {
+          "id": "reincarnation",
+          "label": "転生ポート"
+        },
+        {
           "id": "library",
           "label": "ライブラリー"
         },
@@ -272,66 +276,66 @@ export default {
       },
       "quickStart": "チャットを始める"
     },
-  "payments": {
-    "title": "ポイントチャージ",
-    "description": "PayPalのQRコードからポイント購入や支援ができます。決済後は管理側で残高に反映します。",
-    "buyButton": "PayPalで購入",
-    "supportButton": "支援する",
-    "options": {
-      "jp1000": {
-        "title": "IZAKAYA 1000P",
-        "description": "IZAKAYAverseの利用ポイント1000Pを購入します",
-        "price": "¥1,000",
-        "paypalLink": "https://www.paypal.com/ncp/payment/SBPMPM8BFRQUW",
-        "caption": "国内向け",
-        "localeTag": "JPY"
+    "payments": {
+      "title": "ポイントチャージ",
+      "description": "PayPalのQRコードからポイント購入や支援ができます。決済後は管理側で残高に反映します。",
+      "buyButton": "PayPalで購入",
+      "supportButton": "支援する",
+      "options": {
+        "jp1000": {
+          "title": "IZAKAYA 1000P",
+          "description": "IZAKAYAverseの利用ポイント1000Pを購入します",
+          "price": "¥1,000",
+          "paypalLink": "https://www.paypal.com/ncp/payment/SBPMPM8BFRQUW",
+          "caption": "国内向け",
+          "localeTag": "JPY"
+        },
+        "jp5000": {
+          "title": "IZAKAYA 5000P",
+          "description": "IZAKAYAverseの利用ポイント5000Pを購入します",
+          "price": "¥5,000",
+          "paypalLink": "https://www.paypal.com/ncp/payment/WWLCPFUX2K2VA",
+          "caption": "国内向け",
+          "localeTag": "JPY"
+        },
+        "usd1000": {
+          "title": "IZAKAYA 1000P (USD)",
+          "description": "Purchase 1000 points for IZAKAYAverse",
+          "price": "$10 USD",
+          "paypalLink": "https://www.paypal.com/ncp/payment/HTHQFN7EADLPC",
+          "caption": "Global",
+          "localeTag": "USD"
+        },
+        "usd5000": {
+          "title": "IZAKAYA 5000P (USD)",
+          "description": "Purchase 5000 points for IZAKAYAverse",
+          "price": "$50 USD",
+          "paypalLink": "https://www.paypal.com/ncp/payment/PKBQ6WBAGHVUW",
+          "caption": "Global",
+          "localeTag": "USD"
+        }
       },
-      "jp5000": {
-        "title": "IZAKAYA 5000P",
-        "description": "IZAKAYAverseの利用ポイント5000Pを購入します",
-        "price": "¥5,000",
-        "paypalLink": "https://www.paypal.com/ncp/payment/WWLCPFUX2K2VA",
-        "caption": "国内向け",
-        "localeTag": "JPY"
+      "support": {
+        "title": "IZAKAYA Support / Motoo Koyama",
+        "description": "IZAKAYAverseやMotooKoyama関連コンテンツの活動を支援するためのカンパです（ポイント付与はありません）。",
+        "price": "自由設定",
+        "paypalLink": "https://www.paypal.com/ncp/payment/YP4SEMBEH3AHQ",
+        "buttonLabel": "支援する"
       },
-      "usd1000": {
-        "title": "IZAKAYA 1000P (USD)",
-        "description": "Purchase 1000 points for IZAKAYAverse",
-        "price": "$10 USD",
-        "paypalLink": "https://www.paypal.com/ncp/payment/HTHQFN7EADLPC",
-        "caption": "Global",
-        "localeTag": "USD"
-      },
-      "usd5000": {
-        "title": "IZAKAYA 5000P (USD)",
-        "description": "Purchase 5000 points for IZAKAYAverse",
-        "price": "$50 USD",
-        "paypalLink": "https://www.paypal.com/ncp/payment/PKBQ6WBAGHVUW",
-        "caption": "Global",
-        "localeTag": "USD"
-      }
-    },
-    "support": {
-      "title": "IZAKAYA Support / Motoo Koyama",
-      "description": "IZAKAYAverseやMotooKoyama関連コンテンツの活動を支援するためのカンパです（ポイント付与はありません）。",
-      "price": "自由設定",
-      "paypalLink": "https://www.paypal.com/ncp/payment/YP4SEMBEH3AHQ",
-      "buttonLabel": "支援する"
-    },
-    "notes": [
-      { "text": "📖 Amazon冊子や配布物からも購入可能" },
-      {
-        "text": "🎮 バーチャルコミックマーケット:",
-        "url": "https://www.amazon.co.jp/dp/B0CQQ3YNPR",
-        "urlLabel": "https://www.amazon.co.jp/dp/B0CQQ3YNPR"
-      },
-      {
-        "text": "🤖 電子妖精アバタモ⭐︎エクボ2.0:",
-        "url": "https://www.amazon.co.jp/dp/B0CW1NBPTB",
-        "urlLabel": "https://www.amazon.co.jp/dp/B0CW1NBPTB"
-      }
-    ]
-  }
+      "notes": [
+        { "text": "📖 Amazon冊子や配布物からも購入可能" },
+        {
+          "text": "🎮 バーチャルコミックマーケット:",
+          "url": "https://www.amazon.co.jp/dp/B0CQQ3YNPR",
+          "urlLabel": "https://www.amazon.co.jp/dp/B0CQQ3YNPR"
+        },
+        {
+          "text": "🤖 電子妖精アバタモ⭐︎エクボ2.0:",
+          "url": "https://www.amazon.co.jp/dp/B0CW1NBPTB",
+          "urlLabel": "https://www.amazon.co.jp/dp/B0CW1NBPTB"
+        }
+      ]
+    }
   },
   "overlay": {
     "title": "クイックパネル",
@@ -343,6 +347,7 @@ export default {
     "languageTitle": "言語",
     "links": {
       "chat": "チャットを開く",
+      "reincarnation": "転生ポータル",
       "library": "ライブラリへ",
       "metacapture": "メタキャプチャー",
       "payments": "ポイントチャージ",
@@ -477,10 +482,37 @@ export default {
       "ledgerTitle": "最新レジャー",
       "chatTitle": "Dr.Orb 管理チャット",
       "chatPrompt": "あなたは管理者向けガイドAIです。課金反映やポイント調整、テスター対応に関する問い合わせに具体的な手順で答えてください。"
+    },
+    "reincarnation": {
+      "title": "転生ポータル",
+      "lead": [
+        "QRコードから「魂（設定）」を抽出し、外部AIプラットフォームへ持ち出すためのゲートです。",
+        "スマホで撮影した画像をそのままアップロードして、秘密のプロンプトを手に入れることができます。"
+      ],
+      "workflowTitle": "転生の手順",
+      "workflow": [
+        "【LENS】ボタンでカメラを起動して撮影するか、画像をドロップします。",
+        "【STEALTH】ボタンで、クリップボードの内容を伏せたまま解析します。",
+        "抽出された「秘密のプロンプト」をコピーして、ChatGPTやClaudeに貼り付けてください。"
+      ],
+      "notesTitle": "こだわり",
+      "notes": [
+        "クリップボードの内容は、解析時以外は画面に表示されません（ネタバレ防止）。",
+        "V25の高密度なQRコードも、BFF側の特殊なフィルターで正確に読み取ります。"
+      ],
+      "lensLabel": "LENS スキャン",
+      "lensDesc": "カメラ撮影・画像アップロード",
+      "stealthLabel": "STEALTH 転生",
+      "stealthDesc": "秘密のクリップボード・ブリッジ",
+      "scannedSuccess": "転生ソースを検出しました！",
+      "extractButton": "秘密のプロンプトを抽出",
+      "copySuccess": "クリップボードにコピーしました！",
+      "cameraInstruction": "QRコードを枠内に収めて撮影してください"
     }
   },
   "navigation": {
     "home": "ホーム",
+    "reincarnation": "転生ポート",
     "help": "ヘルプ",
     "admin": "管理"
   }

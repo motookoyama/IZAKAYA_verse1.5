@@ -28,6 +28,10 @@ export default {
           "label": "MetaCapture"
         },
         {
+          "id": "reincarnation",
+          "label": "Port"
+        },
+        {
           "id": "library",
           "label": "Library"
         },
@@ -343,6 +347,7 @@ export default {
     "languageTitle": "Language",
     "links": {
       "chat": "Open chat",
+      "reincarnation": "Reincarnation Portal",
       "library": "Go to library",
       "metacapture": "MetaCapture",
       "payments": "Point charge",
@@ -453,7 +458,6 @@ export default {
         "title": "Management Chat",
         "intro": "Admin and translator cards are located here so the player chat stays uncluttered.",
         "note": "Only open them when you need to handle support or localisation tasks.",
-        "cta": "Open admin console"
       }
     },
     "admin": {
@@ -477,10 +481,37 @@ export default {
       "ledgerTitle": "Latest ledger",
       "chatTitle": "Dr. Orb (Admin Mode)",
       "chatPrompt": "You are the admin helper AI. Provide concrete steps for point adjustments, tester support, and configuration checks."
+    },
+    "reincarnation": {
+      "title": "Reincarnation Portal",
+      "lead": [
+        "A gateway to extract the 'Soul (Settings)' from QR codes and carry them to external AI platforms.",
+        "Simply upload an image or scan with your mobile camera to obtain secret prompts."
+      ],
+      "workflowTitle": "Process",
+      "workflow": [
+        "Use the [LENS] button to activate the camera or drop an image.",
+        "Use the [STEALTH] button to analyze clipboard contents without exposing them.",
+        "Copy the extracted 'Secret Prompt' and paste it into ChatGPT, Claude, etc."
+      ],
+      "notesTitle": "Design Focus",
+      "notes": [
+        "Clipboard contents are never displayed on-screen except during analysis (Spoiler Protection).",
+        "High-density V25 QR codes are accurately read using specialized BFF-side filters."
+      ],
+      "lensLabel": "LENS Scan",
+      "lensDesc": "Camera / Upload",
+      "stealthLabel": "STEALTH Reincarnation",
+      "stealthDesc": "Private Clipboard Bridge",
+      "scannedSuccess": "Reincarnation source detected!",
+      "extractButton": "Extract Secret Prompt",
+      "copySuccess": "Copied to clipboard!",
+      "cameraInstruction": "Position the QR code within the frame to scan"
     }
   },
   "navigation": {
     "home": "Home",
+    "reincarnation": "Reincarnation Port",
     "help": "Help",
     "admin": "Admin"
   }

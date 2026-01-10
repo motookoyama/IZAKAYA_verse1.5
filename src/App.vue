@@ -8,6 +8,7 @@ import MetaShopPage from './pages/MetaShopPage.vue'
 import LibraryPage from './pages/LibraryPage.vue'
 import HelpPage from './pages/HelpPage.vue'
 import AdminPage from './pages/AdminPage.vue'
+import ReincarnationPage from './pages/ReincarnationPage.vue'
 import { useTheme } from './composables/useTheme'
 import { isSupported, persistLocale, type Locale } from './plugins/i18n'
 import type { HeroContent, HelpContent } from './types/home'
@@ -21,6 +22,7 @@ const ROUTES: Record<PageKey, any> = {
   library: LibraryPage,
   help: HelpPage,
   admin: AdminPage,
+  reincarnation: ReincarnationPage,
 }
 
 const { themes, themeId, setTheme } = useTheme()
@@ -75,6 +77,7 @@ type OverlayLink = { id: string; label: string; path: string }
 
 const overlayLinks = computed<OverlayLink[]>(() => [
   { id: 'chat', label: t('overlay.links.chat'), path: PAGE_PATHS.chat },
+  { id: 'reincarnation', label: t('overlay.links.reincarnation'), path: PAGE_PATHS.reincarnation },
   { id: 'library', label: t('overlay.links.library'), path: PAGE_PATHS.library },
   { id: 'metacapture', label: t('overlay.links.metacapture'), path: PAGE_PATHS.metacapture },
   { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.home },

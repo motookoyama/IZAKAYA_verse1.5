@@ -8,12 +8,19 @@ export type SessionUser = {
   name?: string
 }
 
+export type PublicProfile = {
+  displayName: string
+  bio: string
+  avatarUrl: string
+}
+
 type SessionState = {
   status: SessionStatus
   email: string
   accessToken: string | null
   refreshToken: string | null
   user: SessionUser | null
+  profile: PublicProfile | null
   previewCode: string | null
   lastError: string | null
 }
@@ -26,6 +33,7 @@ const state = reactive<SessionState>({
   accessToken: null,
   refreshToken: null,
   user: null,
+  profile: null,
   previewCode: null,
   lastError: null,
 })
@@ -38,6 +46,7 @@ const persist = () => {
       accessToken: state.accessToken,
       refreshToken: state.refreshToken,
       user: state.user,
+      profile: state.profile,
     }
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
   } else {
@@ -57,6 +66,7 @@ const hydrate = () => {
       state.accessToken = payload.accessToken
       state.refreshToken = payload.refreshToken
       state.user = payload.user
+      state.profile = payload.profile || null
     }
   } catch (error) {
     console.warn('[sessionStore] failed to hydrate session', error)
@@ -75,6 +85,7 @@ export function setOtpState(email: string, previewCode: string | null) {
   state.accessToken = null
   state.refreshToken = null
   state.user = null
+  state.profile = null
   persist()
 }
 
@@ -89,12 +100,18 @@ export function setSessionTokens(params: { email: string; accessToken: string; r
   persist()
 }
 
+export function setPublicProfile(profile: PublicProfile | null) {
+  state.profile = profile
+  persist()
+}
+
 export function clearSessionState() {
   state.status = 'signedOut'
   state.email = ''
   state.accessToken = null
   state.refreshToken = null
   state.user = null
+  state.profile = null
   state.previewCode = null
   state.lastError = null
   persist()

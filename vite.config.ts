@@ -8,7 +8,7 @@ export default defineConfig(({ command }) => ({
   // GitHub Pages serves this repo under /IZAKAYA_verse1.5/
   base: command === 'build' ? '/IZAKAYA_verse1.5/' : '/',
   server: {
-    port: 3105,
+    port: 1398,
     strictPort: true,
   },
   build: {

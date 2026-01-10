@@ -36,9 +36,9 @@ const {
   error,
   apiOnline,
 } = useAccount()
-
 const adminTagPattern = /(管理|管理者|翻訳|経理)/
 const preferredCardIds = ['dr-orb', 'miss-madi', 'ekubo']
+
 const playerNavigatorCards = computed(() => {
   const filtered = navigatorCards.filter((card) => !card.tags.some((tag) => adminTagPattern.test(tag)))
   const guaranteed = navigatorCards.filter((card) => preferredCardIds.includes(card.id))

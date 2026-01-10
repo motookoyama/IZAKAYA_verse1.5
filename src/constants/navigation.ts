@@ -5,6 +5,7 @@ export const PAGE_PATHS = {
   library: '#/library',
   help: '#/help',
   admin: '#/admin',
+  reincarnation: '#/reincarnation',
 } as const
 
 export type PageKey = keyof typeof PAGE_PATHS
