@@ -1,0 +1,21 @@
+{
+  "region_id": "mtuber_region",
+  "display_name": "Mtuber Region / メタチューバー・リージョン",
+  "summary": "バーチャル・ネイティブな存在、配信、そしてメタ・パフォーマンスを象徴するリージョン。株式会社オシマシのタレントたちが所属する。",
+  "tags": [
+    "Virtual",
+    "Streaming",
+    "Metacapture",
+    "Oshimashi"
+  ],
+  "spoiler_level": 0,
+  "related_character_ids": [
+    "エグゼ・マキナ",
+    "ココロエ・ヨウマ",
+    "ダガミ・テンカイ",
+    "ハワタリ・ザン",
+    "ハワワ・リュミエール",
+    "ミヤマ・スイム",
+    "ヨリドコロ・ユイカ"
+  ]
+}

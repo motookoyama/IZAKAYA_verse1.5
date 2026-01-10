@@ -1,0 +1,12 @@
+{
+  "region_id": "dr_orb_lab",
+  "display_name": "Dr.Orb Region / ドクター・オーブの研究室",
+  "summary": "科学、サイバネティクス、そしてチームワークを象徴するリージョン。ドクター・オーブとその一派が活動する。",
+  "tags": [
+    "Science",
+    "Cyber",
+    "Team"
+  ],
+  "spoiler_level": 0,
+  "related_character_ids": []
+}
