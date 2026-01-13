@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
 import type { AccountContent, AccountAction } from '../types/home'
 import type { AccountState } from '../composables/useAccount'
 
@@ -11,13 +11,22 @@ const props = defineProps<{
   recentActivities: string[]
   actions: AccountAction[]
   feedback: string | null
+  apiOnline: boolean
 }>()
 
-const { content, state, formattedPoints, lastLogin, recentActivities, actions, feedback } = toRefs(props)
+const { content, state, formattedPoints, lastLogin, recentActivities, actions, feedback, apiOnline } = toRefs(props)
 
 const emit = defineEmits<{
   (e: 'run-action', action: AccountAction): void
 }>()
+
+const userNameDisplay = computed(() =>
+  apiOnline.value ? state.value.user.name : '取得できていません（サーバ未接続）',
+)
+
+const userStatusHint = computed(() =>
+  apiOnline.value ? 'ユーザー情報：取得済み' : 'ユーザー情報：取得できていません（サーバ未接続）',
+)
 </script>
 
 <template>
@@ -35,7 +44,8 @@ const emit = defineEmits<{
       <div class="status-grid">
         <div class="status-item">
           <span class="label">{{ content.status.userLabel }}</span>
-          <span class="value">{{ state.user.name }}</span>
+          <span class="value">{{ userNameDisplay }}</span>
+          <span class="hint">{{ userStatusHint }}</span>
           <span class="hint">last login: {{ lastLogin }}</span>
         </div>
         <div class="status-item">

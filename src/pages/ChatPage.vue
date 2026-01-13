@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import V2ChatWorkspace from '../components/V2ChatWorkspace.vue'
+import ConnectionStatus from '../components/ConnectionStatus.vue'
 import { useAccount } from '../composables/useAccount'
 import { useTheme } from '../composables/useTheme'
 import { navigatorCards, findNavigatorCard } from '../data/sampleCards'
@@ -9,6 +10,7 @@ import type { FeatureContent, ChatContent, AccountAction, AccountContent } from 
 import type { ChatMessage } from '../composables/useChat'
 import chatIcon from '../assets/icons/chat-frame.png'
 import { determineCardRole, loadRoleOverrides, persistRoleOverrides, type CardRole } from '../utils/cardRoles'
+import { API_BASE } from '../utils/api'
 
 const { tm } = useI18n({ useScope: 'global' })
 
@@ -35,7 +37,9 @@ const {
   loading,
   error,
   apiOnline,
+  connectionIssue,
 } = useAccount()
+const connectionTarget = API_BASE
 const adminTagPattern = /(管理|管理者|翻訳|経理)/
 const preferredCardIds = ['dr-orb', 'miss-madi', 'ekubo']
 
@@ -729,6 +733,13 @@ function onSetCardRole(payload: { id: string; role: CardRole | 'AUTO' }) {
       </details>
     </div>
 
+    <ConnectionStatus
+      class="chat-page__connection"
+      :api-online="apiOnline"
+      :api-base="connectionTarget"
+      :issue="connectionIssue"
+    />
+
     <V2ChatWorkspace
       :chat-content="navigatorChatContent"
       :cards="cardSlots"
@@ -848,6 +859,10 @@ function onSetCardRole(payload: { id: string; role: CardRole | 'AUTO' }) {
   gap: 6px;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.8);
+}
+
+.chat-page__connection {
+  margin-top: -12px;
 }
 
 .chat-page__notes {

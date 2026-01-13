@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import personaDefault from '../assets/persona-default.svg'
-import { apiRequest } from '../utils/api'
+import { apiRequest, API_BASE } from '../utils/api'
 
 export type LedgerEntry = {
   id: string
@@ -61,6 +61,37 @@ const state = reactive<AccountState>({
 const loading = ref(false)
 const error = ref<string | null>(null)
 const apiOnline = ref(true)
+type ConnectionIssue = 'server' | 'config' | 'auth'
+const connectionIssue = ref<ConnectionIssue | null>(null)
+
+function detectBaseMismatch(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    const baseHost = new URL(API_BASE).hostname
+    const clientHost = window.location.hostname
+    const baseIsLocal = /(^|\.)(localhost|127\.0\.0\.1)$/i.test(baseHost)
+    const clientIsLocal = /(^|\.)(localhost|127\.0\.0\.1)$/i.test(clientHost)
+    return !clientIsLocal && baseIsLocal
+  } catch {
+    return false
+  }
+}
+
+const baseMismatchFlag = detectBaseMismatch()
+if (baseMismatchFlag) {
+  connectionIssue.value = 'config'
+}
+
+function classifyConnectionIssue(err: unknown): ConnectionIssue {
+  const message = (err instanceof Error ? err.message : String(err || '')).toLowerCase()
+  if (message.includes('gate') || message.includes('auth') || message.includes('token') || message.includes('401') || message.includes('403')) {
+    return 'auth'
+  }
+  if (message.includes('not found') || message.includes('invalid url') || message.includes('404')) {
+    return 'config'
+  }
+  return 'server'
+}
 
 const personaGallery = [
   personaDefault,
@@ -139,9 +170,11 @@ async function fetchAccount(): Promise<void> {
     const snapshot = await apiRequest<PointsSnapshot>('/api/account')
     applySnapshot(snapshot)
     apiOnline.value = true
+    connectionIssue.value = null
   } catch (err) {
     apiOnline.value = false
     error.value = (err as Error).message
+    connectionIssue.value = baseMismatchFlag ? 'config' : classifyConnectionIssue(err)
   } finally {
     loading.value = false
   }
@@ -163,6 +196,7 @@ async function mutateAccount(path: string, payload?: Record<string, unknown>): P
   } catch (err) {
     error.value = (err as Error).message
     apiOnline.value = false
+    connectionIssue.value = baseMismatchFlag ? 'config' : classifyConnectionIssue(err)
     return createSnapshot()
   } finally {
     loading.value = false
@@ -227,6 +261,7 @@ export function useAccount() {
     loading,
     error,
     apiOnline,
+    connectionIssue,
     fetchAccount,
     addPoints,
     consumePoints,

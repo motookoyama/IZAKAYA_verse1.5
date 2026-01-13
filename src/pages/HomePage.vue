@@ -6,6 +6,7 @@ import AccountPanel from '../components/AccountPanel.vue'
 import InfoGrid from '../components/InfoGrid.vue'
 import FeatureGrid from '../components/FeatureGrid.vue'
 import PaymentGrid from '../components/PaymentGrid.vue'
+import ConnectionStatus from '../components/ConnectionStatus.vue'
 import homeEmblem from '../assets/icons/home-emblem.png'
 import chatIcon from '../assets/icons/chat-frame.png'
 import metaIcon from '../assets/icons/metacapture.png'
@@ -28,6 +29,7 @@ import type {
   PaymentSupport,
   PaymentNote,
 } from '../types/home'
+import { API_BASE } from '../utils/api'
 
 const { t, tm } = useI18n({ useScope: 'global' })
 
@@ -130,8 +132,10 @@ const {
   loading: accountLoading,
   error: accountError,
   apiOnline,
+  connectionIssue,
 } = useAccount()
 
+const connectionTarget = API_BASE
 const recentActivities = computed(() => accountState.recentActivities.slice(0, 4))
 const activeActionId = ref<string | null>(null)
 const feedback = ref<string | null>(null)
@@ -206,6 +210,13 @@ watch(apiOnline, (online) => {
       </div>
     </section>
 
+    <ConnectionStatus
+      class="home__connection"
+      :api-online="apiOnline"
+      :api-base="connectionTarget"
+      :issue="connectionIssue"
+    />
+
     <section class="nav-panels">
       <a
         v-for="link in hero.navLinks"
@@ -247,6 +258,7 @@ watch(apiOnline, (online) => {
         :recent-activities="recentActivities"
         :actions="accountActions"
         :feedback="feedback"
+        :api-online="apiOnline"
         @run-action="runAction"
       />
     </section>
@@ -333,6 +345,10 @@ watch(apiOnline, (online) => {
 .hero__description {
   margin: 0;
   opacity: 0.85;
+}
+
+.home__connection {
+  margin-top: -12px;
 }
 
 .nav-panels {
