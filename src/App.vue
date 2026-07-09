@@ -9,11 +9,16 @@ import LibraryPage from './pages/LibraryPage.vue'
 import HelpPage from './pages/HelpPage.vue'
 import AdminPage from './pages/AdminPage.vue'
 import ReincarnationPage from './pages/ReincarnationPage.vue'
+import IZBackyard from './pages/IZBackyard.vue'
+import RegionSelectPage from './pages/RegionSelectPage.vue'
+import RegionDetailPage from './pages/RegionDetailPage.vue'
+import RegionGuidePage from './pages/RegionGuidePage.vue'
 import { useTheme } from './composables/useTheme'
 import { isSupported, persistLocale, type Locale } from './plugins/i18n'
 import type { HeroContent, HelpContent } from './types/home'
 import { PAGE_PATHS, resolvePathForNav, navigateTo, type PageKey } from './constants/navigation'
 import { useAccount } from './composables/useAccount'
+// import { useRegion } from './composables/useRegion'
 
 const ROUTES: Record<PageKey, any> = {
   home: HomePage,
@@ -23,11 +28,16 @@ const ROUTES: Record<PageKey, any> = {
   help: HelpPage,
   admin: AdminPage,
   reincarnation: ReincarnationPage,
+  backyard: IZBackyard,
+  regions: RegionSelectPage,
+  region_detail: RegionDetailPage,
+  region_guide: RegionGuidePage,
 }
 
 const { themes, themeId, setTheme } = useTheme()
 const { t, tm, locale } = useI18n({ useScope: 'global' })
 const { state: accountState, formattedPoints } = useAccount()
+// const { activeRegion } = useRegion() // Initialize Region System - Temporarily disabled to fix build
 
 const hero = computed<HeroContent>(() => tm('home.hero') as HeroContent)
 const navLinks = computed(() => {
@@ -35,9 +45,15 @@ const navLinks = computed(() => {
     ...link,
     path: resolvePathForNav(link.id) ?? PAGE_PATHS.home,
   }))
+  const merged = [
+    ...featureLinks,
+    { id: 'regions', label: t('navigation.regions'), path: PAGE_PATHS.regions },
+  ]
+  const dedup = new Map<string, { id: string; label: string; path: string }>()
+  merged.forEach((item) => dedup.set(item.id, item))
   return [
     { id: 'home', label: t('navigation.home'), path: PAGE_PATHS.home },
-    ...featureLinks,
+    ...Array.from(dedup.values()),
   ]
 })
 
@@ -79,6 +95,8 @@ const overlayLinks = computed<OverlayLink[]>(() => [
   { id: 'chat', label: t('overlay.links.chat'), path: PAGE_PATHS.chat },
   { id: 'reincarnation', label: t('overlay.links.reincarnation'), path: PAGE_PATHS.reincarnation },
   { id: 'library', label: t('overlay.links.library'), path: PAGE_PATHS.library },
+  { id: 'regions', label: t('navigation.regions'), path: PAGE_PATHS.regions },
+  { id: 'region_guide', label: '遊び方', path: PAGE_PATHS.region_guide },
   { id: 'metacapture', label: t('overlay.links.metacapture'), path: PAGE_PATHS.metacapture },
   { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.home },
   { id: 'admin', label: t('overlay.links.admin'), path: PAGE_PATHS.admin },
@@ -115,7 +133,9 @@ function handleOverlayLink(link: OverlayLink) {
 
 function resolvePageFromHash(hash: string): PageKey {
   const cleaned = hash.replace(/^#\/?/, '')
-  const candidate = cleaned.length > 0 ? (cleaned as PageKey) : 'home'
+  if (cleaned.startsWith('region/')) return 'region_detail'
+  const routeKey = cleaned.replace(/-/g, '_')
+  const candidate = routeKey.length > 0 ? (routeKey as PageKey) : 'home'
   return (candidate in ROUTES ? candidate : 'home') as PageKey
 }
 
@@ -154,7 +174,7 @@ function onNavigate(target: string) {
 </script>
 
 <template>
-  <div class="app">
+  <div class="app" :class="{ 'is-home': currentPage === 'home' }">
     <TopNav
       :hero="hero"
       :nav-links="navLinks"
@@ -248,6 +268,11 @@ function onNavigate(target: string) {
   gap: 32px;
   padding: 24px clamp(16px, 4vw, 56px);
   color: var(--fg);
+  background: transparent; /* Default to transparent container */
+}
+
+.app.is-home {
+  background: transparent !important;
 }
 
 .app__content {
@@ -255,6 +280,7 @@ function onNavigate(target: string) {
   display: flex;
   flex-direction: column;
   gap: 32px;
+  background: transparent !important;
 }
 
 .overlay-enter-active,

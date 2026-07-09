@@ -83,8 +83,36 @@ const libraryMeta: Record<
   'hanaso-kawari': { type: 'world', official: true, author: 'IZAKAYA Ops', price: { kind: 'private', label: '非公開' } },
 }
 
+const librarianCards = ref<LibraryProduct[]>([])
+const librarianLoading = ref(false)
+
+async function fetchLibrarianLibrary() {
+  librarianLoading.value = true
+  try {
+    const response = await apiRequest<{ ok: boolean; items: any[] }>('/api/v1/librarian/cards')
+    if (response.ok) {
+      librarianCards.value = response.items.map(item => ({
+        id: item.id,
+        title: item.metadata?.name || item.id,
+        summary: item.metadata?.description || 'No description available.',
+        thumbnail: item.imageUrl || item.metadata?.image || '',
+        tags: item.metadata?.tags || [],
+        type: (item.metadata?.type as ProductType) || 'character',
+        official: false,
+        author: item.metadata?.author || 'Unknown',
+        price: { kind: 'free', label: 'BONDED' },
+        updated: item.updatedAt
+      }))
+    }
+  } catch (err) {
+    console.error('[LIBRARIAN] Fetch failed', err)
+  } finally {
+    librarianLoading.value = false
+  }
+}
+
 const catalogue = computed<LibraryProduct[]>(() => {
-  return navigatorCards.map((card) => {
+  const staticCards = navigatorCards.map((card) => {
     const meta = libraryMeta[card.id] ?? {}
     const resolvedType = meta.type ?? roleToType[determineCardRole(card)]
     const price = meta.price ?? { kind: 'free', label: 'FREE' }
@@ -101,6 +129,7 @@ const catalogue = computed<LibraryProduct[]>(() => {
       updated: meta.updated,
     }
   })
+  return [...staticCards, ...librarianCards.value]
 })
 
 const searchQuery = ref('')
@@ -146,6 +175,15 @@ watch(filteredProducts, (items) => {
   if (!items.length || !selectedProduct.value || !items.some((item) => item.id === selectedProduct.value?.id)) {
     selectedProduct.value = null
     overlayOpen.value = false
+  }
+})
+
+import { onMounted } from 'vue'
+
+onMounted(() => {
+  fetchLibrarianLibrary()
+  if (activeTab.value === 'shared' && shareFeatureEnabled) {
+    fetchSharedLibrary()
   }
 })
 

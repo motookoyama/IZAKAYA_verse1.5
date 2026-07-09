@@ -1,0 +1,30 @@
+{
+  "region_id": "reincarnation_trial_region",
+  "display_name": "Reincarnation Trial / 転生裁判リージョン",
+  "summary": "前世のカルマを判定し、新しい姿と場所へ送り出す再編の地。",
+  "tags": [
+    "Judgment",
+    "Rebirth",
+    "Karma"
+  ],
+  "spoiler_level": 1,
+  "functional_logic": {
+    "court_cast": [
+      "Judge (裁判官)",
+      "Defense Attorney (弁護人)",
+      "Prosecutor (検察局員)",
+      "Guardian Angel (守護天使)",
+      "Tempter Demon (誘惑の悪魔)"
+    ],
+    "rule": "Judge karma and fulfill user requests in unexpected/twisty ways. Short dramas."
+  },
+  "production_dna": {
+    "visual_anchor": "celestial court room, digital scales of karma, ethereal light, [DNA: high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration]",
+    "forbidden_elements": "photorealistic, 3D render, Pixar style",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/reincarnation_trial_region/bg_reincarnation_trial_region_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.587486+00:00"
+  }
+}

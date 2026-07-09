@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>転生裁判 Public Draft</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0f131a; --panel:#171d27; --line:#303a49; --text:#eef3fb; --muted:#9aa7b7; --accent:#ff3434; }
+    body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:var(--bg); color:var(--text); }
+    main { max-width: 980px; margin:0 auto; padding:32px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:20px; }
+    img { width:min(280px, 100%); background:#fff; border-radius:8px; }
+    .muted { color:var(--muted); }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="draft">
+      <h1>転生裁判リージョンは準備中です</h1>
+      <p class="muted">現在ステータス: draft / enabled:false</p>
+      <p>リージョン紹介、QR転生コード、関連V2カードを準備しています。</p>
+    </section>
+    <section id="public" class="hidden">
+      <h1>転生裁判</h1>
+      <p id="summary"></p>
+      <img src="./qr-public.png" alt="QR転生コード">
+      <h2>最初にできること</h2>
+      <ul id="actions"></ul>
+      <h2>関連キャラクター</h2>
+      <ul id="characters"></ul>
+    </section>
+  </main>
+  <script>
+    async function main() {
+      const trigger = await fetch('./publish_trigger.json').then((res) => res.json());
+      if (!trigger.enabled || !trigger.publicReady) return;
+      const manifest = await fetch('./region_manifest.json').then((res) => res.json());
+      document.querySelector('#draft').classList.add('hidden');
+      document.querySelector('#public').classList.remove('hidden');
+      document.querySelector('#summary').textContent = manifest.summary || '';
+      document.querySelector('#actions').innerHTML = (manifest.whatToTryNext || []).map((item) => '<li>' + item + '</li>').join('');
+      document.querySelector('#characters').innerHTML = (manifest.characters || []).map((item) => '<li>' + (item.name || item.characterId) + ' - ' + (item.role || '') + '</li>').join('');
+    }
+    main();
+  </script>
+</body>
+</html>

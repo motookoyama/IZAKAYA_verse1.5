@@ -1,0 +1,58 @@
+{
+  "version": "0.1",
+  "type": "region_dev_manifest",
+  "regionId": "tensei-court",
+  "regionName": "転生裁判",
+  "status": "dev",
+  "currentPhase": "qr-tensei-region-portal-implementation",
+  "owner": "IZAKAYA Verse",
+  "updatedAt": "2026-05-15T02:21:12.383Z",
+  "goal": "QR転生コードを入口として、転生裁判リージョンの開発・公開・検証導線を整備する。",
+  "nextTasks": [
+    "開発用QRからdevポータルへ到達できるようにする",
+    "region_dev_manifest.jsonをdevページに表示する",
+    "公開トリガーをdraft状態で用意する",
+    "公開ページはComing Soon状態にする",
+    "スモークテスト結果を記録する"
+  ],
+  "knownProblems": [
+    "画像生成のシンクロ率が安定しない",
+    "リージョン説明とキャラ人格が混線する可能性がある",
+    "QRを単なるURLとして扱うとQR転生の価値が伝わりにくい"
+  ],
+  "acceptanceCriteria": [
+    "開発用QRを読むとdevポータルが開く",
+    "devポータルに現在フェーズ・次タスク・参照資料が表示される",
+    "Codex向けハンドオフ文書へアクセスできる",
+    "public側は公開トリガーがfalseの間は準備中表示になる",
+    "スモークテスト記録が残る"
+  ],
+  "refs": {
+    "protocol": "../../../tools/narrative-forge/regions/開発リージョンdev先行_仕様書.md",
+    "qrTenseiProtocol": "../../../tools/narrative-forge/regions/リージョン向けQR転生プロトコル.md",
+    "world": "../draft/world.md",
+    "storyOutline": "../draft/story-outline.md",
+    "codexHandoff": "./handoff-codex.md",
+    "openclawHandoff": "./handoff-openclaw.md",
+    "narrativeForgeHandoff": "./handoff-narrative-forge.md",
+    "aura2Notes": "./aura2-notes.md",
+    "smokeTest": "./smoke-test.md",
+    "moderatorGuide": "./moderator-guide.md",
+    "checkFocus": "./check_focus.json",
+    "pointCheckSheet": "./point_check_sheet.md",
+    "fullCheckSheet": "./full_check_sheet.md",
+    "forgeWorkflow": "./forge-workflow.json",
+    "devQr": "./qr-dev.png"
+  },
+  "public": {
+    "publishTrigger": "../public/publish_trigger.json",
+    "publicPage": "../public/index.html",
+    "publicManifest": "../public/region_manifest.json",
+    "publicQr": "../public/qr-public.png"
+  },
+  "separationRule": {
+    "devQrPurpose": "制作文脈の復元",
+    "publicQrPurpose": "一般ユーザー向けリージョン入場",
+    "publicMustNotLinkDevHandoffs": true
+  }
+}

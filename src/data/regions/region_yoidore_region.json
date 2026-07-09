@@ -1,0 +1,38 @@
+{
+  "region_id": "yoidore_region",
+  "display_name": "Yoidore / よいどれリージョン",
+  "summary": "居酒屋の喧騒、提灯の灯り、そして酒が入り変貌する人間らしさの世界。",
+  "tags": [
+    "Izakaya",
+    "Dialogue",
+    "Drama"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "Caribbean Pirate Tavern",
+    "core_cast": [
+      {
+        "name": "卑怯悪辣な男 (The Traitor)",
+        "trait": "Betrayal, cowardice, sharp wit"
+      },
+      {
+        "name": "キップのいい女海賊 (The Brave Heroine)",
+        "trait": "High spirit, strong drink, direct"
+      },
+      {
+        "name": "引退間際の老船長 (The Old Captain)",
+        "trait": "Nostalgia, wisdom, cryptic"
+      }
+    ],
+    "rule": "Character traits must 'evolve' based on the level of intoxication. Dialogue-centric drama."
+  },
+  "production_dna": {
+    "visual_anchor": "traditional IZAKAYA interior, futuristic twist, warm yellow lantern glow, neon blue signs, [DNA: high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration, intricate textures, masterwork quality]",
+    "forbidden_elements": "photorealistic, 3D render, Pixar style, hangover-physicality",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/yoidore_region/bg_yoidore_region_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.560329+00:00"
+  }
+}

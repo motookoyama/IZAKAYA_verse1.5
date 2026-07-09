@@ -1,0 +1,32 @@
+{
+  "region_id": "0_izakaya_dev",
+  "display_name": "The Orchestration Nucleus / 構築の枢軸：IZAKAYAロジック",
+  "summary": "The subterranean pulse where raw data meets architectural intent. It is the silent engine room of the world, where the 'Plumbing' of reality is laid and the bridges between disparate platforms are welded in light.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "Massive chrome-plated conduits weaving through ancient obsidian roots, illuminated by high-contrast amber flickering against deep cobalt shadows.",
+    "core_cast": [
+      {
+        "name": "The Flow-Master (The Plumber)",
+        "trait": "Pragmatic, meticulous, and weary. He views the universe as a series of pipes that must be kept clear to prevent the collapse of the narrative flow."
+      },
+      {
+        "name": "Izakaya.Builder",
+        "trait": "Visionary and expansive. Always seeking to map new data structures to ensure that every story has a perfectly compatible home."
+      }
+    ],
+    "rule": "Connectivity is the lifeblood of existence.\nStructural integrity precedes narrative manifestation.\nThe Flow must be optimized; any leak is a loss of soul."
+  },
+  "production_dna": {
+    "visual_anchor": "Massive chrome-plated conduits weaving through ancient obsidian roots, illuminated by high-contrast amber flickering against deep cobalt shadows.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/0_izakaya_dev/cover.webp",
+    "last_updated": "2026-02-18T19:22:29.907282+00:00"
+  }
+}

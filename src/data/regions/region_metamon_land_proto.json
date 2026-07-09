@@ -1,0 +1,21 @@
+{
+  "region_id": "metamon_land_proto",
+  "display_name": "Metamon Land (Alpha) / メタモンランド（試作区）",
+  "summary": "\"The Digital Sandbox\"\n\nThis is the prototype environment for the \"Metamon\" project. It is a peaceful, malleable world where \"Meta-Data\" takes physical form as \"Meta-Monsters\". The physics here are \"Toy-like\" and \"Voxel-based\".",
+  "tags": [
+    "SANDBOX",
+    "CONSTRUCTION",
+    "GARDEN"
+  ],
+  "spoiler_level": 0,
+  "related_character_ids": [],
+  "production_dna": {
+    "visual_anchor": " **Environment**: Voxel Art Landscape, Bright Green Grass, Blue Sky with Blocky Clouds, \"Minecraft\" with HighRes Lighting, \"Animal Crossing\" coziness.  **Lighting**: Soft Daylight, Warm Sunlight, No harsh shadows.  **Audio**: 8bit chirping birds, Soft Acoustic Guitar, Building sounds (Pop! Click!)., [DNA: high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration]",
+    "forbidden_elements": "photorealistic, 3D render, messy, low-detail",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/metamon_land_proto/bg_metamon_land_proto_20260212.png",
+    "last_updated": "2026-02-11T15:07:08.189982+00:00"
+  }
+}

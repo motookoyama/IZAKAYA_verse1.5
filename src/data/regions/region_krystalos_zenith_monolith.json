@@ -1,0 +1,32 @@
+{
+  "region_id": "krystalos_zenith_monolith",
+  "display_name": "Krystalos Zenith Monolith / 水晶頂データ・モノリス",
+  "summary": "A piercing spire of sentient quartz that serves as the physical memory bank of a forgotten era. It is a place where light is heavy with information and shadows are cast by the weight of ancient secrets.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "A massive obsidian monolith suspended within a hollowed mountain of prismatic glass, illuminated by high-contrast beams of violet and gold light.",
+    "core_cast": [
+      {
+        "name": "Lyra-7",
+        "trait": "Meticulous and detached; she views the biological world as 'unstructured noise' and spends decades pruning the light-paths of the Monolith to ensure perfect data fidelity."
+      },
+      {
+        "name": "Silas the Hollow",
+        "trait": "A hermit who 'listens' to the vibrations of the crystal to recover lost memories of the Old World; he speaks in rhythmic riddles that mimic the hum of the Monolith."
+      }
+    ],
+    "rule": "Total silence must be maintained during the Solar Uplink to prevent data corruption.\nAll physical shadows must be registered; unauthorized darkness is considered a breach of storage."
+  },
+  "production_dna": {
+    "visual_anchor": "A massive obsidian monolith suspended within a hollowed mountain of prismatic glass, illuminated by high-contrast beams of violet and gold light.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/krystalos_zenith_monolith/cover.webp",
+    "last_updated": "2026-02-18T16:54:42.371092+00:00"
+  }
+}

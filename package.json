@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "build:pages": "vue-tsc -b && vite build --base=/IZAKAYA_verse1.5/ --outDir docs --emptyOutDir false",
+    "build:pages:dry": "vue-tsc -b && vite build --base=/IZAKAYA_verse1.5/ --outDir output/github-pages-dry-run --emptyOutDir true",
     "preview": "vite preview",
     "png2json": "node tools/png2json/index.mjs"
   },
@@ -14,7 +16,8 @@
     "pako": "^2.1.0",
     "qrcode": "^1.5.4",
     "vue": "^3.5.21",
-    "vue-i18n": "^9.14.5"
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",

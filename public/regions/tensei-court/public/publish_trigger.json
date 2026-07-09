@@ -1,0 +1,13 @@
+{
+  "regionId": "tensei-court",
+  "status": "draft",
+  "publicReady": false,
+  "enabled": false,
+  "publishAt": null,
+  "publicPage": "./index.html",
+  "publicManifest": "./region_manifest.json",
+  "publicQr": "./qr-public.png",
+  "v2CardGallery": "./v2-card-gallery.json",
+  "characterList": "./character-list.json",
+  "notes": "開発中。公開ページはComing Soon表示にする。"
+}

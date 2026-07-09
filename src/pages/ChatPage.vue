@@ -2,17 +2,18 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import V2ChatWorkspace from '../components/V2ChatWorkspace.vue'
-import ConnectionStatus from '../components/ConnectionStatus.vue'
 import { useAccount } from '../composables/useAccount'
 import { useTheme } from '../composables/useTheme'
 import { navigatorCards, findNavigatorCard } from '../data/sampleCards'
-import type { FeatureContent, ChatContent, AccountAction, AccountContent } from '../types/home'
+import type { ChatContent, AccountAction, AccountContent } from '../types/home'
 import type { ChatMessage } from '../composables/useChat'
 import chatIcon from '../assets/icons/chat-frame.png'
 import { determineCardRole, loadRoleOverrides, persistRoleOverrides, type CardRole } from '../utils/cardRoles'
-import { API_BASE } from '../utils/api'
+// import { API_BASE } from '../utils/api'
+// import { useRegion } from '../composables/useRegion'
 
 const { tm } = useI18n({ useScope: 'global' })
+// const { activeRegion } = useRegion()
 
 const page = computed(() => tm('pages.chat') as {
   title: string
@@ -23,7 +24,13 @@ const page = computed(() => tm('pages.chat') as {
   notesTitle: string
   notes: string[]
 })
-const features = computed(() => (tm('home.features') as FeatureContent[]).find((item) => item.id === 'v2chat'))
+
+const displayTitle = computed(() => {
+  return page.value.title
+})
+
+
+// const features = computed(() => (tm('home.features') as FeatureContent[]).find((item) => item.id === 'v2chat'))
 const baseChat = computed<ChatContent>(() => tm('home.chat') as ChatContent)
 const accountCopy = computed<AccountContent>(() => tm('home.account') as AccountContent)
 const { currentTheme } = useTheme()
@@ -37,9 +44,9 @@ const {
   loading,
   error,
   apiOnline,
-  connectionIssue,
+  // connectionIssue,
 } = useAccount()
-const connectionTarget = API_BASE
+// const connectionTarget = API_BASE
 const adminTagPattern = /(管理|管理者|翻訳|経理)/
 const preferredCardIds = ['dr-orb', 'miss-madi', 'ekubo']
 
@@ -422,13 +429,27 @@ watch(wallpaperOptions, (options) => {
   }
 }, { immediate: true })
 const wallpaperValue = computed(() => {
+  /*
+  // 1. Region Atmosphere (Highest Priority per Plan B)
+  if (activeRegion.value?.atmosphere?.visual_theme) {
+    const theme = activeRegion.value.atmosphere.visual_theme
+    // Check if it's a valid URL or path (simple check)
+    if (theme.includes('/') || theme.startsWith('http')) {
+       return `url(${theme})`
+    }
+  }
+  */
+
+  // 2. Custom User Entry
   if (wallpaperCustom.value.trim().length > 0) {
     return wallpaperCustom.value
   }
+  // 3. Selection from Options
   const found = wallpaperOptions.value.find((item) => item.id === wallpaperId.value)
+  // 4. Default Theme Fallback
   return found?.value ?? defaultWallpaper.value
 })
-const sideNotes = computed(() => features.value?.bullets ?? [])
+// const sideNotes = computed(() => features.value?.bullets ?? [])
 
 function summarizeCardSlot(card?: (typeof navigatorCards)[number]) {
   if (!card) return undefined
@@ -715,7 +736,7 @@ function onSetCardRole(payload: { id: string; role: CardRole | 'AUTO' }) {
         <img class="chat-page__intro-icon" :src="chatIcon" alt="Chat" />
         <div>
           <p class="chat-page__intro-label">
-            <span class="chat-page__intro-label-main">{{ page.title }} &lt;&lt;</span>
+            <span class="chat-page__intro-label-main">{{ displayTitle }} &lt;&lt;</span>
           </p>
           <p class="chat-page__intro-note">
             {{ page.quickHint ?? 'すぐに会話できます' }}
@@ -733,12 +754,6 @@ function onSetCardRole(payload: { id: string; role: CardRole | 'AUTO' }) {
       </details>
     </div>
 
-    <ConnectionStatus
-      class="chat-page__connection"
-      :api-online="apiOnline"
-      :api-base="connectionTarget"
-      :issue="connectionIssue"
-    />
 
     <V2ChatWorkspace
       :chat-content="navigatorChatContent"
@@ -754,7 +769,7 @@ function onSetCardRole(payload: { id: string; role: CardRole | 'AUTO' }) {
       :quick-actions="quickActions"
       :busy="loading"
       :error="error"
-      :notes="sideNotes"
+      :notes="page.notes ?? []"
       :wallpaper="wallpaperValue"
       :wallpaper-options="wallpaperOptions"
       :wallpaper-selected="wallpaperId"

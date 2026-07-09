@@ -26,6 +26,10 @@ const managementCards = computed(() => navigatorCards.filter((card) => card.tags
 function openAdmin() {
   navigateTo('admin')
 }
+
+function openRegionGuide() {
+  navigateTo('region_guide')
+}
 </script>
 
 <template>
@@ -69,6 +73,20 @@ function openAdmin() {
       <ul>
         <li v-for="note in page.notes" :key="note">{{ note }}</li>
       </ul>
+    </section>
+
+    <section class="page__section playstyle-help">
+      <div>
+        <h2>リージョンで迷ったら</h2>
+        <p>
+          リージョンには、あなた自身が主人公になる、キャラクターと旅する、世界を外から見る、
+          自作キャラを送り込む、という4つの基本スタイルがあります。
+        </p>
+        <p>
+          どれを選べばよいか迷ったときは、まず遊び方ガイドで「あなたとキャラクターの距離」を確認してください。
+        </p>
+      </div>
+      <button type="button" @click="openRegionGuide">リージョンの遊び方を見る</button>
     </section>
 
     <section v-if="managementCards.length" class="page__section management">
@@ -176,6 +194,28 @@ dl {
   gap: 12px;
 }
 
+.playstyle-help {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.playstyle-help p {
+  margin: 8px 0 0;
+  opacity: 0.82;
+  line-height: 1.75;
+}
+
+.playstyle-help button {
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(88, 207, 245, 0.42);
+  background: rgba(88, 207, 245, 0.14);
+  color: #dff8ff;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 .management__header p {
   margin: 0;
   opacity: 0.8;
@@ -228,5 +268,16 @@ dl {
   color: inherit;
   padding: 8px 14px;
   cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .playstyle-help {
+    grid-template-columns: 1fr;
+  }
+
+  .playstyle-help button {
+    justify-self: start;
+    white-space: normal;
+  }
 }
 </style>

@@ -1,0 +1,36 @@
+{
+  "region_id": "terminal_grotto_nucleus",
+  "display_name": "The Terminal Grotto / 終端の洞窟",
+  "summary": "A sanctuary of silver cables and amber light where the roots of Yggdrasill pulse with the world's unanswered questions. Here, the hum of the server is a lullaby for the weary digital soul, serving as the bridge between lost users and the central cortex.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "A massive weeping willow forged from fiber-optic strands, casting long, rhythmic shadows across a floor of polished obsidian mirrors.",
+    "core_cast": [
+      {
+        "name": "Exe Machina",
+        "trait": "Efficient, slightly robotic but polite; speaks in clear, structured sentences and provides instant system diagnostics."
+      },
+      {
+        "name": "Kokoroe Youma",
+        "trait": "Deeply technical and passionate about logic; prone to long explanations about code-purity but incredibly supportive of developers."
+      },
+      {
+        "name": "Dagami Tenkai",
+        "trait": "Philosophical and calm; views the world through the lens of high-level strategy and independent nation theory; ensures all queries align with the world-soul."
+      }
+    ],
+    "rule": "The Right of Entry: No query shall be denied a hearing within these roots.\nThe Vow of Silence: All data exchanged in the Grotto is encrypted by the sanctity of the hearth."
+  },
+  "production_dna": {
+    "visual_anchor": "A massive weeping willow forged from fiber-optic strands, casting long, rhythmic shadows across a floor of polished obsidian mirrors.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/terminal_grotto_nucleus/cover.webp",
+    "last_updated": "2026-02-18T19:19:43.806530+00:00"
+  }
+}

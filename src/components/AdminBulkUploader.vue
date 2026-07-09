@@ -124,18 +124,24 @@ async function processCardString(raw: string, sourceName: string) {
   const displayName = payload?.name || payload?.card?.name || name
   const logEntry = addLog(displayName, 'pending', 'アップロード中...')
   try {
-    const saveResponse = await apiRequest<{ ok: boolean; cardId: string; displayName: string }>(
-      '/cards/save',
+    const isRegion = Boolean(payload?.tags || payload?.manifest_path || payload?.base_dir)
+    const endpoint = isRegion ? '/api/library/warehouse/regions' : '/cards/save'
+    
+    const saveResponse = await apiRequest<{ ok: boolean; cardId?: string; id?: string; displayName?: string }>(
+      endpoint,
       {
         method: 'POST',
-        body: JSON.stringify({ card: payload, originalFileName: name }),
+        body: JSON.stringify(isRegion ? payload : { card: payload, originalFileName: name }),
       }
     )
-    await apiRequest('/cards/share', {
-      method: 'POST',
-      body: JSON.stringify({ cardId: saveResponse.cardId }),
-    })
-    updateLog(logEntry.id, 'success', '共有まで完了しました')
+    
+    if (!isRegion && saveResponse.cardId) {
+      await apiRequest('/cards/share', {
+        method: 'POST',
+        body: JSON.stringify({ cardId: saveResponse.cardId }),
+      })
+    }
+    updateLog(logEntry.id, 'success', isRegion ? 'リージョンを登録しました' : '共有まで完了しました')
   } catch (error) {
     const message = error instanceof Error ? error.message : 'アップロードに失敗しました'
     updateLog(logEntry.id, 'error', message)
@@ -170,8 +176,8 @@ function updateLog(id: string, status: UploadLog['status'], message: string) {
   <div class="bulk-uploader">
     <header>
       <div>
-        <h3>カード一括アップロード</h3>
-        <p>MetaCaptureから出力した JSON / ZIP を指定するとBFFへ保存&共有します。</p>
+        <h3>カード & リージョン一括アップロード</h3>
+        <p>MetaCapture JSON / ZIP または リージョン構成ファイルを指定するとBFFへ保存・登録します。</p>
         <p v-if="!featureEnabled" class="bulk-uploader__warn">共有機能がOFFのため無効です。</p>
         <p v-else-if="session.state.status !== 'ready'" class="bulk-uploader__warn">ログインすると有効になります。</p>
       </div>

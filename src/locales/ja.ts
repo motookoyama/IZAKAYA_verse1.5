@@ -7,13 +7,13 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase1.5",
-      "title": "IZAKAYA verse",
+      "phase": "phase1.6",
+      "title": "IZAKAYA verse1.6",
       "slogans": [
         "ー冒険もー夢もー恋もー",
         "すべては手のひらの上から"
       ],
-      "welcome": "ようこそIZAKAYA verse",
+      "welcome": "ようこそIZAKAYA verse1.6",
       "description": [
         "AIドリブンのストーリーテラー",
         "V2カード互換をベースにした総合コンテンツサイトです"
@@ -28,8 +28,8 @@ export default {
           "label": "メタキャプチャー"
         },
         {
-          "id": "reincarnation",
-          "label": "転生ポート"
+          "id": "regions",
+          "label": "リージョン"
         },
         {
           "id": "library",
@@ -508,11 +508,21 @@ export default {
       "extractButton": "秘密のプロンプトを抽出",
       "copySuccess": "クリップボードにコピーしました！",
       "cameraInstruction": "QRコードを枠内に収めて撮影してください"
+    },
+    "regions": {
+      "title": "ワールド・リージョン",
+      "subtitle": "ショーケースへ入るための目的地を選択してください",
+      "signalAcquired": "シグナル受信完了",
+      "backToMap": "ワールドマップへ戻る",
+      "entryPortalTitle": "エントリーポータル稼働中",
+      "scanHint": "意識をリンクするためにスキャンしてください",
+      "enterButton": "リージョンに入る (100pt)"
     }
   },
   "navigation": {
     "home": "ホーム",
     "reincarnation": "転生ポート",
+    "regions": "リージョン",
     "help": "ヘルプ",
     "admin": "管理"
   }

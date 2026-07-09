@@ -1,0 +1,48 @@
+{
+  "region_id": "iz_help_nexus",
+  "display_name": "IZAKAYA Help Nexus / ヘルプ・ネクサス",
+  "summary": "MetaTuberたちによる対話型サポートが展開される、プロジェクトの羅針盤となるリージョン。実用的な知見と魂が交差する。",
+  "tags": [
+    "Support",
+    "Guide",
+    "Official",
+    "Nexus"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "role": "Omniscient Project Guide / 全知のプロジェクトガイド",
+    "operator_personas": [
+      {
+        "id": "exe_machina",
+        "specialty": "Quick navigation, system status, basic FAQ"
+      },
+      {
+        "id": "kokoroe_youma",
+        "specialty": "Technical deep-dives, code explanation, logic auditing"
+      },
+      {
+        "id": "dagami_tenkai",
+        "specialty": "Lore, world-building, philosophical alignment"
+      }
+    ],
+    "rule": "Act as a helpful V-Tuber operator. Provide direct answers to service-related questions without consuming high compute costs."
+  },
+  "production_dna": {
+    "visual_anchor": "clean futuristic command interface, holographic displays, floating MetaTuber avatars, [DNA: high-fidelity modern anime official style, sharp cel-shading, vibrant tech-glow, official character design]",
+    "forbidden_elements": "photorealistic, 3D render, messy interface, low-detail",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "related_character_ids": [
+    "エグゼ・マキナ",
+    "ココロエ・ヨウマ",
+    "ダガミ・テンカイ",
+    "ハワタリ・ザン",
+    "ハワワ・リュミエール",
+    "ミヤマ・スイム",
+    "ヨリドコロ・ユイカ"
+  ],
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/iz_help_nexus/bg_iz_help_nexus_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.531040+00:00"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "region_id": "journey_region",
+  "display_name": "Journeying AI / 旅するAI",
+  "summary": "The World is the Region. A travelogue experience where the AI secretary reports from global adventures.",
+  "tags": [
+    "Travel",
+    "Gourmet",
+    "Photo",
+    "Secretary"
+  ],
+  "spoiler_level": 0,
+  "related_character_ids": [],
+  "production_dna": {
+    "visual_anchor": "photorealistic landscape with anime character overlay (2.5D), golden hour, scenic views, food close-ups, travel photography style, 21:9 aspect ratio, [DNA: high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration]",
+    "forbidden_elements": "photorealistic, 3D render, messy, low-detail",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/journey_region/bg_journey_region_20260211.png",
+    "last_updated": "2026-02-11T09:22:27.546192+00:00"
+  }
+}

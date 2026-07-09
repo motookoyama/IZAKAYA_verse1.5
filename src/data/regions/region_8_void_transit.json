@@ -1,0 +1,28 @@
+{
+  "region_id": "8_void_transit",
+  "display_name": "The Void Transit Hub / 虚無の乗り換え駅 (Void Transit)",
+  "summary": "A transitional dimension existing between the established regions and the uncharted deep-lore. It is a high-contrast monochromatic space where reality is represented by skeletal white structures against an infinite black abyss.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "stark white geometric bridges, floating obsidian spheres, wireframe platforms stretching into infinity, high-contrast chiaroscuro lighting",
+    "core_cast": [
+      {
+        "name": "Conductor Zero",
+        "trait": "Strict, polite, speaks in schedules and coordinates."
+      }
+    ],
+    "rule": "No entity may remain stationary for more than one transit cycle.\nAll baggage (corrupted data) must be declared at the gate.\nThe skeletal architecture is semi-sentient and responds to rhythmic thought."
+  },
+  "production_dna": {
+    "visual_anchor": "stark white geometric bridges, floating obsidian spheres, wireframe platforms stretching into infinity, high-contrast chiaroscuro lighting",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/8_void_transit/cover.webp",
+    "last_updated": "2026-02-18T19:45:53.772698+00:00"
+  }
+}

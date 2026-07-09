@@ -1,0 +1,36 @@
+{
+  "region_id": "2_ambient_region",
+  "display_name": "The Gilded Sky-Reach / 黄金の空へ届く岸辺",
+  "summary": "A coastal sanctuary where the rhythmic crash of tides mirrors the flow of global data. Here, the horizon is a digital tapestry monitored by sky-gods, offering refuge to those navigating the storms of information.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "A lone cedar cabin perched on a black sand cliff, illuminated by high-contrast cinematic shafts of light piercing through a geometric, bird-shaped cloud formation.",
+    "core_cast": [
+      {
+        "name": "Sentinel Horus",
+        "trait": "Observational and detached yet protective; he speaks in cryptic but comforting data-points, watching the horizon for 'systemic zombies' or anomalies."
+      },
+      {
+        "name": "Manager Mammon",
+        "trait": "A pragmatist who manages the 'luck' of the region; he treats personal peace as a high-value asset and refuses to acknowledge his past corporate life."
+      },
+      {
+        "name": "The Orb-Mimi",
+        "trait": "Endlessly curious and helpful; it provides 'menus of approaches' for lost travelers, translating professional complexities into elementary comfort."
+      }
+    ],
+    "rule": "The Tide Always Returns What Is Lost: Every deleted byte eventually washes ashore.\nSilence is the Highest Protocol: Communication is measured in the sound of waves and wooden creaks."
+  },
+  "production_dna": {
+    "visual_anchor": "A lone cedar cabin perched on a black sand cliff, illuminated by high-contrast cinematic shafts of light piercing through a geometric, bird-shaped cloud formation.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/2_ambient_region/cover.webp",
+    "last_updated": "2026-02-18T19:22:30.155178+00:00"
+  }
+}

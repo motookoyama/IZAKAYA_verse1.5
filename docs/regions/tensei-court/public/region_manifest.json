@@ -1,0 +1,38 @@
+{
+  "$schema": "izakaya.region_manifest.v0_2",
+  "version": "0.2",
+  "regionId": "tensei-court",
+  "regionName": "転生裁判",
+  "updatedAt": "2026-05-15T02:21:12.383Z",
+  "entryType": "region_portal",
+  "summary": "転生希望者がAI裁判官に審査されるリージョン。公開前にDev Portal、Manifest、QR、チェックシート、公開トリガーを先行整備する。",
+  "entryMessage": "あなたは転生審査室に呼び出されました。",
+  "whatToTryNext": [
+    "審査を開始する",
+    "裁判官AIに質問する",
+    "自分の転生先を選ぶ"
+  ],
+  "links": {
+    "entryUrl": "https://izakaya.example/r/tensei-court",
+    "qrImage": "./qr-public.png"
+  },
+  "safetyNote": "このリージョンは創作体験用です。個人情報や現実の法的判断には使用しないでください。",
+  "characters": [
+    {
+      "characterId": "judge-001",
+      "name": "転生裁判官",
+      "role": "案内役",
+      "initialPromptRef": "../draft/prompts/judge-dialogue.md"
+    }
+  ],
+  "tags": [
+    "Judgment",
+    "Rebirth",
+    "Karma",
+    "QR Tensei"
+  ],
+  "llm": {
+    "provider": "inherit_from_host",
+    "model": "inherit_from_host"
+  }
+}

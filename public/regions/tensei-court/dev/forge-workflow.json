@@ -1,0 +1,46 @@
+{
+  "workflowId": "tensei-court-qr-entry-alpha",
+  "version": "0.1",
+  "nodes": [
+    {
+      "id": "seed",
+      "type": "Seed",
+      "title": "転生裁判"
+    },
+    {
+      "id": "world",
+      "type": "World",
+      "source": "../draft/world.md"
+    },
+    {
+      "id": "character",
+      "type": "Character",
+      "source": "../draft/characters/judge-001.md"
+    },
+    {
+      "id": "checkgen",
+      "type": "CheckSheetGeneration",
+      "source": "./check_focus.json"
+    },
+    {
+      "id": "qrPortal",
+      "type": "QRPortal",
+      "source": "../public/region_manifest.json"
+    },
+    {
+      "id": "review",
+      "type": "AURA2Review",
+      "source": "./aura2-notes.md"
+    },
+    {
+      "id": "smoke",
+      "type": "SmokeTest",
+      "source": "./smoke-test.md"
+    },
+    {
+      "id": "handoff",
+      "type": "Handoff",
+      "source": "./handoff-codex.md"
+    }
+  ]
+}

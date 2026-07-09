@@ -17,5 +17,21 @@
     "ハワワ・リュミエール",
     "ミヤマ・スイム",
     "ヨリドコロ・ユイカ"
-  ]
+  ],
+  "production_dna": {
+    "visual_anchor": "high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration, intricate costume detail, glowing neon tech accents, cinematic lighting, official v-tuber character design, masterwork quality",
+    "forbidden_elements": "photorealistic, 3D render, Pixar style, movie style, muted colors, sketchy lines, blurry, messy hair, low-detail, doll-like features",
+    "aura_template_id": "api_aura_mtuber_v1",
+    "point_dna": {
+      "eyes": "distinctive expressive eye shapes with vibrant intricate iris patterns and unique tech-highlights",
+      "hair": "sharp stylized silhouettes with characteristic hair-bundles and anti-gravity properties",
+      "props": "highly detailed v-tuber accessories like cyber-monocles, futuristic headphones, and glowing crystals",
+      "garments": "intricate technical costume structures with high-collars, tactical vests, and glowing circuitry lines",
+      "exaggeration_factor": 1.2
+    }
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/mtuber_region/bg_mtuber_region_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.507148+00:00"
+  }
 }

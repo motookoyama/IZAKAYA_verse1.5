@@ -184,7 +184,7 @@ async function mutateAccount(path: string, payload?: Record<string, unknown>): P
   loading.value = true
   error.value = null
   try {
-    if (!apiOnline.value) {
+    if (!apiOnline.value && connectionIssue.value !== 'auth') {
       return createSnapshot()
     }
     const snapshot = await apiRequest<PointsSnapshot>(path, {
@@ -197,6 +197,9 @@ async function mutateAccount(path: string, payload?: Record<string, unknown>): P
     error.value = (err as Error).message
     apiOnline.value = false
     connectionIssue.value = baseMismatchFlag ? 'config' : classifyConnectionIssue(err)
+    if (connectionIssue.value === 'auth') {
+      throw err
+    }
     return createSnapshot()
   } finally {
     loading.value = false
@@ -207,7 +210,7 @@ async function addPoints(amount = 500, note = 'Quick charge'): Promise<void> {
   if (amount <= 0) {
     throw new Error('Charge amount must be positive')
   }
-  if (!apiOnline.value) {
+  if (!apiOnline.value && connectionIssue.value !== 'auth') {
     addLedgerEntry('charge', amount, note)
     return
   }
@@ -218,7 +221,7 @@ async function consumePoints(amount: number, note?: string): Promise<void> {
   if (amount <= 0) {
     throw new Error('Spend amount must be positive')
   }
-  if (!apiOnline.value) {
+  if (!apiOnline.value && connectionIssue.value !== 'auth') {
     addLedgerEntry('spend', amount, note)
     return
   }

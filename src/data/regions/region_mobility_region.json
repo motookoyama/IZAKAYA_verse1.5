@@ -1,0 +1,23 @@
+{
+  "region_id": "mobility_region",
+  "display_name": "Mobility & Robotics / モビリティ",
+  "summary": "The Museum of Motion. A dynamic showcase of futuristic transportation and socially embedded robotics.",
+  "tags": [
+    "Tech",
+    "Vehicle",
+    "Robot",
+    "Space"
+  ],
+  "ui_layout": "pattern_a",
+  "spoiler_level": 0,
+  "related_character_ids": [],
+  "production_dna": {
+    "visual_anchor": "clean futuristic showroom, bright studio lighting, sleek aerodynamic curves, chrome and glass, high-tech engineering, white and orange accents, 21:9 aspect ratio, [DNA: high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration]",
+    "forbidden_elements": "photorealistic, 3D render, messy, low-detail",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/mobility_region/bg_mobility_region_20260211.png",
+    "last_updated": "2026-02-11T09:22:03.314506+00:00"
+  }
+}

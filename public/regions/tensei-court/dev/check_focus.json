@@ -1,0 +1,93 @@
+{
+  "$schema": "izakaya.check_focus.v1",
+  "schema_version": "1.0.0",
+  "content_id": "tensei-court",
+  "content_type": "region",
+  "title": "転生裁判",
+  "target_phase": "prototype",
+  "generated_at": "2026-05-15T02:21:12.375Z",
+  "generation_mode": "deterministic_poc",
+  "core_intent": "転生希望者がAI裁判官に審査されるリージョン",
+  "human_focus": [
+    {
+      "id": "human_1",
+      "label": "リージョン体験が一言で説明できるか",
+      "reason": "公開時の入口になるため。",
+      "check_type": "human",
+      "importance": "high",
+      "pass_condition": "初見でも何を体験する場所か分かる。"
+    },
+    {
+      "id": "human_2",
+      "label": "キャスト配置に意味があるか",
+      "reason": "V2カード展開につながるため。",
+      "check_type": "human",
+      "importance": "medium",
+      "pass_condition": "登場キャラがリージョンの体験やルールに接続している。"
+    },
+    {
+      "id": "human_3",
+      "label": "メインビジュアルと売り文句が一致するか",
+      "reason": "検品時のズレを早く見つけるため。",
+      "check_type": "human",
+      "importance": "medium",
+      "pass_condition": "画像と紹介文から同じ世界観が伝わる。"
+    }
+  ],
+  "ai_focus": [
+    {
+      "id": "ai_1",
+      "label": "必須フィールドが揃っているか",
+      "reason": "UIや後続処理が読める最低条件。",
+      "check_type": "structure",
+      "importance": "medium",
+      "pass_condition": "title, content_type, target_phase, concept_text または narrative_output が存在する。"
+    },
+    {
+      "id": "ai_2",
+      "label": "判定欄が PASS / REPAIR / HOLD に限定されているか",
+      "reason": "自動破棄を避けるため。",
+      "check_type": "policy",
+      "importance": "medium",
+      "pass_condition": "却下を使わず、allowed_judgements が3種に固定されている。"
+    },
+    {
+      "id": "ai_3",
+      "label": "リージョン用の構造が確認できるか",
+      "reason": "目録UIに表示するため。",
+      "check_type": "structure",
+      "importance": "medium",
+      "pass_condition": "概要、ルール、体験導線、タグ、ビジュアル方向のいずれかが構造化されている。"
+    }
+  ],
+  "minimum_pass_line": "リージョン体験が一言で伝わり、次に確認すべき画像・V2カード・売り文句の焦点が分かること。",
+  "allowed_judgements": [
+    "PASS",
+    "REPAIR",
+    "HOLD"
+  ],
+  "recommended_modules": [
+    "interactive_json_md_v2_review",
+    "common_thumbnail_palette"
+  ],
+  "legacy": {
+    "core": "転生希望者がAI裁判官に審査されるリージョン",
+    "pass_line": "リージョン体験が一言で伝わり、次に確認すべき画像・V2カード・売り文句の焦点が分かること。",
+    "human_check_points": [
+      "リージョン体験が一言で説明できるか",
+      "キャスト配置に意味があるか",
+      "メインビジュアルと売り文句が一致するか"
+    ],
+    "ai_check_points": [
+      "必須フィールドが揃っているか",
+      "判定欄が PASS / REPAIR / HOLD に限定されているか",
+      "リージョン用の構造が確認できるか"
+    ],
+    "recommended_modules": [
+      "interactive_json_md_v2_review",
+      "common_thumbnail_palette"
+    ],
+    "final_judgment": "HOLD",
+    "repair_memo": ""
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "region_id": "6_mobility_region",
+  "display_name": "The Orbit-Flow Corridor / 軌道循環回廊",
+  "summary": "A perpetual-motion district where luck and data circulate at terminal velocity through a labyrinth of neon-lit arteries. Here, the journey is the only destination, and existence is defined by the seamless transition between arrival and departure.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "Long-exposure light trails of automated pods cutting through vertical chrome monoliths under high-contrast cyan moonlight.",
+    "core_cast": [
+      {
+        "name": "Miss Madi",
+        "trait": "A patient but mathematically precise guide who bridges the gap between raw machine logic and human navigation; she is the first voice heard by those lost in the automated sprawl."
+      },
+      {
+        "name": "Mammon Manager",
+        "trait": "Pragmatic and ruthlessly efficient; he views luck as a quantifiable asset and manages the flow of personal finances with the cold competence of a high-speed trading engine."
+      }
+    ],
+    "rule": "Stagnation is a Civil Offense; all entities must remain in kinetic or digital flux.\nThe Great Algorithm dictates the right-of-way; intuition must yield to the automated path."
+  },
+  "production_dna": {
+    "visual_anchor": "Long-exposure light trails of automated pods cutting through vertical chrome monoliths under high-contrast cyan moonlight.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/6_mobility_region/cover.webp",
+    "last_updated": "2026-02-18T19:22:30.380065+00:00"
+  }
+}

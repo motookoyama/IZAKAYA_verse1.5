@@ -8,5 +8,9 @@
     "Official"
   ],
   "spoiler_level": 0,
-  "related_character_ids": []
+  "related_character_ids": [],
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/master_source/bg_master_source_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.420103+00:00"
+  }
 }

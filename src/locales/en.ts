@@ -7,13 +7,13 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase1.5",
-      "title": "IZAKAYA verse",
+      "phase": "phase1.6",
+      "title": "IZAKAYA verse1.6",
       "slogans": [
         "Adventure, dreams, and love—",
         "all within the palm of your hand."
       ],
-      "welcome": "Welcome to IZAKAYA verse",
+      "welcome": "Welcome to IZAKAYA verse1.6",
       "description": [
         "An AI-driven storyteller.",
         "A comprehensive content site built on V2 card compatibility."
@@ -28,8 +28,8 @@ export default {
           "label": "MetaCapture"
         },
         {
-          "id": "reincarnation",
-          "label": "Port"
+          "id": "regions",
+          "label": "Regions"
         },
         {
           "id": "library",
@@ -507,11 +507,21 @@ export default {
       "extractButton": "Extract Secret Prompt",
       "copySuccess": "Copied to clipboard!",
       "cameraInstruction": "Position the QR code within the frame to scan"
+    },
+    "regions": {
+      "title": "WORLD REGIONS",
+      "subtitle": "Select a destination to enter the showcase",
+      "signalAcquired": "SIGNAL ACQUIRED",
+      "backToMap": "BACK TO WORLD MAP",
+      "entryPortalTitle": "ENTRY PORTAL ACTIVE",
+      "scanHint": "Scan to link consciousness",
+      "enterButton": "ENTER REGION (100pt)"
     }
   },
   "navigation": {
     "home": "Home",
     "reincarnation": "Reincarnation Port",
+    "regions": "Regions",
     "help": "Help",
     "admin": "Admin"
   }

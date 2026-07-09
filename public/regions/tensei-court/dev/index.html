@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>転生裁判 Dev Portal</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0f131a; --panel:#171d27; --line:#303a49; --text:#eef3fb; --muted:#9aa7b7; --accent:#ff3434; }
+    body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:var(--bg); color:var(--text); }
+    header, main { max-width: 1120px; margin: 0 auto; padding: 24px; }
+    header { display:flex; align-items:center; gap:20px; border-bottom:1px solid var(--line); }
+    header img { width:112px; height:112px; object-fit:contain; background:#fff; border-radius:8px; }
+    h1, h2 { margin:0 0 12px; }
+    .grid { display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:18px; }
+    a { color:#ffd2d2; }
+    .links { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px; }
+    .links a { border:1px solid var(--line); border-radius:6px; padding:10px; text-decoration:none; background:#10161f; }
+    .badge { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:4px 10px; color:var(--muted); }
+    pre { white-space:pre-wrap; word-break:break-word; background:#0c1118; border:1px solid var(--line); border-radius:6px; padding:12px; }
+    @media (max-width: 820px) { header { align-items:flex-start; flex-direction:column; } .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="./qr-dev.png" alt="開発転生QR">
+    <div>
+      <p class="badge">Region Dev Portal</p>
+      <h1>転生裁判</h1>
+      <p>QR転生コードを入口として、転生裁判リージョンの開発・公開・検証導線を整備する。</p>
+    </div>
+  </header>
+  <main>
+    <div class="grid">
+      <section>
+        <h2>現在地</h2>
+        <dl id="manifestSummary"></dl>
+      </section>
+      <section>
+        <h2>公開状態</h2>
+        <p>Public側は初期状態で draft / enabled:false です。</p>
+        <p><a href="../public/">公開ドラフトを開く</a></p>
+      </section>
+    </div>
+    <section>
+      <h2>作業リンク</h2>
+      <div class="links">
+        <a href="./handoff-codex.md">Codex向け指示</a>
+        <a href="./handoff-openclaw.md">OpenClaw向け指示</a>
+        <a href="./handoff-narrative-forge.md">Narrative Forge向け指示</a>
+        <a href="./aura2-notes.md">AURA2メモ</a>
+        <a href="./moderator-guide.md">Moderator Guide</a>
+        <a href="./smoke-test.md">Smoke Test</a>
+        <a href="./point_check_sheet.md">Point Check Sheet</a>
+        <a href="./check_focus.json">Check Focus JSON</a>
+        <a href="./forge-workflow.json">Forge Workflow JSON</a>
+        <a href="../public/publish_trigger.json">Publish Trigger</a>
+      </div>
+    </section>
+    <section>
+      <h2>Manifest</h2>
+      <pre id="manifestRaw">Loading...</pre>
+    </section>
+  </main>
+  <script>
+    async function main() {
+      const response = await fetch('./region_dev_manifest.json');
+      const manifest = await response.json();
+      const summary = document.querySelector('#manifestSummary');
+      summary.innerHTML = [
+        ['regionId', manifest.regionId],
+        ['status', manifest.status],
+        ['currentPhase', manifest.currentPhase],
+        ['owner', manifest.owner],
+        ['updatedAt', manifest.updatedAt]
+      ].map(([key, value]) => '<dt>' + key + '</dt><dd>' + value + '</dd>').join('');
+      document.querySelector('#manifestRaw').textContent = JSON.stringify(manifest, null, 2);
+    }
+    main().catch((error) => {
+      document.querySelector('#manifestRaw').textContent = String(error);
+    });
+  </script>
+</body>
+</html>

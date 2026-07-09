@@ -98,6 +98,8 @@ function onNavigate(path: string | undefined, id: string) {
 
 <style scoped>
 .top-nav {
+  position: relative;
+  z-index: 100;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

@@ -6,6 +6,10 @@ export const PAGE_PATHS = {
   help: '#/help',
   admin: '#/admin',
   reincarnation: '#/reincarnation',
+  backyard: '#/backyard',
+  regions: '#/regions',
+  region_detail: '#/region/:id',
+  region_guide: '#/region-guide',
 } as const
 
 export type PageKey = keyof typeof PAGE_PATHS

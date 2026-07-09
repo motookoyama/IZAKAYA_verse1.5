@@ -1,4 +1,4 @@
-# IZAKAYA Verse 1.5 (Vue + Vite)
+# IZAKAYA Verse 1.6 (Vue + Vite)
 
 開発メモや公開手順など、プロジェクトに固有の情報をこのリポジトリに集約しています。
 

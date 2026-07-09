@@ -1,0 +1,20 @@
+{
+  "region_id": "development_region",
+  "display_name": "Development / 開発リージョン",
+  "summary": "システム構築、仮想空間の設計、そしてデバッギングの空気を纏ったテック・スペース。",
+  "tags": [
+    "Dev",
+    "Code",
+    "Blueprint"
+  ],
+  "spoiler_level": 0,
+  "production_dna": {
+    "visual_anchor": "high-tech laboratory, blue data streams, glowing holograms, crystalline server racks, sharp digital architecture, high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration, intricate gear detail, glowing neon tech accents",
+    "forbidden_elements": "photorealistic, 3D render, Pixar style, movie style, messy, low-detail",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/development_region/bg_development_region_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.546160+00:00"
+  }
+}

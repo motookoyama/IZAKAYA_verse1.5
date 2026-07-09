@@ -1,0 +1,12 @@
+{
+  "version": "0.1",
+  "regionId": "tensei-court",
+  "characters": [
+    {
+      "characterId": "judge-001",
+      "name": "転生裁判官",
+      "role": "案内役",
+      "initialPromptRef": "../draft/prompts/judge-dialogue.md"
+    }
+  ]
+}

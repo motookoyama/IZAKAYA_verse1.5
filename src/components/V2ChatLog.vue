@@ -159,6 +159,7 @@ function formatSize(size: number) {
   max-height: 70vh;
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
+  contain: paint;
 }
 
 .chat-log__item {
@@ -170,6 +171,9 @@ function formatSize(size: number) {
   border-radius: 18px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
+  will-change: transform, opacity;
 }
 
 .chat-log__item--assistant {
@@ -196,7 +200,7 @@ function formatSize(size: number) {
 .chat-log__avatar svg {
   width: 60px;
   height: 60px;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .chat-log__avatar-bg {

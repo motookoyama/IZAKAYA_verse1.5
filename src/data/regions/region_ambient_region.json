@@ -1,0 +1,30 @@
+{
+  "region_id": "ambient_region",
+  "display_name": "Ambient / アンビエント・リージョン",
+  "summary": "静寂、環境音、素朴に流れる日常の風景と非現実性の融合。",
+  "tags": [
+    "ASMR",
+    "TTS",
+    "Calm"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "modes": [
+      "Beach Hut",
+      "Motorhouse Journey",
+      "Camping Night",
+      "Rural Life",
+      "City Penthouse"
+    ],
+    "feature": "TTS-optimized prompts. Photo-reflective generation from context."
+  },
+  "production_dna": {
+    "visual_anchor": "serene abstract digital void, floating minimal tech fragments, soft light particles, 21:9 aspect ratio, [DNA: high-fidelity modern anime official style, ultra-sharp cel-shading, vibrant digital illustration]",
+    "forbidden_elements": "photorealistic, 3D render, Pixar style, busy, messy",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/workspace/outputs/regions/ambient_region/bg_ambient_region_20260211.png",
+    "last_updated": "2026-02-10T17:22:16.574428+00:00"
+  }
+}

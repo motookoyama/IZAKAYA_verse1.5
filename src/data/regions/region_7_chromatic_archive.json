@@ -1,0 +1,32 @@
+{
+  "region_id": "7_chromatic_archive",
+  "display_name": "The Chromatic Archive of Forgotten Dreams / 色彩の忘却書庫 (Chromatic Archive)",
+  "summary": "A liquid-light library suspended in a neon-noir void, where forgotten memories are preserved as glowing ink. The gravity is subjective, and the shelves are made of solidified chromatic data.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "glowing liquid ink vials, floating holographic scrolls, deep obsidian architecture with neon blue and magenta lighting, subjective gravity perspectives",
+    "core_cast": [
+      {
+        "name": "Mina the Curator",
+        "trait": "Quiet, observant, speaks in metaphors related to light and shadow."
+      },
+      {
+        "name": "Ink-Stained Echo",
+        "trait": "Nervous, efficient, obsessed with filing systems."
+      }
+    ],
+    "rule": "No memory shall be denied a home in the Archive.\nChromatic bleeding (color mixing) is the only form of accepted physical contact.\nThe Librarian's silence is the highest order of the Archive."
+  },
+  "production_dna": {
+    "visual_anchor": "glowing liquid ink vials, floating holographic scrolls, deep obsidian architecture with neon blue and magenta lighting, subjective gravity perspectives",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/7_chromatic_archive/cover.webp",
+    "last_updated": "2026-02-18T19:43:09.771363+00:00"
+  }
+}

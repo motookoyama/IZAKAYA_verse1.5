@@ -1,0 +1,14 @@
+{
+  "version": "0.1",
+  "regionId": "tensei-court",
+  "status": "draft",
+  "cards": [
+    {
+      "characterId": "judge-001",
+      "name": "転生裁判官",
+      "role": "案内役",
+      "cardStatus": "planned",
+      "source": "dev-first-placeholder"
+    }
+  ]
+}
