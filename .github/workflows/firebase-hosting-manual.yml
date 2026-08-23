@@ -1,0 +1,53 @@
+name: Deploy static mirror to Firebase Hosting
+
+on:
+  workflow_dispatch:
+    inputs:
+      owner_approved:
+        description: 'Owner approval confirmed for this static mirror release'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: izakaya-firebase-static-mirror
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ inputs.owner_approved }}
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_PROJECT: izakaya-commercial-sandbox
+      WIF_PROVIDER: ${{ vars.IZAKAYA_FIREBASE_WIF_PROVIDER }}
+      WIF_SERVICE_ACCOUNT: ${{ vars.IZAKAYA_FIREBASE_WIF_SERVICE_ACCOUNT }}
+    steps:
+      - name: Check out this approved revision
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and verify the static release
+        run: |
+          npm ci
+          npm run test:v2-card-external-images
+          npm run test:v2-prompt-manifest
+          npm run build:firebase
+
+      - name: Authenticate to Google Cloud without a stored key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - name: Deploy only the static Hosting surface
+        run: npx --yes firebase-tools@15.28.1 deploy --only hosting --project "$FIREBASE_PROJECT" --non-interactive
