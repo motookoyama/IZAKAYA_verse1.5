@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { findShowcaseRegion } from '../data/regions_v3'
 import { PAGE_PATHS, navigateTo } from '../constants/navigation'
+import { commercialGateNotice, releaseBadge } from '../core/releaseProfile'
 
 type RegionScene = {
   label: string
@@ -27,8 +28,8 @@ type RegionPageSpec = {
   visualBody: string
   logo?: string
   heroImage?: string
-  freeSticker?: string
-  freeNote?: string
+  statusSticker?: string
+  statusNote?: string
   scenes: RegionScene[]
   cards: RegionCard[]
   flow: Array<{ title: string; body: string }>
@@ -91,12 +92,12 @@ const cardFiles = {
 const pageSpecs: Record<string, RegionPageSpec> = {
   mtuber_region: {
     id: 'mtuber_region',
-    eyebrow: 'IZAKAYA VER.1.6 / JULY FREE WEEK',
+    eyebrow: releaseBadge(),
     title: 'メタチューバー',
     logo: '/assets/regions/mtuber_region/selected/logo_meta_tuber_0001.png',
-    freeSticker: '一週間無料!',
-    freeNote: '7月の無料対象です。無料になるのはリージョンアクセス権のみです。',
-    lead: '目録で採用されたシーンと公式V2カードから入る、配信スタジオ型リージョンです。キャスト、観客、ステージの熱量を見て、話しかけたい相手や参加したい企画を選んでください。',
+    statusSticker: 'PRELAUNCH',
+    statusNote: commercialGateNotice(),
+    lead: '目録で採用されたシーンと公式V2カードから入る、配信スタジオ型リージョンです。キャスト、観客、ステージの熱量を見て、自分のAI環境へ持ち込む入口を選んでください。',
     visualTitle: 'ロゴ、ステージ、キャストで世界を一気に伝える場所。',
     visualBody: 'このページのメインビジュアルは目録のMAIN/SUB登録を正本にします。目録で人間が採用したロゴとシーンだけを公開面へ出し、カード画像はキャラクターカードとして別枠に置きます。',
     scenes: [
@@ -116,22 +117,22 @@ const pageSpecs: Record<string, RegionPageSpec> = {
     ],
     flow: [
       { title: 'まず雰囲気を見る', body: '配信スタジオ、キャスト、運用カードを眺めて、このリージョンの遊び方を掴みます。' },
-      { title: 'キャストに話しかける', body: 'V2カードを起点に、配信準備、企画相談、キャラクター会話へ入ります。' },
-      { title: '主人公カードで参加する', body: '自分のV2カードを持ち込み、IZAKAYA Verse経由でリージョン体験に接続します。' },
+      { title: 'カードを持ち出す', body: 'V2カードを起点に、配信準備、企画相談、キャラクター会話の設定を自分のAI環境へ渡します。' },
+      { title: '主人公カードで参加する', body: '自分のV2カードを作り、IZAKAYA Verseのリージョン設定と組み合わせて体験に接続します。' },
     ],
     createTitle: 'このリージョン所属の新キャラを作る',
-    createBody: 'ユーザーのオリジナルV2カードを、メタチューバー所属キャストとして発行する導線です。画像生成、カード登録、目録への追加、Mind Sync補正までをひとつの制作フローへ接続します。',
-    createPrice: '新キャラ生成 30P',
+    createBody: 'ユーザーのオリジナルV2カードを、自分のAI環境でメタチューバー所属キャストとして作るためのガイドです。原本と画像は手元に保存し、公式目録への登録はこの段階では行いません。',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   },
   reincarnation_judgment: {
     id: 'reincarnation_judgment',
-    eyebrow: 'IZAKAYA VER.1.6 / AUGUST FREE WEEK',
+    eyebrow: releaseBadge(),
     title: '転生裁判',
     heroImage: '/assets/regions/reincarnation_judgment/selected/sub1.png',
-    freeNote: '8月の一週間無料予定です。無料対象はリージョンアクセス権のみです。',
+    statusNote: commercialGateNotice(),
     lead: '魂の転生先を、女神裁判官、守護天使、誘惑の悪魔が審理するリージョンです。荘厳さ、救済、誘惑を同じ法廷に置き、ユーザーの選択で物語の温度が変わります。',
     visualTitle: '天上の法廷で、魂の行き先を選ぶ。',
-    visualBody: '目録で採用された裁判シーンを正本にし、キャラクターカードは審理に参加する役割として分離します。8月無料枠の主役候補です。',
+    visualBody: '目録で採用された裁判シーンを正本にし、キャラクターカードは審理に参加する役割として分離します。2.0の継承候補として検品します。',
     scenes: [
       { label: 'SUB1', title: '転生法廷', body: '裁きと祈りが同じ空間に立ち上がる、リージョン全体の基準シーン。', image: '/assets/regions/reincarnation_judgment/selected/sub0.png' },
       { label: 'SUB2', title: '光の審理', body: '救済と再出発の気配を見せる、ユーザーが入りやすい転生導入。', image: '/assets/regions/reincarnation_judgment/selected/sub1.png' },
@@ -148,15 +149,15 @@ const pageSpecs: Record<string, RegionPageSpec> = {
       { title: '主人公として転生する', body: 'V2カードを使って、裁判結果をリージョン体験へ接続します。' },
     ],
     createTitle: '転生者カードを作る',
-    createBody: 'この法廷に呼び出される新しい魂、裁判官、守護者、誘惑者を追加する制作導線です。目録登録とMind Sync補正へ接続します。',
-    createPrice: '新キャラ生成 30P',
+    createBody: 'この法廷に呼び出される魂、裁判官、守護者、誘惑者を、自分のAI環境で作るためのガイドです。公式への掲載・投稿はこの段階では行いません。',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   },
   yoidore_region: {
     id: 'yoidore_region',
-    eyebrow: 'IZAKAYA VER.1.6 / SEPTEMBER FREE WEEK',
+    eyebrow: releaseBadge(),
     title: 'よいどれ',
     heroImage: '/assets/regions/yoidore_region/selected/sub2.png',
-    freeNote: '9月の一週間無料予定です。無料対象はリージョンアクセス権のみです。',
+    statusNote: commercialGateNotice(),
     lead: '酒場、港、海賊、旅人の声が混ざる会話リージョンです。人間味のあるやり取りを中心に、食事、噂、依頼、夜の空気から物語を始めます。',
     visualTitle: '港の酒場で、会話から物語が始まる。',
     visualBody: '目録採用シーンの酒場感と海賊キャストを前面に出し、カードは話しかける相手として分離します。',
@@ -171,19 +172,19 @@ const pageSpecs: Record<string, RegionPageSpec> = {
     ],
     flow: [
       { title: '席につく', body: 'まず店の空気を読み、誰に声をかけるかを決めます。' },
-      { title: '一言話しかける', body: '噂、注文、旅の目的を投げると会話が動きます。' },
+      { title: '一言目を決める', body: '噂、注文、旅の目的を設定し、自分のAI環境で会話を始める準備をします。' },
       { title: '依頼や関係を広げる', body: '気に入ったキャストから、港の物語を深く進めます。' },
     ],
     createTitle: '酒場の新キャストを作る',
-    createBody: '常連、船乗り、料理人、旅人など、よいどれ所属の新しいV2カードを作る導線です。',
-    createPrice: '新キャラ生成 30P',
+    createBody: '常連、船乗り、料理人、旅人など、よいどれ所属の新しいV2カードを自分のAI環境で作り、手元に保存する導線です。',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   },
   mobility_region: {
     id: 'mobility_region',
-    eyebrow: 'IZAKAYA VER.1.6 / OCTOBER FREE WEEK',
+    eyebrow: releaseBadge(),
     title: 'モビリティ',
     heroImage: '/assets/regions/mobility_region/selected/sub1.png',
-    freeNote: '10月の一週間無料予定です。無料対象はリージョンアクセス権のみです。',
+    statusNote: commercialGateNotice(),
     lead: '移動体、ロボティクス、未来交通を主題にした技術リージョンです。メカ系キャラクターカードは制作評価中のため、まずはシーンと設計思想を中心に見せます。',
     visualTitle: '移動する機構と、未来交通の物語。',
     visualBody: 'プロンプト評価は高く、メカのカード画像は慎重に扱います。今回は目録採用シーンを中心に、リージョンの方向性を公開します。',
@@ -199,15 +200,15 @@ const pageSpecs: Record<string, RegionPageSpec> = {
       { title: 'カード化へ進む', body: '納得できるメカ画像ができた段階で、V2カードとして登録します。' },
     ],
     createTitle: 'メカV2カードを設計する',
-    createBody: 'モビリティは人物用プロンプトではなく、パーツ、機構、用途、シルエット指定を重くした制作導線へ接続します。',
-    createPrice: '新キャラ生成 30P',
+    createBody: 'モビリティは人物用プロンプトではなく、パーツ、機構、用途、シルエット指定を重くしたセルフV2制作ガイドへ接続します。',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   },
   ambient_region: {
     id: 'ambient_region',
-    eyebrow: 'IZAKAYA VER.1.6 / NOVEMBER FREE WEEK',
+    eyebrow: releaseBadge(),
     title: 'アンビエント',
     heroImage: '/assets/regions/ambient_region/selected/main.png',
-    freeNote: '11月の一週間無料予定です。無料対象はリージョンアクセス権のみです。',
+    statusNote: commercialGateNotice(),
     lead: '静けさ、余白、空気感を楽しむ審美リージョンです。強い事件よりも、滞在、風景、音、短い対話で世界を味わいます。',
     visualTitle: '静かな景色に、会話の余白を置く。',
     visualBody: '目録採用シーンを使って、低ノイズで入りやすいリージョン体験を見せます。カードは今後の滞在者や案内役として追加できます。',
@@ -220,21 +221,21 @@ const pageSpecs: Record<string, RegionPageSpec> = {
     cards: [],
     flow: [
       { title: '景色を見る', body: 'まずは背景と空気を眺めて、リージョンの温度に入ります。' },
-      { title: '短く話す', body: '長い命令より、一言の感想や問いかけから始めます。' },
+      { title: '短い導入を作る', body: '長い命令より、一言の感想や問いかけを決め、自分のAI環境へ持ち込みます。' },
       { title: '滞在を重ねる', body: '気に入った空気を、カードやBGMと一緒に育てます。' },
     ],
     createTitle: '滞在者カードを作る',
-    createBody: '静かな案内役、観測者、旅人など、アンビエントに合うV2カードを追加する導線です。',
-    createPrice: '新キャラ生成 30P',
+    createBody: '静かな案内役、観測者、旅人など、アンビエントに合うV2カードを自分のAI環境で作り、手元に保存する導線です。',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   },
   iz_help_nexus: {
     id: 'iz_help_nexus',
-    eyebrow: 'IZAKAYA VER.1.6 / ALWAYS FREE',
+    eyebrow: releaseBadge(),
     title: 'IZヘルプ',
     heroImage: '/assets/regions/iz_help_nexus/selected/main.png',
-    freeSticker: '常時無料',
-    freeNote: 'IZヘルプは常時無料入口です。一週間無料枠で無料になるのはリージョンアクセス権のみで、カードDLや新キャラ生成は別枠です。',
-    lead: '初めて来たユーザーが、リージョン、V2カード、QR転生、無料枠、ポイント導線を理解するための公式案内リージョンです。',
+    statusSticker: 'STATIC GUIDE',
+    statusNote: 'IZヘルプの静的ガイドは誰でも読めます。利用権の販売・発行は商業ゲート成立後にのみ開始します。',
+    lead: '初めて来たユーザーが、リージョン、V2カード、QR転生、セルフ制作、持ち出し型の遊び方を理解するための公式案内リージョンです。',
     visualTitle: '迷ったら、まずここから。',
     visualBody: '目録採用画像を使い、ヘルプを単なるFAQではなく、世界へ入るための案内ページとして見せます。',
     scenes: [
@@ -244,13 +245,13 @@ const pageSpecs: Record<string, RegionPageSpec> = {
     ],
     cards: [],
     flow: [
-      { title: '遊び方を読む', body: 'リージョン、V2カード、ポイントの関係を短く確認します。' },
-      { title: '行き先を選ぶ', body: '無料枠、公開リージョン、チャットのどこへ行くかを決めます。' },
-      { title: '困ったら戻る', body: '画像、カード、QR、課金導線で迷った時に戻る場所です。' },
+      { title: '遊び方を読む', body: 'リージョン、V2カード、自分のAI環境への持ち出し方を短く確認します。' },
+      { title: '行き先を選ぶ', body: 'リージョン、カード、セルフV2制作、ガイドのどこへ行くかを決めます。' },
+      { title: '困ったら戻る', body: '画像、カード、QR、利用権の案内で迷った時に戻る場所です。' },
     ],
     createTitle: '案内カードを追加する',
-    createBody: '必要に応じて、ヘルプ担当の案内キャラクターや運用カードを追加する導線です。',
-    createPrice: '新キャラ生成 30P',
+    createBody: '必要に応じて、ヘルプ担当の案内キャラクターや運用カードを自分のAI環境で作る導線です。',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   },
 }
 
@@ -261,7 +262,7 @@ const page = computed(() => {
   if (!fallback) return null
   return {
     id: fallback.id,
-    eyebrow: 'IZAKAYA VER.1.6',
+    eyebrow: releaseBadge(),
     title: fallback.label_jp,
     lead: fallback.description,
     visualTitle: `${fallback.label_jp}の入口`,
@@ -270,12 +271,12 @@ const page = computed(() => {
     cards: [],
     flow: [
       { title: '世界を選ぶ', body: 'リージョンのテーマと空気を確認します。' },
-      { title: 'キャストを見る', body: '登録カードがある場合は、話しかける相手を選びます。' },
-      { title: '体験へ進む', body: 'チャットや共通ガイドへ移動します。' },
+      { title: 'キャストを見る', body: '登録カードがある場合は、持ち出す相手や役割を選びます。' },
+      { title: '体験へ進む', body: '共通ガイドを読み、自分のAI環境で始める準備をします。' },
     ],
     createTitle: '新しいカードを作る',
     createBody: 'このリージョン所属のV2カード制作導線です。',
-    createPrice: '新キャラ生成 30P',
+    createPrice: 'セルフV2作成（ユーザー自身のAI環境）',
   } satisfies RegionPageSpec
 })
 
@@ -289,8 +290,7 @@ const onHash = () => {
 
 const goBack = () => navigateTo(PAGE_PATHS.regions)
 const goGuide = () => navigateTo(PAGE_PATHS.region_guide)
-const goChat = () => navigateTo(PAGE_PATHS.chat)
-const goCreate = () => navigateTo(PAGE_PATHS.metacapture)
+const goCreate = () => navigateTo(PAGE_PATHS.region_guide)
 
 onMounted(() => {
   window.addEventListener('hashchange', onHash)
@@ -311,13 +311,13 @@ onUnmounted(() => {
         <div class="hero-visual" :class="{ 'hero-visual--logo': page.logo }" :aria-label="page.title">
           <img v-if="heroVisual" :src="publicAssetPath(heroVisual)" :alt="page.title" />
           <h1 v-else>{{ page.title }}</h1>
-          <span v-if="page.freeSticker" class="free-sticker">{{ page.freeSticker }}</span>
+          <span v-if="page.statusSticker" class="free-sticker">{{ page.statusSticker }}</span>
         </div>
         <p class="lead">{{ page.lead }}</p>
-        <p v-if="page.freeNote" class="free-note">{{ page.freeNote }}</p>
+        <p v-if="page.statusNote" class="free-note">{{ page.statusNote }}</p>
         <div class="hero-actions">
-          <button type="button" @click="goChat">チャットを試す</button>
-          <button type="button" class="secondary" @click="goGuide">リージョンの遊び方</button>
+          <button type="button" @click="goGuide">持ち出し方を見る</button>
+          <button type="button" class="secondary" @click="goBack">リージョン一覧</button>
         </div>
       </div>
 
@@ -354,8 +354,8 @@ onUnmounted(() => {
         <p class="kicker">V2 Card Cast</p>
         <h2>公式V2カードを選んで入る</h2>
         <p>
-          所属キャストはキャラクターカードとして扱います。カードデータのダウンロードは仮に10P、
-          このリージョン所属の新キャラ生成は仮に30Pです。
+          所属キャストはキャラクターカードとして扱います。商業ゲート成立前は、販売・ポイント消費・
+          利用権発行を開始しません。オリジナルV2カードはユーザー自身のAI環境で作成・保存します。
         </p>
       </header>
 
@@ -366,7 +366,7 @@ onUnmounted(() => {
             <h3>{{ card.name }}</h3>
             <p>{{ card.role }}</p>
             <p v-if="card.note" class="card-note">{{ card.note }}</p>
-            <a v-if="card.file" class="download-link" :href="card.file" :download="`${card.name}.json`">カードDL 10P</a>
+            <span v-if="card.file" class="download-link download-link--disabled">カードデータ：PRELAUNCH</span>
           </div>
         </article>
       </div>
@@ -393,7 +393,7 @@ onUnmounted(() => {
         <p class="kicker">Need Help?</p>
         <h2>全リージョン共通の遊び方へ</h2>
         <p>
-          QR転生コード、V2カード、無料枠、ポイント導線など、リージョン全体の遊び方は共通解説ページで確認できます。
+          QR転生コード、V2カード、24時間初回券、100P・30日利用権、外部AI環境への持ち出し方は共通解説ページで確認できます。
         </p>
       </div>
       <div class="guide-cta__actions">
@@ -728,6 +728,12 @@ button.secondary {
   font-size: 13px;
   font-weight: 900;
   text-decoration: none;
+}
+
+.download-link--disabled {
+  border-color: rgba(255, 196, 112, 0.36);
+  color: #ffd58c;
+  cursor: not-allowed;
 }
 
 .empty-cast {

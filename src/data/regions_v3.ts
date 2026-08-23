@@ -13,7 +13,7 @@ export const SHOWCASE_REGIONS: ShowcaseRegion[] = [
     id: 'mtuber_region',
     name: 'Oshimashi Meta-Performance Studio',
     label_jp: 'メタチューバー',
-    description: '配信・メタ演出・V2運用の中核リージョン。IZAKAYA 1.6 の公開導線を担う。 ',
+    description: '配信・メタ演出・V2運用の中核リージョン。IZAKAYA Verse 2.0の継承候補。',
     thumbnail: getRegionPublicMedia('mtuber_region').thumbnail,
     atmosphere: { visual_theme: 'cyber_studio', bgm_url: null, ambient_sounds: ['hologram_hum'] },
     laws: ['Streaming Active', 'Metacapture Protocol', 'Style Consistency'],

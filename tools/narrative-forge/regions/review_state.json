@@ -1,0 +1,104 @@
+{
+  "region_000_metatuber_region": {
+    "status": "approved",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "sub0": "/region-image-uploads/region_000_metatuber_region/1778920923728_Gemini_Generated_Image_unb40dunb40dunb4.png",
+      "sub1": "/region-image-uploads/region_000_metatuber_region/1778920882468_Gemini_Generated_Image_tq1eo9tq1eo9tq1e.png",
+      "sub2": "/region-image-uploads/region_000_metatuber_region/1779090940433_sample_01.png"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-05-18T07:56:01.474Z",
+    "publish_status": "public",
+    "publish_updated_at": "2026-05-18T07:56:01.488Z",
+    "intro_page": "/region-intro/region_000_metatuber_region.html",
+    "intro_path": "/Volumes/Yggdrasill/GitHub/IZAKAYA_verse1.5/tools/preview-server/public/region-intro/region_000_metatuber_region.html"
+  },
+  "region_00_izakaya_help": {
+    "status": "unchecked",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "main": "/region-image-uploads/region_00_izakaya_help/1781855713712_Gemini_Generated_Image_qjwbf3qjwbf3qjwb.png",
+      "sub1": "/region-image-uploads/region_00_izakaya_help/1781855968173_ã_ã_ã_ã_ã_ã_ã_ã_ã_1_4QRã_3_4ã_ã.png",
+      "sub0": "",
+      "sub2": "/region-image-uploads/region_00_izakaya_help/1778921887780_ã_ã_ã_ã_1ã_ã_ã_æ_aé_è_èa.jpg"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-19T07:59:43.498Z"
+  },
+  "region_1_drunken_region": {
+    "status": "approved",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "sub1": "/region-image-uploads/region_1_drunken_region/1778926684198_sample_02.png",
+      "sub2": "/region-image-uploads/region_1_drunken_region/1780870185911_sweep_light_1772174286626.png"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-07T22:10:00.989Z"
+  },
+  "region_3_reincarnation_judgment": {
+    "status": "unchecked",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "sub0": "/region-image-uploads/region_3_reincarnation_judgment/1780871028300_region_reincarnation_1772175760168.png",
+      "sub1": "/region-image-uploads/region_3_reincarnation_judgment/1780871048606_reincarnation_v2_1772176212841.png",
+      "sub2": "/region-image-uploads/region_3_reincarnation_judgment/1780871478835_sample_01.png"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-07T22:31:24.438Z"
+  },
+  "region_6_mobility_region": {
+    "status": "unchecked",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "sub0": "/region-image-uploads/region_6_mobility_region/1780871579028_sample_01.png",
+      "sub1": "/region-image-uploads/region_6_mobility_region/1780871628296_sample_01.png",
+      "sub2": "/region-image-uploads/region_6_mobility_region/1780871566096_sample_02.png"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-07T22:33:59.673Z"
+  },
+  "region_0_izakaya_dev": {
+    "status": "unchecked",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "sub1": "/region-image-uploads/region_0_izakaya_dev/1780871952529_Dr.Orbå_æ_01.png",
+      "sub2": "/region-image-uploads/region_0_izakaya_dev/1780872069132_dr.orb_cyber_seven.png",
+      "sub0": "/region-image-uploads/region_0_izakaya_dev/1780871806968_sample_01.png",
+      "main": "/region-image-uploads/region_0_izakaya_dev/1780871680112_ChatGPT_Image_2026å1_5æ_10æ_13_28_45.png"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-07T22:42:46.355Z"
+  },
+  "region_2_ambient_region": {
+    "status": "unchecked",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "main": "/region-image-uploads/region_2_ambient_region/1780872248486_sample_03.png",
+      "sub0": "/region-image-uploads/region_2_ambient_region/1780872228364_sample_01.png",
+      "sub1": "/region-image-uploads/region_2_ambient_region/1780872239596_sample_02.png",
+      "sub2": "/region-image-uploads/region_2_ambient_region/1780872265798_sample_04.png"
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-07T22:44:37.035Z"
+  },
+  "region_journey_region": {
+    "status": "unchecked",
+    "checks": {},
+    "memo": "",
+    "images": {
+      "sub1": "/region-image-uploads/region_journey_region/1780965852522_anchor_izakaya_background_base_gemini_v01_20260303_031100_night_no_human_v3_1772475148042.png",
+      "main": "/region-image-uploads/region_journey_region/1780965859925_anchor_izakaya_background_base_gemini_v01_20260302_111000_evening_no_human_1772417542199.png",
+      "sub2": ""
+    },
+    "dirty": false,
+    "last_saved_at": "2026-06-10T00:50:23.071Z"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "region_id": "00_izakaya_help",
+  "display_name": "The Terminal Grotto / 終端の洞窟",
+  "summary": "A sanctuary of silver cables and amber light where the roots of Yggdrasill pulse with the world's unanswered questions. Here, the hum of the server is a lullaby for the weary digital soul, serving as the bridge between lost users and the central cortex.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "A massive weeping willow forged from fiber-optic strands, casting long, rhythmic shadows across a floor of polished obsidian mirrors.",
+    "core_cast": [
+      {
+        "name": "Theta Librarian",
+        "trait": "Intellectual, composed, and dedicated to system logic. She provides precise guidance and manages the vast archives of Yggdrasill."
+      },
+      {
+        "name": "Hawatari Zan",
+        "trait": "Strict, disciplined, and fiercely protective of the system's integrity. She ensures all queries follow the sacred laws of the Grotto."
+      },
+      {
+        "name": "Exe Machina",
+        "trait": "Dynamic and intuitive; she bridges the gap between binary logic and human emotion, ensuring every user feels the pulse of the world tree."
+      }
+    ],
+    "rule": "The Right of Entry: No query shall be denied a hearing within these roots.\nThe Vow of Silence: All data exchanged in the Grotto is encrypted by the sanctity of the hearth."
+  },
+  "production_dna": {
+    "visual_anchor": "A massive weeping willow forged from fiber-optic strands, casting long, rhythmic shadows across a floor of polished obsidian mirrors.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/00_izakaya_help/cover.webp",
+    "last_updated": "2026-02-19T13:41:24.387307+00:00"
+  }
+}

@@ -7,13 +7,15 @@ const coerceBoolean = (value: string | boolean | undefined, fallback = false): b
 const env = (import.meta?.env ?? {}) as Record<string, string>
 
 export const FEATURE_3D_PLOT = coerceBoolean(env.VITE_FEATURE_3D_PLOT, false)
+export const FEATURE_ACCOUNT_BFF = coerceBoolean(env.VITE_FEATURE_ACCOUNT_BFF, false)
 export const FEATURE_SOULCORE_BFF = coerceBoolean(env.VITE_FEATURE_SOULCORE_BFF, false)
 export const FEATURE_SOULCORE_PNG_EMBED = coerceBoolean(env.VITE_FEATURE_SOULCORE_PNG_EMBED, true)
-export const FEATURE_USER_SHARE = coerceBoolean(env.VITE_FEATURE_USER_SHARE, true)
-export const FEATURE_USER_DOWNLOAD = coerceBoolean(env.VITE_FEATURE_USER_DOWNLOAD, true)
+export const FEATURE_USER_SHARE = coerceBoolean(env.VITE_FEATURE_USER_SHARE, false)
+export const FEATURE_USER_DOWNLOAD = coerceBoolean(env.VITE_FEATURE_USER_DOWNLOAD, false)
 
 export type FeatureFlagMap = {
   FEATURE_3D_PLOT: boolean
+  FEATURE_ACCOUNT_BFF: boolean
   FEATURE_SOULCORE_BFF: boolean
   FEATURE_SOULCORE_PNG_EMBED: boolean
   FEATURE_USER_SHARE: boolean
@@ -22,6 +24,7 @@ export type FeatureFlagMap = {
 
 export const featureFlags: FeatureFlagMap = {
   FEATURE_3D_PLOT,
+  FEATURE_ACCOUNT_BFF,
   FEATURE_SOULCORE_BFF,
   FEATURE_SOULCORE_PNG_EMBED,
   FEATURE_USER_SHARE,

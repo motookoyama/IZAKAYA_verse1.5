@@ -25,14 +25,21 @@ const isLoading = ref(true)
 const error = ref<string | null>(null)
 
 const POLLING_INTERVAL_MS = 5000
-const BFF_URL = (import.meta as any).env.VITE_REGION_BFF_URL || (import.meta as any).env.VITE_BFF_URL || 'http://localhost:4117'
-const GATE_KEY = (import.meta as any).env.VITE_GATE_KEY || ''
-const ENABLE_REGION_POLLING = (import.meta as any).env.VITE_ENABLE_REGION_POLLING === 'true'
+// Static Pages builds never infer a local BFF. Region polling is an explicitly
+// enabled development integration, not a public runtime dependency.
+const STATIC_PAGES = import.meta.env.VITE_STATIC_PAGES === 'true'
+const BFF_URL = STATIC_PAGES ? '' : (import.meta.env.VITE_REGION_BFF_URL || import.meta.env.VITE_BFF_URL || '')
+const GATE_KEY = STATIC_PAGES ? '' : (import.meta.env.VITE_GATE_KEY || '')
+const ENABLE_REGION_POLLING = !STATIC_PAGES && import.meta.env.VITE_ENABLE_REGION_POLLING === 'true'
 
 export function useRegion() {
     let pollingInterval: number | null = null
 
     const fetchRegion = async () => {
+        if (!BFF_URL) {
+            isLoading.value = false
+            return
+        }
         try {
             const res = await fetch(`${BFF_URL}/api/v1/regions/active`, {
                 headers: {

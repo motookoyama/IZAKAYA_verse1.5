@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import personaDefault from '../assets/persona-default.svg'
+import { FEATURE_ACCOUNT_BFF } from '../core/featureFlags'
 import { apiRequest, API_BASE } from '../utils/api'
 
 export type LedgerEntry = {
@@ -44,7 +45,7 @@ type PointsSnapshot = {
 const state = reactive<AccountState>({
   user: {
     id: 'default',
-    name: 'Loading...',
+    name: 'ゲスト',
     tier: 'Bronze',
     personaUrl: personaDefault,
     lastLogin: new Date().toISOString(),
@@ -60,7 +61,7 @@ const state = reactive<AccountState>({
 
 const loading = ref(false)
 const error = ref<string | null>(null)
-const apiOnline = ref(true)
+const apiOnline = ref(FEATURE_ACCOUNT_BFF)
 type ConnectionIssue = 'server' | 'config' | 'auth'
 const connectionIssue = ref<ConnectionIssue | null>(null)
 
@@ -252,9 +253,11 @@ function resetHistory() {
 const formattedPoints = computed(() => `${state.points.available.toLocaleString()}${state.points.currency}`)
 const lastLogin = computed(() => new Date(state.user.lastLogin).toLocaleString())
 
-void fetchAccount().catch(() => {
-  /* error ref already populated */
-})
+if (FEATURE_ACCOUNT_BFF) {
+  void fetchAccount().catch(() => {
+    /* error ref already populated */
+  })
+}
 
 export function useAccount() {
   return {

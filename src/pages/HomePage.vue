@@ -1,23 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useAccount } from '../composables/useAccount'
-import AccountPanel from '../components/AccountPanel.vue'
 import InfoGrid from '../components/InfoGrid.vue'
 import FeatureGrid from '../components/FeatureGrid.vue'
-import PaymentGrid from '../components/PaymentGrid.vue'
 import RegionCinema from '../components/RegionCinema.vue'
 import { useRegion } from '../composables/useRegion'
 import homeEmblem from '../assets/icons/home-emblem.png'
 import chatIcon from '../assets/icons/chat-frame.png'
-import metaIcon from '../assets/icons/metacapture.png'
+import regionGatewayIcon from '../assets/icons/region-gateway-v1.png'
 import libraryIcon from '../assets/icons/library.png'
 import helpIcon from '../assets/icons/help-qr.png'
-import paypal1000 from '../assets/payments/paypal-1000p.png'
-import paypal5000 from '../assets/payments/paypal-5000p.png'
-import paypal1000En from '../assets/payments/paypal-1000p-en.png'
-import paypal5000En from '../assets/payments/paypal-5000p-en.png'
-import paypalSupport from '../assets/payments/paypal-support.png'
 import { resolvePathForNav, navigateTo } from '../constants/navigation'
 import { TOP_SLIDES_TAKE1 } from '../data/top_slideshow_take1'
 import type {
@@ -25,14 +17,9 @@ import type {
   GuideContent,
   AuthorContent,
   FeatureContent,
-  AccountContent,
-  AccountAction,
-  PaymentOption,
-  PaymentSupport,
-  PaymentNote,
 } from '../types/home'
 
-const { t, tm } = useI18n({ useScope: 'global' })
+const { tm } = useI18n({ useScope: 'global' })
 
 const hero = computed<HeroContent>(() => {
   const value = tm('home.hero') as HeroContent
@@ -45,9 +32,18 @@ const hero = computed<HeroContent>(() => {
   }
 })
 
+const publicEntryLinks = computed(() => {
+  const priority: Record<string, number> = { regions: 10, chat: 20, library: 30 }
+  return hero.value.navLinks
+    .filter((link) => link.id !== 'help' && link.id !== 'region_guide')
+    .sort((left, right) => (priority[left.id] ?? 50) - (priority[right.id] ?? 50))
+})
+
+const supportLinks = computed(() => hero.value.navLinks.filter((link) => link.id === 'region_guide' || link.id === 'help'))
+
 const navIcons: Record<string, string | undefined> = {
   chat: chatIcon,
-  metacapture: metaIcon,
+  regions: regionGatewayIcon,
   library: libraryIcon,
   help: helpIcon,
 }
@@ -61,8 +57,6 @@ const guide = computed<GuideContent>(() => {
 })
 
 const author = computed<AuthorContent>(() => tm('home.author') as AuthorContent)
-const accountContent = computed<AccountContent>(() => tm('home.account') as AccountContent)
-const accountActions = computed<AccountAction[]>(() => accountContent.value.actions?.items ?? [])
 const features = computed<FeatureContent[]>(() => {
   const value = tm('home.features') as FeatureContent[]
   return value.map((feature) => ({
@@ -70,74 +64,13 @@ const features = computed<FeatureContent[]>(() => {
     linkPath: resolvePathForNav(feature.id),
   }))
 })
-const paymentSection = computed(() => {
-  const value = tm('home.payments') as Record<string, any>
-  const buyLabel = (value.buyButton as string) ?? t('home.payments.buyButton', 'Pay with PayPal')
-  const supportButton = (value.supportButton as string) ?? buyLabel
-  const optionDefs: Array<{ key: string; image: string; localeTag?: string }> = [
-    { key: 'jp1000', image: paypal1000, localeTag: 'JPY' },
-    { key: 'jp5000', image: paypal5000, localeTag: 'JPY' },
-    { key: 'usd1000', image: paypal1000En, localeTag: 'USD' },
-    { key: 'usd5000', image: paypal5000En, localeTag: 'USD' },
-  ]
-
-  const optionsContent = (value.options ?? {}) as Record<string, any>
-  const options: PaymentOption[] = optionDefs.reduce((acc, def) => {
-    const entry = optionsContent[def.key]
-    if (!entry?.paypalLink) return acc
-    acc.push({
-      id: def.key,
-      title: entry.title ?? def.key,
-      description: entry.description ?? '',
-      price: entry.price ?? '',
-      qrImage: def.image,
-      paypalLink: entry.paypalLink as string,
-      buttonLabel: entry.buttonLabel ?? buyLabel,
-      caption: entry.caption,
-      localeTag: entry.localeTag ?? def.localeTag,
-    })
-    return acc
-  }, [] as PaymentOption[])
-
-  let support: PaymentSupport | undefined
-  if (value.support?.paypalLink) {
-    support = {
-      title: value.support.title ?? 'Support',
-      description: value.support.description ?? '',
-      price: value.support.price ?? '',
-      qrImage: paypalSupport,
-      paypalLink: value.support.paypalLink as string,
-      buttonLabel: value.support.buttonLabel ?? supportButton,
-    }
-  }
-
-  const notes = Array.isArray(value.notes)
-    ? (value.notes as PaymentNote[])
-    : []
-
-  return {
-    title: value.title as string,
-    description: value.description as string,
-    options,
-    support,
-    notes,
-  }
-})
-const {
-  state: accountState,
-  formattedPoints,
-  lastLogin,
-  addPoints,
-  cyclePersona,
-  fetchAccount,
-  loading: accountLoading,
-  error: accountError,
-  apiOnline,
-} = useAccount()
 const { activeRegion } = useRegion()
 
-// BFF base URL for resolving AURA-generated asset paths
-const BFF_URL = import.meta.env.VITE_BFF_URL || 'http://localhost:4117'
+// A public Pages build must not invent a localhost BFF. Development-only
+// region slides may opt in through VITE_BFF_URL.
+const BFF_URL = import.meta.env.VITE_STATIC_PAGES === 'true'
+  ? ''
+  : (import.meta.env.VITE_BFF_URL || '')
 
 /*
 // Region-aware hero title
@@ -160,74 +93,25 @@ const heroSubtitle = computed(() => {
 // Dynamically switch slides: AURA-generated region slides → default richSlides
 const activeSlides = computed(() => {
   if (activeRegion.value?.slides && activeRegion.value.slides.length > 0) {
-    return activeRegion.value.slides.map(s => ({
-      image: s.image.startsWith('http') ? s.image : `${BFF_URL}${s.image}`,
-      title: s.title,
-      subtitle: s.subtitle,
-      align: (s.align || 'left') as 'left' | 'right' | 'center' | 'top-left' | 'bottom-right'
-    }))
+    const resolved = activeRegion.value.slides
+      .map((slide) => ({
+        image: slide.image.startsWith('http') ? slide.image : (BFF_URL ? `${BFF_URL}${slide.image}` : ''),
+        title: slide.title,
+        subtitle: slide.subtitle,
+        align: (slide.align || 'left') as 'left' | 'right' | 'center' | 'top-left' | 'bottom-right',
+      }))
+      .filter((slide) => slide.image.length > 0)
+    if (resolved.length > 0) return resolved
   }
   return richSlidesArray
 })
 
-const recentActivities = computed(() => accountState.recentActivities.slice(0, 4))
-const activeActionId = ref<string | null>(null)
-const feedback = ref<string | null>(null)
 const showAdvancedHub = ref(false)
-
-watch(accountError, (value) => {
-  if (value) {
-    feedback.value = apiOnline.value
-      ? value
-      : 'バックエンドに接続できませんでした。オフラインモードで継続します。'
-  }
-})
-
-async function runAction(action: AccountAction) {
-  if (accountLoading.value || activeActionId.value) {
-    return
-  }
-
-  activeActionId.value = action.id
-  feedback.value = apiOnline.value ? 'Processing...' : 'オフラインモード: ローカルで反映します。'
-
-  try {
-    switch (action.id) {
-      case 'addPoints':
-        await addPoints()
-        feedback.value = apiOnline.value ? `${action.label} ✓` : 'ポイントを仮追加しました (オフライン)'
-        break
-      case 'managePersona':
-        await cyclePersona()
-        feedback.value = apiOnline.value ? action.description : 'ペルソナをローカルで切り替えました'
-        break
-      case 'viewHistory':
-        await fetchAccount()
-        feedback.value = apiOnline.value
-          ? accountState.recentActivities[0] ?? action.description
-          : '最新履歴はオフラインモードでは保存のみ行います'
-        break
-      default:
-        feedback.value = action.description
-    }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    feedback.value = message || 'Operation failed'
-  } finally {
-    activeActionId.value = null
-  }
-}
 
 function goTo(path?: string, fallbackId?: string) {
   const target = path ?? fallbackId ?? 'home'
   navigateTo(target)
 }
-
-watch(apiOnline, (online) => {
-  if (!online) {
-    feedback.value = '現在はオフラインモードです。操作はこの画面上だけで反映されます。'
-  }
-})
 
 const richSlidesArray = [
   ...TOP_SLIDES_TAKE1.map(({ image, title, subtitle, align }) => ({ image, title, subtitle, align })),
@@ -284,7 +168,7 @@ function toggleAdvancedHub() {
 
     <section class="nav-panels">
       <a
-        v-for="link in hero.navLinks"
+        v-for="link in publicEntryLinks"
         :key="link.id"
         class="nav-panels__item"
         :href="link.path || '#/'"
@@ -303,7 +187,7 @@ function toggleAdvancedHub() {
     <section class="cta-strip">
       <div class="cta-strip__text">
         <h2>まずは世界を選ぶ</h2>
-        <p>説明はあとからで大丈夫です。気になるリージョンを選び、キャラクターに一言話しかけてください。</p>
+        <p>説明はあとからで大丈夫です。気になるリージョンを選び、V2カードやガイドを自分のAI環境へ持ち込んで始めてください。</p>
       </div>
       <a
         class="cta-strip__button"
@@ -317,31 +201,42 @@ function toggleAdvancedHub() {
     <section class="beginner-path">
       <article class="beginner-card beginner-card--lead">
         <p class="beginner-kicker">First Step</p>
-        <h2>遊園地の入口として使う</h2>
-        <p>トップでは仕組みを説明しすぎず、世界、キャラクター、会話の入口だけを見せます。</p>
+        <h2>リージョンを選ぶ入口として使う</h2>
+        <p>トップでは仕組みを説明しすぎず、世界、キャラクター、V2カード、持ち出しガイドの入口を見せます。</p>
       </article>
-      <a class="beginner-card" href="#/region-guide" @click.prevent="goTo('region_guide')">
-        <span>01</span>
-        <h3>遊び方を見る</h3>
-        <p>QR、V2カード、各プラットフォームでの遊び方をまとめています。</p>
-      </a>
       <a class="beginner-card" href="#/regions" @click.prevent="goTo('regions')">
-        <span>02</span>
+        <span>01</span>
         <h3>世界を選ぶ</h3>
         <p>海賊酒場、転生裁判、配信スタジオ、癒しの旅から入れます。</p>
       </a>
-      <a class="beginner-card" href="#/chat" @click.prevent="goTo('chat')">
+      <a class="beginner-card" href="#/region-guide" @click.prevent="goTo('region_guide')">
+        <span>02</span>
+        <h3>遊び方を見る</h3>
+        <p>QR、V2カード、各プラットフォームでの遊び方をまとめています。</p>
+      </a>
+      <a class="beginner-card" href="#/region-guide" @click.prevent="goTo('region_guide')">
         <span>03</span>
-        <h3>話しかける</h3>
-        <p>最初の一言から、リージョンの物語が始まります。</p>
+        <h3>好きなAIで始める</h3>
+        <p>カード、プロンプト、画像を持ち出して、普段使うAI環境で物語を始めます。</p>
       </a>
     </section>
+
+    <nav class="support-links" aria-label="補助案内">
+      <a
+        v-for="link in supportLinks"
+        :key="link.id"
+        :href="link.path || '#/'"
+        @click.prevent="goTo(link.path, link.id)"
+      >
+        {{ link.label }}
+      </a>
+    </nav>
 
     <section class="advanced-entry">
       <div class="advanced-entry__copy">
         <p>More</p>
-        <h2>詳しい機能とポイント</h2>
-        <span>慣れてきたら、ポイント、ライブラリー、利用ポリシー、運用メニューを確認できます。</span>
+        <h2>詳しい機能と配布予定</h2>
+        <span>ライブラリー、利用ポリシー、配布予定を確認できます。ポイント販売とアカウント利用は準備中です。</span>
       </div>
       <button type="button" class="advanced-entry__button" @click="toggleAdvancedHub">
         {{ showAdvancedHub ? '閉じる' : '詳しく見る' }}
@@ -350,28 +245,11 @@ function toggleAdvancedHub() {
 
     <transition name="advanced-panel">
       <div v-if="showAdvancedHub" class="advanced-hub">
-        <section class="account-hub">
-          <AccountPanel
-            :content="accountContent"
-            :state="accountState"
-            :formatted-points="formattedPoints"
-            :last-login="lastLogin"
-            :recent-activities="recentActivities"
-            :actions="accountActions"
-            :feedback="feedback"
-            :api-online="apiOnline"
-            @run-action="runAction"
-          />
+        <section id="payments" class="prelaunch-sales-notice" aria-label="ポイント販売とアカウント利用の状態">
+          <p class="prelaunch-sales-notice__eyebrow">COMMERCIAL GATE · PREPARING</p>
+          <h2>ポイント販売とアカウント利用は準備中です</h2>
+          <p>現在は、リージョン紹介、V2カードの確認、利用者自身のAIを使う試遊ガイドを公開しています。決済、ポイント付与、利用権発行はまだ開始していません。</p>
         </section>
-
-        <PaymentGrid
-          id="payments"
-          :title="paymentSection.title"
-          :description="paymentSection.description"
-          :options="paymentSection.options"
-          :support="paymentSection.support"
-          :notes="paymentSection.notes"
-        />
 
         <section class="features">
           <FeatureGrid :title="$t('ui.featuresTitle')" :items="features" />
@@ -647,6 +525,26 @@ a.beginner-card:hover {
   background: rgba(9, 15, 26, 0.56);
 }
 
+.support-links {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: -12px;
+}
+
+.support-links a {
+  color: rgba(244, 247, 251, 0.58);
+  font-size: 0.78rem;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(244, 247, 251, 0.24);
+}
+
+.support-links a:hover {
+  color: #fff;
+  border-color: rgba(88, 207, 245, 0.68);
+}
+
 .advanced-entry__copy {
   display: grid;
   gap: 4px;
@@ -689,6 +587,34 @@ a.beginner-card:hover {
 .advanced-hub {
   display: grid;
   gap: 32px;
+}
+
+.prelaunch-sales-notice {
+  display: grid;
+  gap: 10px;
+  padding: clamp(22px, 4vw, 32px);
+  border: 1px solid rgba(255, 207, 102, 0.36);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(87, 61, 18, 0.34), rgba(18, 30, 51, 0.58));
+}
+
+.prelaunch-sales-notice__eyebrow {
+  margin: 0;
+  color: #ffd866;
+  font-size: .74rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.prelaunch-sales-notice h2,
+.prelaunch-sales-notice p:not(.prelaunch-sales-notice__eyebrow) {
+  margin: 0;
+}
+
+.prelaunch-sales-notice p:not(.prelaunch-sales-notice__eyebrow) {
+  max-width: 720px;
+  color: rgba(244, 247, 251, .78);
+  line-height: 1.65;
 }
 
 .advanced-panel-enter-active,

@@ -55,6 +55,7 @@ function onNavigate(path: string | undefined, id: string) {
           v-for="link in navLinks"
           :key="link.id"
           class="primary-nav__item"
+          :class="{ 'primary-nav__item--support': link.id === 'region_guide' || link.id === 'help' }"
           :href="link.path || '#/'"
           @click.prevent="onNavigate(link.path, link.id)"
         >
@@ -155,6 +156,20 @@ function onNavigate(path: string | undefined, id: string) {
 .primary-nav__item:hover {
   border-color: rgba(255, 255, 255, 0.4);
   opacity: 0.9;
+}
+
+.primary-nav__item--support {
+  padding: 4px 9px;
+  border-color: transparent;
+  background: transparent;
+  font-size: 0.74rem;
+  opacity: 0.62;
+}
+
+.primary-nav__item--support:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.18);
+  opacity: 0.94;
 }
 
 .toolbar {

@@ -8,6 +8,9 @@ interface ImportMetaEnv {
   readonly VITE_API_GATE_KEY?: string
   readonly VITE_BFF_URL?: string
   readonly VITE_GATE_KEY?: string
+  readonly VITE_REGION_BFF_URL?: string
+  readonly VITE_ENABLE_REGION_POLLING?: string
+  readonly VITE_STATIC_PAGES?: string
 }
 
 interface ImportMeta {

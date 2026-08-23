@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+output/firebase-hosting
+output/firebase-hosting-dry-run
 *.local
 
 # Editor directories and files

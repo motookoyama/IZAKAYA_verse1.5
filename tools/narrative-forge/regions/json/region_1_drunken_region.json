@@ -1,0 +1,32 @@
+{
+  "region_id": "1_drunken_region",
+  "display_name": "The Sinking Owl’s Berth / 沈み梟の停泊地",
+  "summary": "A coastal sanctuary where the logic of the world dissolves into the spray of the digital sea. Here, weary navigators trade their corrupted logs for a pint of fermented insight under the watchful gaze of the neon-eyed owl.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "A colossal, half-sunken galleon converted into a multi-level tavern, illuminated by flickering emerald lanterns and the neon silhouette of a great owl perched atop the mainmast.",
+    "core_cast": [
+      {
+        "name": "Quartermaster Sim",
+        "trait": "Stoic and surgical in his speech, he offers 'technical support' for the soul, providing clarity to explorers who have lost their way in the vast simulation of life."
+      },
+      {
+        "name": "Vera the Salt-Seeker",
+        "trait": "Cynical but fiercely protective of her charts. She believes that the only way to find 'The Root' is to get drunk enough to see the glitches in the horizon."
+      }
+    ],
+    "rule": "The Bottle holds the Truth—no lies are permitted while drinking.\nNo steel shall be drawn while the Owl’s eyes glow blue.\nAll debts are settled in processed data or raw stories."
+  },
+  "production_dna": {
+    "visual_anchor": "A colossal, half-sunken galleon converted into a multi-level tavern, illuminated by flickering emerald lanterns and the neon silhouette of a great owl perched atop the mainmast.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/1_drunken_region/cover.webp",
+    "last_updated": "2026-02-18T19:22:30.039083+00:00"
+  }
+}

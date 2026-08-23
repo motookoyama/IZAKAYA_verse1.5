@@ -1,0 +1,367 @@
+{
+  "$schema": "izakaya.verse2.lineage_manifest.v1",
+  "product": {
+    "name": "IZAKAYA Verse",
+    "version": "2.0",
+    "lifecycle": "prelaunch",
+    "predecessor": "IZAKAYA Verse 1.6",
+    "predecessor_policy": "inherit_only"
+  },
+  "commercial_boundary": {
+    "sales_enabled": false,
+    "access_passes_enabled": false,
+    "external_ai_cost": "user_managed"
+  },
+  "regions": [
+    {
+      "region_id": "region_000_metatuber_region",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "dbb4042db64f05215ddfc5387f770e952c2f1e9943b816c55b76ed8eb8e151fc",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_000_metatuber_region.json",
+        "markdown": "tools/narrative-forge/regions/md/region_000_metatuber_region.md",
+        "review_status": "approved",
+        "v2_registration": [
+          {
+            "name": "エグゼ・マキナ",
+            "status": "official",
+            "source": "src/data/v2cards/エグゼ・マキナ.json",
+            "sha256": "3ba678b7278e3382e545afc3b92429f931f6bbf0a078fb6ba90aff6d504f6c96"
+          },
+          {
+            "name": "ココロエ・ヨウマ",
+            "status": "official",
+            "source": "src/data/v2cards/ココロエ・ヨウマ.json",
+            "sha256": "435bfa112106ae537705a87284610baa7b353eae1315545aea43dc66039958f3"
+          },
+          {
+            "name": "ダガミ・テンカイ",
+            "status": "official",
+            "source": "src/data/v2cards/ダガミ・テンカイ.json",
+            "sha256": "2c22bb98c04b70395fed00e4b32bec049d31dde70f7a88219d0a47f2e517109a"
+          },
+          {
+            "name": "ハワタリ・ザン",
+            "status": "official",
+            "source": "src/data/v2cards/ハワタリ・ザン.json",
+            "sha256": "c00faff224345d4c838e80d929d04b72287b0cc7021b6f10e2fa79a55409444d"
+          },
+          {
+            "name": "ハワワ",
+            "status": "official",
+            "source": "src/data/v2cards/ハワワ.json",
+            "sha256": "3ab4371fafa2062cbb5c3372f6cc3c5ef5a248afcd08782bb0fe6f50aab0b056"
+          },
+          {
+            "name": "ミヤコ・スイム",
+            "status": "official",
+            "source": "src/data/v2cards/ミヤコ・スイム.json",
+            "sha256": "a6883932ac79ec200021d5d9612c7e04e6f74aa93154ee837c2514039a33d7ca"
+          },
+          {
+            "name": "ヨリドコロ・ユイカ",
+            "status": "official",
+            "source": "src/data/v2cards/ヨリドコロ・ユイカ.json",
+            "sha256": "03e30d30c8a94137916d4e15646edf7fa95137bf083030571fdf08de6aa39860"
+          },
+          {
+            "name": "株式会社オシマシ",
+            "status": "official",
+            "source": "src/data/v2cards/株式会社オシマシ.json",
+            "sha256": "2997699fc98c8f4b00e8dfb1195ef8fc7ad1393bbb3ecde0751de5efd908bd2d"
+          }
+        ]
+      },
+      "readiness": {
+        "content": "present",
+        "review": "reviewed",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "520fdb8089a76c9f9976bd6b8b4db682c6553f92df92c0ee1dcd8a19fb47d6db",
+        "markdown": "5afe0488fc32b6f1b884c637643e951b79fdd139b3bbff0a80b7204dcb570a99",
+        "cards": [
+          {
+            "name": "エグゼ・マキナ",
+            "status": "official",
+            "source": "src/data/v2cards/エグゼ・マキナ.json",
+            "sha256": "3ba678b7278e3382e545afc3b92429f931f6bbf0a078fb6ba90aff6d504f6c96"
+          },
+          {
+            "name": "ココロエ・ヨウマ",
+            "status": "official",
+            "source": "src/data/v2cards/ココロエ・ヨウマ.json",
+            "sha256": "435bfa112106ae537705a87284610baa7b353eae1315545aea43dc66039958f3"
+          },
+          {
+            "name": "ダガミ・テンカイ",
+            "status": "official",
+            "source": "src/data/v2cards/ダガミ・テンカイ.json",
+            "sha256": "2c22bb98c04b70395fed00e4b32bec049d31dde70f7a88219d0a47f2e517109a"
+          },
+          {
+            "name": "ハワタリ・ザン",
+            "status": "official",
+            "source": "src/data/v2cards/ハワタリ・ザン.json",
+            "sha256": "c00faff224345d4c838e80d929d04b72287b0cc7021b6f10e2fa79a55409444d"
+          },
+          {
+            "name": "ハワワ",
+            "status": "official",
+            "source": "src/data/v2cards/ハワワ.json",
+            "sha256": "3ab4371fafa2062cbb5c3372f6cc3c5ef5a248afcd08782bb0fe6f50aab0b056"
+          },
+          {
+            "name": "ミヤコ・スイム",
+            "status": "official",
+            "source": "src/data/v2cards/ミヤコ・スイム.json",
+            "sha256": "a6883932ac79ec200021d5d9612c7e04e6f74aa93154ee837c2514039a33d7ca"
+          },
+          {
+            "name": "ヨリドコロ・ユイカ",
+            "status": "official",
+            "source": "src/data/v2cards/ヨリドコロ・ユイカ.json",
+            "sha256": "03e30d30c8a94137916d4e15646edf7fa95137bf083030571fdf08de6aa39860"
+          },
+          {
+            "name": "株式会社オシマシ",
+            "status": "official",
+            "source": "src/data/v2cards/株式会社オシマシ.json",
+            "sha256": "2997699fc98c8f4b00e8dfb1195ef8fc7ad1393bbb3ecde0751de5efd908bd2d"
+          }
+        ]
+      }
+    },
+    {
+      "region_id": "region_00_izakaya_help",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "509b237f80be3ef40a3ecb91bf2107299ad2e4f9dc40fb847cf3eb04a2a3d645",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_00_izakaya_help.json",
+        "markdown": "tools/narrative-forge/regions/md/region_00_izakaya_help.md",
+        "review_status": "unchecked",
+        "v2_registration": []
+      },
+      "readiness": {
+        "content": "present",
+        "review": "unchecked",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "e725d0dd60d4559eabce71cee13b40f2798bd9b180e7a6d7f48e1163fbdfdaa4",
+        "markdown": "5d3ba94347f5d8f551c952472764b05d621d60d9880dc6eea8ea9dec30dfe63c",
+        "cards": []
+      }
+    },
+    {
+      "region_id": "region_0_izakaya_dev",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "5aef32317f0a39e49798dc036b50859cb1214d38568ff2aa1376a3759fb7db3c",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_0_izakaya_dev.json",
+        "markdown": "tools/narrative-forge/regions/md/region_0_izakaya_dev.md",
+        "review_status": "unchecked",
+        "v2_registration": []
+      },
+      "readiness": {
+        "content": "present",
+        "review": "unchecked",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "da4c71cf73d98d138be0eb7487da6822cf912870ce3b4687d11c1a2fd3bf991d",
+        "markdown": "6e52254e429077168110ed98817e203fd3242d7f27601863da1ddcb292ebeafa",
+        "cards": []
+      }
+    },
+    {
+      "region_id": "region_1_drunken_region",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "b62034c2bbd03ec07633467e5552fc24a6e9027f875965ad8087c9e3d6d98e67",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_1_drunken_region.json",
+        "markdown": "tools/narrative-forge/regions/md/region_1_drunken_region.md",
+        "review_status": "approved",
+        "v2_registration": [
+          {
+            "name": "アンナ・ガルバルディ",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/アンナ・ガルバルディ.json",
+            "sha256": "262d8cade2954d93325d25407a856e870fc7d559e643e27585540a05b08ea98e"
+          },
+          {
+            "name": "マーロウ・ブラックフィン",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/マーロウ・ブラックフィン.json",
+            "sha256": "4265df06caec4c276369fa794c9148972ea2e11e883c6dddcc15986c8f7d04b6"
+          },
+          {
+            "name": "バルド・オールドキール",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/バルド・オールドキール.json",
+            "sha256": "45243dc1f5a3f4dfdb7088a7e6096a4cd1fac14461a350aa8b02a037618127a7"
+          }
+        ]
+      },
+      "readiness": {
+        "content": "present",
+        "review": "reviewed",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "f8433bee2302c9532a7c6646c2045495c44c82ac4115a6ec1701183dc5f7a69f",
+        "markdown": "d73473c0ab98473a522862156695174f7c1b0283fa4ec69ea2632e9cb08730cd",
+        "cards": [
+          {
+            "name": "アンナ・ガルバルディ",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/アンナ・ガルバルディ.json",
+            "sha256": "262d8cade2954d93325d25407a856e870fc7d559e643e27585540a05b08ea98e"
+          },
+          {
+            "name": "マーロウ・ブラックフィン",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/マーロウ・ブラックフィン.json",
+            "sha256": "4265df06caec4c276369fa794c9148972ea2e11e883c6dddcc15986c8f7d04b6"
+          },
+          {
+            "name": "バルド・オールドキール",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/バルド・オールドキール.json",
+            "sha256": "45243dc1f5a3f4dfdb7088a7e6096a4cd1fac14461a350aa8b02a037618127a7"
+          }
+        ]
+      }
+    },
+    {
+      "region_id": "region_2_ambient_region",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "18451ccb798f043d4b5fa602f7529f965a1d622b7d0a6b835cbd5448b154286d",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_2_ambient_region.json",
+        "markdown": "tools/narrative-forge/regions/md/region_2_ambient_region.md",
+        "review_status": "unchecked",
+        "v2_registration": []
+      },
+      "readiness": {
+        "content": "present",
+        "review": "unchecked",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "2a60cf81c7adffbdaff8632b7b03abae25b0a7b3537599fe91d5edbd21a68e7b",
+        "markdown": "818a52b1b4064d710493e703826c3c43b06097a8faf35ee5b76e1d213b9bf09a",
+        "cards": []
+      }
+    },
+    {
+      "region_id": "region_3_reincarnation_judgment",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "d5d5fe3a1edc88edc7b07bfeec6b0713b39cd6d3ec8e009b96fad3f3f9dfdab0",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_3_reincarnation_judgment.json",
+        "markdown": "tools/narrative-forge/regions/md/region_3_reincarnation_judgment.md",
+        "review_status": "unchecked",
+        "v2_registration": [
+          {
+            "name": "アストライア・リライト",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/アストライア・リライト.json",
+            "sha256": "ec651b9e9d2a70ab4d4a5a1eafdba78cb7594e543c5f3da9ba2507c475026c37"
+          },
+          {
+            "name": "ルミエル・セーフガード",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/ルミエル・セーフガード.json",
+            "sha256": "a2bcb1239fe6b1bf8b6c317a050cbf1d9da001156988f3d74b595155499e36a9"
+          },
+          {
+            "name": "ヴェルベット・ナイトフォール",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/ヴェルベット・ナイトフォール.json",
+            "sha256": "f60560d66ee1183574b87f1928db24faf1a4348f468cf5ab1010d786719983f0"
+          }
+        ]
+      },
+      "readiness": {
+        "content": "present",
+        "review": "unchecked",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "5f4934be0af4337bdc7cc565e51bd41f4c8953feca64dedfd11ad18ebabc2d77",
+        "markdown": "6f6947d1a654a86f363e0f19035b0a5c2dd1c97544b2a9e0b408a7151128da28",
+        "cards": [
+          {
+            "name": "アストライア・リライト",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/アストライア・リライト.json",
+            "sha256": "ec651b9e9d2a70ab4d4a5a1eafdba78cb7594e543c5f3da9ba2507c475026c37"
+          },
+          {
+            "name": "ルミエル・セーフガード",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/ルミエル・セーフガード.json",
+            "sha256": "a2bcb1239fe6b1bf8b6c317a050cbf1d9da001156988f3d74b595155499e36a9"
+          },
+          {
+            "name": "ヴェルベット・ナイトフォール",
+            "status": "generated_pending_review",
+            "source": "src/data/v2cards/ヴェルベット・ナイトフォール.json",
+            "sha256": "f60560d66ee1183574b87f1928db24faf1a4348f468cf5ab1010d786719983f0"
+          }
+        ]
+      }
+    },
+    {
+      "region_id": "region_6_mobility_region",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "72f7c29d0b5626f80c00db7c3686b6d0c79a39e9f02bc6d7dcfca6d7521b1448",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_6_mobility_region.json",
+        "markdown": "tools/narrative-forge/regions/md/region_6_mobility_region.md",
+        "review_status": "unchecked",
+        "v2_registration": []
+      },
+      "readiness": {
+        "content": "present",
+        "review": "unchecked",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "8acaa2e59e60fcd964a4a807f35e48bda1bf4b2334924ef11cec2a0590113ca5",
+        "markdown": "aa21bf42f118b38b1e8cd792c4d4d01065cb467bf41b165fc35d4b6c4574f826",
+        "cards": []
+      }
+    },
+    {
+      "region_id": "region_journey_region",
+      "inherited_from": "IZAKAYA Verse 1.6",
+      "region_version": "2.0.0-draft",
+      "content_hash": "87f65b047b80d061d036a20472545ef40f420e6a812c9ce2514f6fa752cc1178",
+      "source": {
+        "json": "tools/narrative-forge/regions/json/region_journey_region.json",
+        "markdown": "tools/narrative-forge/regions/md/region_journey_region.md",
+        "review_status": "unchecked",
+        "v2_registration": []
+      },
+      "readiness": {
+        "content": "present",
+        "review": "unchecked",
+        "public_release": "prelaunch"
+      },
+      "source_hashes": {
+        "json": "a7e3d923c8c2cbe5747e89b641d02e3c5322f18bf674e80b731eb3088cd8af0d",
+        "markdown": "7d6d315ce8d342eeb39f7da624c7eaa194b2444f612e9091e9928a89384af4a0",
+        "cards": []
+      }
+    }
+  ]
+}

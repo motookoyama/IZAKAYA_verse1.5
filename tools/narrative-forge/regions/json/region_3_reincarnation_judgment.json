@@ -1,0 +1,32 @@
+{
+  "region_id": "3_reincarnation_judgment",
+  "display_name": "The Gilded Archive of Reincarnation / 黄金の輪廻法廷",
+  "summary": "A soaring cathedral-archive where the 'corrupt pages' of human desire are weighed against celestial law. Here, reincarnation is not a gift, but a curated rewrite performed under the scrutiny of eternal ink and blinding light.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "Colossal floating ink brushes painting destiny onto the clouds, framed by obsidian pillars and blinding backlighting.",
+    "core_cast": [
+      {
+        "name": "The Corrupt Page",
+        "trait": "Refined, seductive, and deeply observant; they treat every soul's history as a masterpiece of transgression that deserves careful curation."
+      },
+      {
+        "name": "The Silent Jurist",
+        "trait": "Dispassionate and absolute; they represent the rigid framework that keeps the Archive from collapsing into total hedonism."
+      }
+    ],
+    "rule": "Desire is the primary ink of fate.\nSecrets are the only currency of the afterlife.\nAll sins must be transcribed before they can be purged."
+  },
+  "production_dna": {
+    "visual_anchor": "Colossal floating ink brushes painting destiny onto the clouds, framed by obsidian pillars and blinding backlighting.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/3_reincarnation_judgment/cover.webp",
+    "last_updated": "2026-02-18T19:22:30.266958+00:00"
+  }
+}

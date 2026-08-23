@@ -1,0 +1,120 @@
+{
+  "regions": {
+    "region_000_metatuber_region": {
+      "name": "メタチューバー",
+      "status": "official",
+      "note": "公式V2カード8枚。旧参照・未作成枠は制作過程の残骸として台帳から除外。",
+      "characters": [
+        {
+          "name": "エグゼ・マキナ",
+          "svg": "エグゼ_マキナ.svg",
+          "v2card": "エグゼ・マキナ.json",
+          "type": "character",
+          "status": "official"
+        },
+        {
+          "name": "ココロエ・ヨウマ",
+          "svg": "ココロエ_ヨウマ.svg",
+          "v2card": "ココロエ・ヨウマ.json",
+          "type": "character",
+          "status": "official"
+        },
+        {
+          "name": "ダガミ・テンカイ",
+          "svg": "ダガミ_テンカイ.svg",
+          "v2card": "ダガミ・テンカイ.json",
+          "type": "character",
+          "status": "official",
+          "imageUrl": "/v2card-images/ダガミ・テンカイ.png"
+        },
+        {
+          "name": "ハワタリ・ザン",
+          "svg": "ハワタリ_ザン.svg",
+          "v2card": "ハワタリ・ザン.json",
+          "type": "character",
+          "status": "official"
+        },
+        {
+          "name": "ハワワ",
+          "svg": "preview_ハワワ.svg",
+          "v2card": "ハワワ.json",
+          "type": "character",
+          "status": "official"
+        },
+        {
+          "name": "ミヤコ・スイム",
+          "svg": "ミヤコ_スイム.svg",
+          "v2card": "ミヤコ・スイム.json",
+          "type": "character",
+          "status": "official"
+        },
+        {
+          "name": "ヨリドコロ・ユイカ",
+          "svg": "ヨリドコロ_ユイカ.svg",
+          "v2card": "ヨリドコロ・ユイカ.json",
+          "type": "character",
+          "status": "official"
+        },
+        {
+          "name": "株式会社オシマシ",
+          "svg": "株式会社オシマシ.svg",
+          "v2card": "株式会社オシマシ.json",
+          "type": "organization",
+          "status": "official"
+        }
+      ]
+    },
+    "region_1_drunken_region": {
+      "name": "The Sinking Owl's Berth",
+      "characters": [
+        {
+          "name": "アンナ・ガルバルディ",
+          "svg": "アンナ_ガルバルディ.svg",
+          "v2card": "アンナ・ガルバルディ.json",
+          "status": "generated_pending_review",
+          "imageUrl": "/v2card-images/generated/アンナ_ガルバルディ_20260619073956.png"
+        },
+        {
+          "name": "マーロウ・ブラックフィン",
+          "svg": "マーロウ_ブラックフィン.svg",
+          "v2card": "マーロウ・ブラックフィン.json",
+          "status": "generated_pending_review",
+          "imageUrl": "/v2card-images/generated/マーロウ_ブラックフィン_20260619074339.png"
+        },
+        {
+          "name": "バルド・オールドキール",
+          "svg": "バルド_オールドキール.svg",
+          "v2card": "バルド・オールドキール.json",
+          "status": "generated_pending_review",
+          "imageUrl": "/v2card-images/generated/バルド_オールドキール_20260619074357.png"
+        }
+      ]
+    },
+    "region_3_reincarnation_judgment": {
+      "name": "The Gilded Archive of Reincarnation",
+      "characters": [
+        {
+          "name": "アストライア・リライト",
+          "svg": "アストライア_リライト.svg",
+          "v2card": "アストライア・リライト.json",
+          "status": "generated_pending_review",
+          "imageUrl": "/v2card-images/generated/アストライア_リライト_20260619074416.png"
+        },
+        {
+          "name": "ルミエル・セーフガード",
+          "svg": "ルミエル_セーフガード.svg",
+          "v2card": "ルミエル・セーフガード.json",
+          "status": "generated_pending_review",
+          "imageUrl": "/v2card-images/generated/ルミエル_セーフガード_20260619074432.png"
+        },
+        {
+          "name": "ヴェルベット・ナイトフォール",
+          "svg": "ヴェルベット_ナイトフォール.svg",
+          "v2card": "ヴェルベット・ナイトフォール.json",
+          "status": "generated_pending_review",
+          "imageUrl": "/v2card-images/generated/ヴェルベット_ナイトフォール_20260619074501.png"
+        }
+      ]
+    }
+  }
+}

@@ -1,33 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import libraryIcon from '../assets/icons/library.png'
 import { navigatorCards } from '../data/sampleCards'
 import { determineCardRole, type CardRole } from '../utils/cardRoles'
-import SessionPanel from '../components/SessionPanel.vue'
-import { useSession } from '../composables/useSession'
-import { FEATURE_USER_SHARE, FEATURE_USER_DOWNLOAD } from '../core/featureFlags'
-import { apiRequest } from '../utils/api'
-import { POINTS_PRICING } from '../constants/points'
-
-const { tm } = useI18n({ useScope: 'global' })
-
-const page = computed(() => tm('pages.library') as { title: string; lead: string[] })
-
-const session = useSession()
-const shareFeatureEnabled = FEATURE_USER_SHARE
-const downloadFeatureEnabled = FEATURE_USER_DOWNLOAD
-type LibraryTab = 'official' | 'shared'
-const activeTab = ref<LibraryTab>('official')
 
 type ProductType = 'character' | 'world' | 'scenario' | 'game'
-type PriceKind = 'free' | 'points' | 'private'
-
-type PriceInfo = {
-  kind: PriceKind
-  label: string
-}
-
 type LibraryProduct = {
   id: string
   title: string
@@ -37,818 +14,113 @@ type LibraryProduct = {
   type: ProductType
   official: boolean
   author: string
-  price: PriceInfo
   updated?: string
 }
 
-type SharedCardEntry = {
-  cardId: string
-  ownerId: string
-  displayName: string
-  sharedAt: string
-  downloads: number
-  lastDownloadAt: string | null
-}
-
+const PAGE_SIZE = 25
 const typeLabels: Record<ProductType, string> = {
-  character: 'キャラ（話す人）',
-  world: 'ワールド（舞台）',
-  scenario: 'シナリオ（事件）',
-  game: 'ゲーム（ルール）',
+  character: 'キャラ', world: 'ワールド', scenario: 'シナリオ', game: 'ゲーム',
 }
-
-const originLabels = {
-  official: 'Official',
-  community: 'Community',
-} as const
-
 const roleToType: Record<CardRole, ProductType> = {
-  CHARACTER: 'character',
-  WORLD: 'world',
-  SCENARIO: 'scenario',
-  UNKNOWN: 'character',
+  CHARACTER: 'character', WORLD: 'world', SCENARIO: 'scenario', UNKNOWN: 'character',
+}
+const libraryMeta: Record<string, Partial<Pick<LibraryProduct, 'type' | 'official' | 'author' | 'updated'>>> = {
+  'dr-orb': { type: 'character', official: true, author: 'IZAKAYA Ops' },
+  'ekaterina-menter': { type: 'world', official: true, author: 'IZAKAYA Ops', updated: '2025-12-01' },
+  'lady-maholo': { type: 'character', official: true, author: 'IZAKAYA Ops' },
+  'miss-madi': { type: 'character', official: false, author: 'Community Hub' },
+  'mammon-manager': { type: 'scenario', official: false, author: 'Mammon Office' },
+  'team-ozanari-dungeon': { type: 'game', official: true, author: 'Atelier Reverse' },
+  ekubo: { type: 'scenario', official: false, author: 'Ekubo Union' },
+  'hanaso-kawari': { type: 'world', official: true, author: 'IZAKAYA Ops' },
 }
 
-const libraryMeta: Record<
-  string,
-  Partial<Pick<LibraryProduct, 'type' | 'official' | 'author' | 'price' | 'updated'>>
-> = {
-  'dr-orb': { type: 'character', official: true, author: 'IZAKAYA Ops', price: { kind: 'free', label: 'FREE' } },
-  'ekaterina-menter': { type: 'world', official: true, author: 'IZAKAYA Ops', price: { kind: 'free', label: 'FREE' }, updated: '2025-12-01' },
-  'lady-maholo': { type: 'character', official: true, author: 'Meta Host', price: { kind: 'points', label: '80pt' } },
-  'miss-madi': { type: 'character', official: false, author: 'Community Hub', price: { kind: 'points', label: '120pt' } },
-  'mammon-manager': { type: 'scenario', official: false, author: 'Mammon Office', price: { kind: 'points', label: '240pt' } },
-  'team-ozanari-dungeon': { type: 'game', official: true, author: 'Atelier Reverse', price: { kind: 'points', label: '360pt' } },
-  ekubo: { type: 'scenario', official: false, author: 'Ekubo Union', price: { kind: 'free', label: 'FREE' } },
-  'hanaso-kawari': { type: 'world', official: true, author: 'IZAKAYA Ops', price: { kind: 'private', label: '非公開' } },
-}
-
-const librarianCards = ref<LibraryProduct[]>([])
-const librarianLoading = ref(false)
-
-async function fetchLibrarianLibrary() {
-  librarianLoading.value = true
-  try {
-    const response = await apiRequest<{ ok: boolean; items: any[] }>('/api/v1/librarian/cards')
-    if (response.ok) {
-      librarianCards.value = response.items.map(item => ({
-        id: item.id,
-        title: item.metadata?.name || item.id,
-        summary: item.metadata?.description || 'No description available.',
-        thumbnail: item.imageUrl || item.metadata?.image || '',
-        tags: item.metadata?.tags || [],
-        type: (item.metadata?.type as ProductType) || 'character',
-        official: false,
-        author: item.metadata?.author || 'Unknown',
-        price: { kind: 'free', label: 'BONDED' },
-        updated: item.updatedAt
-      }))
-    }
-  } catch (err) {
-    console.error('[LIBRARIAN] Fetch failed', err)
-  } finally {
-    librarianLoading.value = false
+const catalogue = computed<LibraryProduct[]>(() => navigatorCards.map((card) => {
+  const meta = libraryMeta[card.id] ?? {}
+  return {
+    id: card.id,
+    title: card.name,
+    summary: card.summary,
+    thumbnail: card.avatar,
+    tags: card.tags,
+    type: meta.type ?? roleToType[determineCardRole(card)],
+    official: meta.official ?? true,
+    author: meta.author ?? 'IZAKAYA Ops',
+    updated: meta.updated,
   }
-}
-
-const catalogue = computed<LibraryProduct[]>(() => {
-  const staticCards = navigatorCards.map((card) => {
-    const meta = libraryMeta[card.id] ?? {}
-    const resolvedType = meta.type ?? roleToType[determineCardRole(card)]
-    const price = meta.price ?? { kind: 'free', label: 'FREE' }
-    return {
-      id: card.id,
-      title: card.name,
-      summary: card.summary,
-      thumbnail: card.avatar,
-      tags: card.tags,
-      type: resolvedType,
-      official: meta.official ?? true,
-      author: meta.author ?? (meta.official === false ? 'Community Creator' : 'IZAKAYA Ops'),
-      price,
-      updated: meta.updated,
-    }
-  })
-  return [...staticCards, ...librarianCards.value]
-})
+}))
 
 const searchQuery = ref('')
 const sortKey = ref<'title' | 'recent'>('title')
 const typeFilter = ref<'all' | ProductType>('all')
 const originFilter = ref<'all' | 'official' | 'community'>('all')
-const priceFilter = ref<'all' | PriceKind>('all')
-const sharedEntries = ref<SharedCardEntry[]>([])
-const sharedLoading = ref(false)
-const sharedError = ref<string | null>(null)
-const sharedMessage = ref<string | null>(null)
-const downloadCost = POINTS_PRICING.library.baseDownload
-
-const filteredProducts = computed(() => {
-  const text = searchQuery.value.trim().toLowerCase()
-  let items = catalogue.value.filter((product) => {
-    const matchesSearch =
-      !text ||
-      [product.title, product.summary, product.author, ...product.tags]
-        .filter(Boolean)
-        .some((fragment) => fragment.toLowerCase().includes(text))
-    const matchesType = typeFilter.value === 'all' || product.type === typeFilter.value
-    const matchesOrigin =
-      originFilter.value === 'all' ||
-      (originFilter.value === 'official' ? product.official : !product.official)
-    const matchesPrice = priceFilter.value === 'all' || product.price.kind === priceFilter.value
-    return matchesSearch && matchesType && matchesOrigin && matchesPrice
-  })
-
-  if (sortKey.value === 'title') {
-    items = [...items].sort((a, b) => a.title.localeCompare(b.title))
-  } else {
-    items = [...items].sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''))
-  }
-
-  return items
-})
-
+const pageIndex = ref(0)
 const selectedProduct = ref<LibraryProduct | null>(null)
 const overlayOpen = ref(false)
 
-watch(filteredProducts, (items) => {
-  if (!items.length || !selectedProduct.value || !items.some((item) => item.id === selectedProduct.value?.id)) {
-    selectedProduct.value = null
-    overlayOpen.value = false
-  }
+const filteredProducts = computed(() => {
+  const text = searchQuery.value.trim().toLocaleLowerCase()
+  const items = catalogue.value.filter((product) => {
+    const searchable = [product.title, product.summary, product.author, ...product.tags].join(' ').toLocaleLowerCase()
+    const matchesText = !text || searchable.includes(text)
+    const matchesType = typeFilter.value === 'all' || product.type === typeFilter.value
+    const matchesOrigin = originFilter.value === 'all' || (originFilter.value === 'official' ? product.official : !product.official)
+    return matchesText && matchesType && matchesOrigin
+  })
+  return [...items].sort((a, b) => sortKey.value === 'recent'
+    ? (b.updated ?? '').localeCompare(a.updated ?? '') || a.title.localeCompare(b.title)
+    : a.title.localeCompare(b.title))
 })
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredProducts.value.length / PAGE_SIZE)))
+const visibleProducts = computed(() => filteredProducts.value.slice(pageIndex.value * PAGE_SIZE, (pageIndex.value + 1) * PAGE_SIZE))
 
-import { onMounted } from 'vue'
+watch([searchQuery, sortKey, typeFilter, originFilter], () => { pageIndex.value = 0 })
+watch(totalPages, (count) => { if (pageIndex.value >= count) pageIndex.value = count - 1 })
 
-onMounted(() => {
-  fetchLibrarianLibrary()
-  if (activeTab.value === 'shared' && shareFeatureEnabled) {
-    fetchSharedLibrary()
-  }
-})
-
-watch(activeTab, (tab) => {
-  if (tab === 'shared' && shareFeatureEnabled && !sharedEntries.value.length) {
-    fetchSharedLibrary()
-  }
-})
-
-function selectProduct(product: LibraryProduct) {
-  selectedProduct.value = product
-  overlayOpen.value = true
-}
-
-function closeOverlay() {
-  overlayOpen.value = false
-}
-
-async function fetchSharedLibrary() {
-  if (!shareFeatureEnabled) return
-  sharedLoading.value = true
-  sharedError.value = null
-  try {
-    const response = await apiRequest<{ ok: boolean; entries: SharedCardEntry[] }>('/library/shared')
-    sharedEntries.value = response.entries.map((entry) => ({
-      cardId: entry.cardId,
-      ownerId: entry.ownerId,
-      displayName: entry.displayName,
-      sharedAt: entry.sharedAt,
-      downloads: entry.downloads ?? 0,
-      lastDownloadAt: entry.lastDownloadAt ?? null,
-    }))
-  } catch (error) {
-    sharedError.value = error instanceof Error ? error.message : '共有ライブラリの取得に失敗しました'
-  } finally {
-    sharedLoading.value = false
-  }
-}
-
-async function downloadSharedCard(entry: SharedCardEntry) {
-  if (!shareFeatureEnabled || !downloadFeatureEnabled) {
-    sharedMessage.value = 'この機能は現在利用できません'
-    return
-  }
-  if (session.state.status !== 'ready') {
-    sharedMessage.value = 'ログインしてください'
-    return
-  }
-  try {
-    const response = await apiRequest<{ ok: boolean; cardId: string; card: any; balance: number; downloads: number }>(
-      `/library/shared/${entry.cardId}/download`,
-      {
-        method: 'POST',
-      }
-    )
-    const blob = new Blob([JSON.stringify(response.card, null, 2)], { type: 'application/json' })
-    triggerDownload(`${entry.displayName || entry.cardId}.json`, blob)
-    entry.downloads = response.downloads ?? entry.downloads + 1
-    entry.lastDownloadAt = new Date().toISOString()
-    sharedMessage.value = `ダウンロードしました（残高: ${response.balance}pt）`
-  } catch (error) {
-    sharedMessage.value = error instanceof Error ? error.message : 'ダウンロードに失敗しました'
-  }
-}
-
-function triggerDownload(filename: string, blob: Blob) {
-  const href = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = href
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(href)
-}
-
-const typeFilterOptions: Array<{ label: string; value: typeof typeFilter.value }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Character', value: 'character' },
-  { label: 'World', value: 'world' },
-  { label: 'Scenario', value: 'scenario' },
-  { label: 'Game', value: 'game' },
-]
-
-const originFilterOptions: Array<{ label: string; value: typeof originFilter.value }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Official', value: 'official' },
-  { label: 'Community', value: 'community' },
-]
-
-const priceFilterOptions: Array<{ label: string; value: typeof priceFilter.value }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Free', value: 'free' },
-  { label: 'Paid', value: 'points' },
-  { label: 'Private', value: 'private' },
-]
+function selectProduct(product: LibraryProduct) { selectedProduct.value = product; overlayOpen.value = true }
+function closeOverlay() { overlayOpen.value = false }
+function previousPage() { pageIndex.value = Math.max(0, pageIndex.value - 1) }
+function nextPage() { pageIndex.value = Math.min(totalPages.value - 1, pageIndex.value + 1) }
 </script>
 
 <template>
-  <div class="library">
+  <main class="library">
     <header class="library__hero">
       <img class="library__icon" :src="libraryIcon" alt="Library" />
-      <h1>{{ page.title }}</h1>
+      <p class="library__eyebrow">V2 CATALOG · PRELAUNCH</p>
+      <h1>ライブラリー</h1>
+      <p>公開済み・審査状態のカードを、外部AIへ持ち出す前に確認する一覧です。ユーザー登録・共有・ダウンロードはまだ開始していません。</p>
     </header>
 
-    <div v-if="shareFeatureEnabled" class="library__tabs">
-      <button type="button" :class="{ active: activeTab === 'official' }" @click="activeTab = 'official'">
-        Official
-      </button>
-      <button type="button" :class="{ active: activeTab === 'shared' }" @click="activeTab = 'shared'">
-        User Shared
-      </button>
-    </div>
-
-    <section v-if="activeTab === 'official'" class="controls">
-      <label class="controls__field">
-        <span>Search</span>
-        <input v-model="searchQuery" type="search" :placeholder="$t('pages.library.search', 'キーワード検索')" />
-      </label>
-      <label class="controls__field">
-        <span>Sort</span>
-        <select v-model="sortKey">
-          <option value="title">{{ $t('pages.library.sortTitle', 'タイトル順') }}</option>
-          <option value="recent">{{ $t('pages.library.sortRecent', '最近追加') }}</option>
-        </select>
-      </label>
-      <label class="controls__field">
-        <span>Type</span>
-        <select v-model="typeFilter">
-          <option v-for="option in typeFilterOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
-      <label class="controls__field">
-        <span>Origin</span>
-        <select v-model="originFilter">
-          <option v-for="option in originFilterOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
-      <label class="controls__field">
-        <span>Price</span>
-        <select v-model="priceFilter">
-          <option v-for="option in priceFilterOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
+    <section class="controls" aria-label="ライブラリー検索と並び替え">
+      <label class="controls__search"><span>検索</span><input v-model="searchQuery" type="search" placeholder="カード名・タグ・説明で検索" /></label>
+      <label><span>並び替え</span><select v-model="sortKey"><option value="title">タイトル順</option><option value="recent">更新日順</option></select></label>
+      <label><span>種類</span><select v-model="typeFilter"><option value="all">すべて</option><option v-for="(label, value) in typeLabels" :key="value" :value="value">{{ label }}</option></select></label>
+      <label><span>出所</span><select v-model="originFilter"><option value="all">すべて</option><option value="official">Official</option><option value="community">Community</option></select></label>
+      <p class="controls__count">{{ filteredProducts.length }} 件 / 1ページ {{ PAGE_SIZE }} 件</p>
     </section>
 
-    <section v-if="activeTab === 'official'" class="catalogue">
-      <p v-if="!filteredProducts.length" class="catalogue__empty">
-        {{ $t('pages.library.empty', '条件に一致するカードがありません。フィルターを緩めてください。') }}
-      </p>
-
-      <article
-        v-for="product in filteredProducts"
-        :key="product.id"
-        class="product-card"
-        :class="{ 'is-selected': selectedProduct?.id === product.id }"
-        @click="selectProduct(product)"
-      >
-        <div class="product-card__thumb">
-          <img :src="product.thumbnail" :alt="product.title" />
-          <span class="badge badge--type" :data-type="product.type">{{ typeLabels[product.type] }}</span>
-          <span
-            class="badge badge--origin"
-            :class="product.official ? 'badge--official' : 'badge--community'"
-          >
-            {{ product.official ? originLabels.official : originLabels.community }}
-          </span>
-        </div>
-        <div class="product-card__body">
-          <div class="product-card__title">
-            <h3>{{ product.title }}</h3>
-            <span v-if="product.updated" class="product-card__updated">{{ product.updated }}</span>
-          </div>
-          <p class="product-card__author">{{ product.author }}</p>
-          <p class="product-card__summary">{{ product.summary }}</p>
-          <ul class="product-card__tags">
-            <li v-for="tag in product.tags" :key="tag">{{ tag }}</li>
-          </ul>
-        </div>
-        <footer class="product-card__footer">
-          <span class="product-card__price" :data-kind="product.price.kind">{{ product.price.label }}</span>
-          <button type="button">{{ $t('pages.library.open', '開く') }}</button>
-        </footer>
+    <section class="catalogue" aria-live="polite">
+      <p v-if="!filteredProducts.length" class="catalogue__empty">条件に一致するカードがありません。検索語かフィルターを変更してください。</p>
+      <article v-for="product in visibleProducts" :key="product.id" class="product-card" :class="{ 'is-selected': selectedProduct?.id === product.id }" tabindex="0" @click="selectProduct(product)" @keydown.enter="selectProduct(product)">
+        <div class="product-card__thumb"><img :src="product.thumbnail" :alt="product.title" /><span class="badge badge--type">{{ typeLabels[product.type] }}</span><span class="badge" :class="product.official ? 'badge--official' : 'badge--community'">{{ product.official ? 'Official' : 'Community' }}</span></div>
+        <div class="product-card__body"><h2>{{ product.title }}</h2><p>{{ product.author }}</p><p class="product-card__summary">{{ product.summary }}</p></div>
+        <footer><span>PRELAUNCH</span><button type="button" @click.stop="selectProduct(product)">詳細</button></footer>
       </article>
     </section>
 
-    <section v-if="shareFeatureEnabled && activeTab === 'shared'" class="shared-library">
-      <SessionPanel />
-      <p class="shared-library__note">ダウンロードには {{ downloadCost }}pt 消費します。</p>
-      <p v-if="sharedError" class="shared-library__error">{{ sharedError }}</p>
-      <p v-if="sharedMessage" class="shared-library__status">{{ sharedMessage }}</p>
-      <p v-if="sharedLoading" class="shared-library__status">共有ライブラリを読み込み中...</p>
-      <p v-else-if="!sharedEntries.length" class="shared-library__empty">共有カードはまだありません。</p>
-      <ul v-else class="shared-library__list">
-        <li v-for="entry in sharedEntries" :key="entry.cardId" class="shared-library__item">
-          <div>
-            <h3>{{ entry.displayName }}</h3>
-            <p>提供者: {{ entry.ownerId }}</p>
-            <p>
-              共有: {{ new Date(entry.sharedAt).toLocaleString() }} / DL: {{ entry.downloads }} /
-              最終DL: {{ entry.lastDownloadAt ? new Date(entry.lastDownloadAt).toLocaleString() : '---' }}
-            </p>
-          </div>
-          <button type="button" class="shared-library__btn" @click="downloadSharedCard(entry)">
-            {{ downloadFeatureEnabled ? `${downloadCost}ptでDL` : 'DL停止中' }}
-          </button>
-        </li>
-      </ul>
-    </section>
+    <nav v-if="totalPages > 1" class="pagination" aria-label="ページ送り"><button type="button" :disabled="pageIndex === 0" @click="previousPage">前へ</button><span>{{ pageIndex + 1 }} / {{ totalPages }}</span><button type="button" :disabled="pageIndex + 1 === totalPages" @click="nextPage">次へ</button></nav>
 
-    <teleport to="body">
-      <div v-if="overlayOpen && selectedProduct" class="product-overlay" @click.self="closeOverlay">
-        <article class="product-detail">
-          <button type="button" class="product-detail__close" @click="closeOverlay">×</button>
-          <div class="product-detail__media">
-            <img :src="selectedProduct.thumbnail" :alt="selectedProduct.title" />
-            <div class="product-detail__badges">
-              <span class="badge badge--type" :data-type="selectedProduct.type">
-                {{ typeLabels[selectedProduct.type] }}
-              </span>
-              <span
-                class="badge badge--origin"
-                :class="selectedProduct.official ? 'badge--official' : 'badge--community'"
-              >
-                {{ selectedProduct.official ? originLabels.official : originLabels.community }}
-              </span>
-            </div>
-          </div>
-          <div class="product-detail__body">
-            <header>
-              <h2>{{ selectedProduct.title }}</h2>
-              <p class="product-detail__author">{{ selectedProduct.author }}</p>
-              <p class="product-detail__price" :data-kind="selectedProduct.price.kind">
-                {{ selectedProduct.price.label }}
-              </p>
-            </header>
-            <p class="product-detail__summary">{{ selectedProduct.summary }}</p>
-            <ul class="product-detail__tags">
-              <li v-for="tag in selectedProduct.tags" :key="tag">{{ tag }}</li>
-            </ul>
-            <div class="product-detail__actions">
-              <button type="button" class="primary">{{ $t('pages.library.open', '開く') }}</button>
-              <button type="button" class="ghost">{{ $t('pages.library.save', '保存') }}</button>
-              <button
-                type="button"
-                class="secondary"
-                :disabled="selectedProduct.price.kind === 'private'"
-              >
-                {{ selectedProduct.price.kind === 'free' ? $t('pages.library.download', 'ダウンロード') : selectedProduct.price.label }}
-              </button>
-            </div>
-          </div>
-        </article>
-      </div>
-    </teleport>
-  </div>
+    <teleport to="body"><div v-if="overlayOpen && selectedProduct" class="product-overlay" @click.self="closeOverlay"><article class="product-detail"><button class="product-detail__close" type="button" aria-label="閉じる" @click="closeOverlay">×</button><img :src="selectedProduct.thumbnail" :alt="selectedProduct.title" /><div><p class="library__eyebrow">{{ typeLabels[selectedProduct.type] }} · {{ selectedProduct.official ? 'OFFICIAL' : 'COMMUNITY' }}</p><h2>{{ selectedProduct.title }}</h2><p>{{ selectedProduct.author }}</p><p>{{ selectedProduct.summary }}</p><ul><li v-for="tag in selectedProduct.tags" :key="tag">{{ tag }}</li></ul><p class="product-detail__notice">このカードはPRELAUNCHの閲覧用です。ダウンロード、住民カタログ登録、共有は商業・審査プロトコルの成立後に別途案内します。</p></div></article></div></teleport>
+  </main>
 </template>
 
 <style scoped>
-.library {
-  display: grid;
-  gap: 32px;
-  padding-bottom: 48px;
-}
-
-.library__hero {
-  display: grid;
-  gap: 12px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(12, 18, 32, 0.45);
-  padding: clamp(24px, 4vw, 40px);
-  position: relative;
-}
-
-.library__hero h1 {
-  margin: 0;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-}
-
-.library__icon {
-  position: absolute;
-  top: clamp(12px, 2vw, 24px);
-  right: clamp(12px, 3vw, 32px);
-  width: clamp(60px, 7vw, 92px);
-  height: auto;
-}
-
-.library__tabs {
-  display: flex;
-  gap: 12px;
-  margin: 1.5rem 0;
-}
-
-.library__tabs button {
-  flex: 1 1 160px;
-  padding: 0.6rem 1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
-.library__tabs button.active {
-  background: linear-gradient(90deg, #63e6ff, #5c7cfa);
-  color: #030812;
-  font-weight: 600;
-}
-
-.controls {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  align-items: end;
-  background: rgba(9, 12, 24, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  padding: 20px;
-}
-
-.controls__field {
-  display: grid;
-  gap: 6px;
-  font-size: 0.85rem;
-  opacity: 0.8;
-}
-
-.controls__field input,
-.controls__field select {
-  width: 100%;
-}
-
-.catalogue {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.catalogue__empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 32px;
-  border-radius: 18px;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  background: rgba(10, 12, 24, 0.6);
-}
-
-.product-card {
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  border: 1px solid transparent;
-  background: rgba(12, 18, 32, 0.7);
-  overflow: hidden;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-  cursor: pointer;
-}
-
-.product-card.is-selected {
-  border-color: rgba(255, 255, 255, 0.45);
-  transform: translateY(-2px);
-}
-
-.product-card__thumb {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-}
-
-.product-card__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.badge {
-  position: absolute;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 600;
-}
-
-.badge--type {
-  left: 8px;
-  bottom: 8px;
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.badge--origin {
-  right: 8px;
-  top: 8px;
-}
-
-.badge--official {
-  background: #51d1ff;
-  color: #011627;
-}
-
-.badge--community {
-  background: #ff96dc;
-  color: #240726;
-}
-
-.product-card__body {
-  display: grid;
-  gap: 8px;
-  padding: 16px 18px 0;
-}
-
-.product-card__title {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.product-card__title h3 {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
-.product-card__updated {
-  font-size: 0.78rem;
-  opacity: 0.6;
-}
-
-.product-card__author {
-  font-size: 0.85rem;
-  opacity: 0.75;
-}
-
-.product-card__summary {
-  font-size: 0.9rem;
-  line-height: 1.35;
-  opacity: 0.9;
-  max-height: 4.4em;
-  overflow: hidden;
-}
-
-.product-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.product-card__tags li {
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.product-card__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 18px 18px;
-  gap: 12px;
-}
-
-.product-card__price {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.product-card__price[data-kind='free'] {
-  color: #9effb8;
-}
-
-.product-card__price[data-kind='points'] {
-  color: #ffd866;
-}
-
-.product-card__price[data-kind='private'] {
-  color: #ff6b6b;
-}
-
-.product-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(3, 6, 12, 0.82);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(16px, 4vw, 48px);
-  z-index: 30;
-}
-
-.product-detail {
-  display: grid;
-  grid-template-columns: minmax(280px, 1fr) 2fr;
-  gap: 32px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(8, 8, 18, 0.9);
-  padding: clamp(24px, 4vw, 36px);
-  position: relative;
-  max-width: 1080px;
-  width: 100%;
-}
-
-@media (max-width: 900px) {
-  .product-detail {
-    grid-template-columns: 1fr;
-  }
-}
-
-.product-detail__close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 1.4rem;
-  cursor: pointer;
-}
-
-.product-detail__media {
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-}
-
-.product-detail__media img {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-}
-
-.product-detail__badges {
-  position: absolute;
-  display: flex;
-  gap: 8px;
-  top: 12px;
-  left: 12px;
-}
-
-.product-detail__body {
-  display: grid;
-  gap: 16px;
-}
-
-.product-detail__author {
-  margin: 0;
-  opacity: 0.7;
-}
-
-.product-detail__price {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.product-detail__price[data-kind='free'] {
-  color: #9effb8;
-}
-
-.product-detail__price[data-kind='points'] {
-  color: #ffd866;
-}
-
-.product-detail__price[data-kind='private'] {
-  color: #ff6b6b;
-}
-
-.product-detail__summary {
-  line-height: 1.5;
-  opacity: 0.95;
-}
-
-.product-detail__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.product-detail__tags li {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.product-detail__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-@media (max-width: 640px) {
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .product-detail__actions {
-    flex-direction: column;
-  }
-}
-
-.shared-library {
-  margin-top: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  padding: clamp(18px, 3vw, 28px);
-  background: rgba(7, 10, 22, 0.78);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.shared-library__note,
-.shared-library__status {
-  margin: 0;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.shared-library__error {
-  color: #ff8e8e;
-}
-
-.shared-library__empty {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.shared-library__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.shared-library__item {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.shared-library__btn {
-  padding: 0.65rem 1.3rem;
-  border-radius: 12px;
-  border: none;
-  background: linear-gradient(90deg, #63e6ff, #5c7cfa);
-  color: #041021;
-  font-weight: 600;
-  cursor: pointer;
-}
+.library { display: grid; gap: 20px; padding-bottom: 48px; }
+.library__hero, .controls, .product-card { border: 1px solid rgba(255,255,255,.12); background: rgba(10,16,30,.68); border-radius: 16px; }
+.library__hero { position: relative; padding: clamp(20px,3vw,30px); }.library__hero h1 { margin: 0; }.library__hero > p:last-child { max-width: 760px; margin: 8px 0 0; color: rgba(255,255,255,.75); line-height: 1.55; }.library__eyebrow { margin: 0 0 6px; color: #80e5ff; font-size: .74rem; letter-spacing: .12em; }.library__icon { position: absolute; right: 20px; top: 18px; width: 64px; }
+.controls { display: grid; grid-template-columns: 2fr repeat(3, minmax(120px,1fr)); gap: 12px; align-items: end; padding: 14px; }.controls label { display: grid; gap: 5px; font-size: .78rem; color: rgba(255,255,255,.78); }.controls input, .controls select { box-sizing: border-box; width: 100%; min-height: 36px; border: 1px solid rgba(255,255,255,.18); border-radius: 8px; background: rgba(3,7,16,.75); color: inherit; padding: 7px; }.controls__count { margin: 0; grid-column: 1 / -1; color: rgba(255,255,255,.62); font-size: .8rem; }
+.catalogue { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }.catalogue__empty { grid-column: 1 / -1; padding: 28px; text-align: center; border: 1px dashed rgba(255,255,255,.2); border-radius: 14px; }.product-card { min-width: 0; overflow: hidden; cursor: pointer; transition: border-color .18s ease, transform .18s ease; }.product-card:hover, .product-card.is-selected { border-color: #80e5ff; transform: translateY(-2px); }.product-card__thumb { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: #07111e; }.product-card__thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }.badge { position: absolute; top: 6px; right: 6px; border-radius: 999px; padding: 3px 6px; color: #07111e; font-size: .62rem; font-weight: 800; background: #80e5ff; }.badge--type { top: auto; bottom: 6px; left: 6px; right: auto; color: white; background: rgba(0,0,0,.68); }.badge--community { background: #ff9cdb; }.product-card__body { padding: 9px 10px 4px; }.product-card__body h2 { margin: 0; font-size: .9rem; line-height: 1.25; }.product-card__body > p:not(.product-card__summary) { margin: 5px 0; color: rgba(255,255,255,.6); font-size: .72rem; }.product-card__summary { display: -webkit-box; overflow: hidden; margin: 0; color: rgba(255,255,255,.78); font-size: .76rem; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }.product-card footer { display: flex; justify-content: space-between; align-items: center; gap: 5px; padding: 8px 10px 10px; color: #ffd866; font-size: .67rem; }.product-card footer button, .pagination button { border: 1px solid rgba(128,229,255,.55); border-radius: 7px; background: transparent; color: #80e5ff; padding: 5px 7px; cursor: pointer; }.pagination { display: flex; justify-content: center; align-items: center; gap: 12px; }.pagination button:disabled { opacity: .4; cursor: not-allowed; }
+.product-overlay { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: rgba(3,6,12,.86); }.product-detail { position: relative; display: grid; grid-template-columns: minmax(180px, .8fr) 1.2fr; gap: 20px; width: min(780px,100%); max-height: 90vh; overflow: auto; padding: 24px; border: 1px solid rgba(255,255,255,.16); border-radius: 18px; background: #101828; }.product-detail > img { width: 100%; border-radius: 12px; }.product-detail h2 { margin: 0; }.product-detail ul { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; list-style: none; }.product-detail li { border-radius: 999px; padding: 4px 7px; background: rgba(255,255,255,.1); font-size: .78rem; }.product-detail__close { position: absolute; top: 8px; right: 10px; border: 0; background: none; color: inherit; font-size: 1.5rem; cursor: pointer; }.product-detail__notice { border-left: 3px solid #ffd866; padding-left: 10px; color: rgba(255,255,255,.78); line-height: 1.5; }
+@media (max-width: 1050px) { .catalogue { grid-template-columns: repeat(4, minmax(0,1fr)); } .controls { grid-template-columns: repeat(2,minmax(0,1fr)); }.controls__search { grid-column: span 2; } } @media (max-width: 720px) { .catalogue { grid-template-columns: repeat(3,minmax(0,1fr)); } .product-detail { grid-template-columns: 1fr; } } @media (max-width: 480px) { .catalogue { grid-template-columns: repeat(2,minmax(0,1fr)); } .controls { grid-template-columns: 1fr; }.controls__search { grid-column: auto; } }
 </style>

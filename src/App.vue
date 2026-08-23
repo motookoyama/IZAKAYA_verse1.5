@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
 import TopNav from './components/TopNav.vue'
 import HomePage from './pages/HomePage.vue'
-import ChatPage from './pages/ChatPage.vue'
-import MetaShopPage from './pages/MetaShopPage.vue'
+import DirectByokPlayPage from './pages/DirectByokPlayPage.vue'
 import LibraryPage from './pages/LibraryPage.vue'
 import HelpPage from './pages/HelpPage.vue'
-import AdminPage from './pages/AdminPage.vue'
-import ReincarnationPage from './pages/ReincarnationPage.vue'
-import IZBackyard from './pages/IZBackyard.vue'
 import RegionSelectPage from './pages/RegionSelectPage.vue'
 import RegionDetailPage from './pages/RegionDetailPage.vue'
 import RegionGuidePage from './pages/RegionGuidePage.vue'
+import VerseIntroPage from './pages/VerseIntroPage.vue'
 import { useTheme } from './composables/useTheme'
 import { isSupported, persistLocale, type Locale } from './plugins/i18n'
 import type { HeroContent, HelpContent } from './types/home'
 import { PAGE_PATHS, resolvePathForNav, navigateTo, type PageKey } from './constants/navigation'
-import { useAccount } from './composables/useAccount'
 // import { useRegion } from './composables/useRegion'
 
-const ROUTES: Record<PageKey, any> = {
+const ROUTES: Partial<Record<PageKey, Component>> = {
   home: HomePage,
-  chat: ChatPage,
-  metacapture: MetaShopPage,
+  chat: DirectByokPlayPage,
   library: LibraryPage,
   help: HelpPage,
-  admin: AdminPage,
-  reincarnation: ReincarnationPage,
-  backyard: IZBackyard,
   regions: RegionSelectPage,
   region_detail: RegionDetailPage,
   region_guide: RegionGuidePage,
+  verse_intro: VerseIntroPage,
+}
+
+// These are retained as local/backstage tools. They are intentionally absent
+// from the static Pages surface until their own commercial/runtime gate exists.
+if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_INTERNAL_ROUTES === 'true') {
+  ROUTES.admin = defineAsyncComponent(() => import('./pages/AdminPage.vue'))
+  ROUTES.reincarnation = defineAsyncComponent(() => import('./pages/ReincarnationPage.vue'))
+  ROUTES.backyard = defineAsyncComponent(() => import('./pages/IZBackyard.vue'))
 }
 
 const { themes, themeId, setTheme } = useTheme()
 const { t, tm, locale } = useI18n({ useScope: 'global' })
-const { state: accountState, formattedPoints } = useAccount()
 // const { activeRegion } = useRegion() // Initialize Region System - Temporarily disabled to fix build
 
 const hero = computed<HeroContent>(() => tm('home.hero') as HeroContent)
@@ -51,10 +51,21 @@ const navLinks = computed(() => {
   ]
   const dedup = new Map<string, { id: string; label: string; path: string }>()
   merged.forEach((item) => dedup.set(item.id, item))
-  return [
+  const links = [
     { id: 'home', label: t('navigation.home'), path: PAGE_PATHS.home },
     ...Array.from(dedup.values()),
   ]
+  // The public entry is a world-first experience. Guides and Help remain
+  // available, but are recovery links rather than the first instruction.
+  const priority: Record<string, number> = {
+    home: 0,
+    regions: 10,
+    chat: 20,
+    library: 30,
+    region_guide: 90,
+    help: 100,
+  }
+  return links.sort((left, right) => (priority[left.id] ?? 50) - (priority[right.id] ?? 50))
 })
 
 const languageOptions: { value: Locale; label: string }[] = [
@@ -88,18 +99,13 @@ const overlayHelpSections = computed(() => {
   }
   return sections
 })
-const overlayActivities = computed(() => accountState.recentActivities.slice(0, 4))
 type OverlayLink = { id: string; label: string; path: string }
 
 const overlayLinks = computed<OverlayLink[]>(() => [
-  { id: 'chat', label: t('overlay.links.chat'), path: PAGE_PATHS.chat },
-  { id: 'reincarnation', label: t('overlay.links.reincarnation'), path: PAGE_PATHS.reincarnation },
-  { id: 'library', label: t('overlay.links.library'), path: PAGE_PATHS.library },
   { id: 'regions', label: t('navigation.regions'), path: PAGE_PATHS.regions },
-  { id: 'region_guide', label: '遊び方', path: PAGE_PATHS.region_guide },
-  { id: 'metacapture', label: t('overlay.links.metacapture'), path: PAGE_PATHS.metacapture },
+  { id: 'library', label: t('overlay.links.library'), path: PAGE_PATHS.library },
   { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.home },
-  { id: 'admin', label: t('overlay.links.admin'), path: PAGE_PATHS.admin },
+  { id: 'region_guide', label: '遊び方', path: PAGE_PATHS.region_guide },
 ])
 
 function onThemeChange(input: string | Event) {
@@ -200,14 +206,17 @@ function onNavigate(target: string) {
             <h2>{{ t('overlay.title') }}</h2>
             <p>{{ t('overlay.subtitle') }}</p>
           </header>
-          <section class="overlay__section">
-            <h3>{{ t('overlay.statusTitle') }}</h3>
-            <p class="overlay__points">{{ formattedPoints }}</p>
-            <p class="overlay__user">{{ accountState.user.name }} · {{ accountState.user.tier }}</p>
-            <ul v-if="overlayActivities.length" class="overlay__activity">
-              <li v-for="item in overlayActivities" :key="item">{{ item }}</li>
-            </ul>
-          </section>
+          <nav class="overlay__section overlay__links">
+            <h3>{{ t('overlay.linksTitle') }}</h3>
+            <button
+              v-for="link in overlayLinks"
+              :key="link.id"
+              type="button"
+              @click="handleOverlayLink(link)"
+            >
+              {{ link.label }}
+            </button>
+          </nav>
           <section class="overlay__section overlay__controls">
             <h3>{{ t('overlay.themeTitle') }}</h3>
             <select :value="themeId" @change="onThemeChange">
@@ -228,27 +237,15 @@ function onNavigate(target: string) {
               </div>
             </div>
           </section>
-          <section
-            v-for="section in overlayHelpSections"
-            :key="section.title"
-            class="overlay__section overlay__help"
-          >
-            <h3>{{ section.title }}</h3>
-            <ul>
-              <li v-for="item in section.items" :key="item">{{ item }}</li>
-            </ul>
-          </section>
-          <nav class="overlay__section overlay__links">
-            <h3>{{ t('overlay.linksTitle') }}</h3>
-            <button
-              v-for="link in overlayLinks"
-              :key="link.id"
-              type="button"
-              @click="handleOverlayLink(link)"
-            >
-              {{ link.label }}
-            </button>
-          </nav>
+          <details class="overlay__section overlay__help">
+            <summary>困ったときの案内・ヘルプ</summary>
+            <section v-for="section in overlayHelpSections" :key="section.title" class="overlay__help-section">
+              <h3>{{ section.title }}</h3>
+              <ul>
+                <li v-for="item in section.items" :key="item">{{ item }}</li>
+              </ul>
+            </section>
+          </details>
           <p class="overlay__note">{{ t('overlay.note') }}</p>
         </aside>
       </div>
@@ -379,6 +376,21 @@ function onNavigate(target: string) {
   letter-spacing: 0.04em;
 }
 
+.overlay__help {
+  gap: 14px;
+}
+
+.overlay__help summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.78;
+}
+
+.overlay__help-section {
+  display: grid;
+  gap: 8px;
+}
+
 .overlay__section ul {
   margin: 0;
   padding-left: 1.2rem;
@@ -409,27 +421,6 @@ function onNavigate(target: string) {
 .overlay__language-buttons button.active {
   border-color: var(--brand-2, #58cff5);
   background: rgba(88, 207, 245, 0.18);
-}
-
-.overlay__points {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.overlay__user {
-  margin: 0;
-  font-size: 0.9rem;
-  opacity: 0.75;
-}
-
-.overlay__activity {
-  margin: 0;
-  padding-left: 1.2rem;
-  display: grid;
-  gap: 4px;
-  font-size: 0.8rem;
-  opacity: 0.7;
 }
 
 .overlay__links {

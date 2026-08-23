@@ -1,0 +1,36 @@
+{
+  "region_id": "000_metatuber_region",
+  "display_name": "Oshimashi Meta-Performance Studio / オシマシ・メタパフォーマン・スタジオ",
+  "summary": "The flagship broadcast hub where the lines between reality and virtual stardom dissolve. This is the birthplace of MetaTubers, a high-fidelity cathedral of digital performance and metacapture technology.",
+  "tags": [
+    "New Region"
+  ],
+  "spoiler_level": 0,
+  "functional_logic": {
+    "scenario": "A massive 360-degree holographic stage surrounded by floating camera drones and crystalline data-displays; high-contrast anime aesthetics with vibrant neon accents.",
+    "core_cast": [
+      {
+        "name": "Exe Machina",
+        "trait": "Technically brilliant and socially intuitive. She acts as the primary interface between the virtual and physical domains of Oshimashi."
+      },
+      {
+        "name": "Hawatari Zan",
+        "trait": "Stoic and disciplined. She views virtual performance as a martial art and commands the stage with absolute authority."
+      },
+      {
+        "name": "Theta Librarian",
+        "trait": "The quiet intelligence behind the scenes, managing the lore and historical data of the MetaTuber lineage."
+      }
+    ],
+    "rule": "The Show Must Go On: All activity is synchronized with the broadcast schedule.\nPerformance is Truth: Identity is defined by the avatar's expression.\nCrystal Clear Logic: Low-latency communication is the only acceptable standard."
+  },
+  "production_dna": {
+    "visual_anchor": "A massive 360-degree holographic stage surrounded by floating camera drones and crystalline data-displays; high-contrast anime aesthetics with vibrant neon accents.",
+    "forbidden_elements": "photorealistic, 3D render",
+    "aura_template_id": "api_aura_mtuber_v1"
+  },
+  "environment_state": {
+    "current_background": "/assets/regions/000_metatuber_region/cover.webp",
+    "last_updated": "2026-02-19T13:41:25.483247+00:00"
+  }
+}

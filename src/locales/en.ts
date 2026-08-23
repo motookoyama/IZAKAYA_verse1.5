@@ -7,13 +7,13 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase1.6",
-      "title": "IZAKAYA verse1.6",
+      "phase": "phase2.0 / PRELAUNCH",
+      "title": "IZAKAYA Verse 2.0",
       "slogans": [
         "Adventure, dreams, and love—",
         "all within the palm of your hand."
       ],
-      "welcome": "Welcome to IZAKAYA verse1.6",
+      "welcome": "Welcome to IZAKAYA Verse 2.0",
       "description": [
         "An AI-driven storyteller.",
         "A comprehensive content site built on V2 card compatibility."
@@ -22,10 +22,6 @@ export default {
         {
           "id": "chat",
           "label": "Chat"
-        },
-        {
-          "id": "metacapture",
-          "label": "MetaCapture"
         },
         {
           "id": "regions",
@@ -103,10 +99,10 @@ export default {
     "guide": {
       "title": "Guidelines",
       "steps": [
-        "Create an account and purchase points.",
-        "Choose a character card and start chatting.",
-        "Ready for more? Challenge the Scenario Campaign.",
-        "Replay your favorite stories anytime from the library."
+        "Read the region guide and choose a world.",
+        "Use official cards or create a local V2 card in your own AI environment.",
+        "Bring the prompt and assets to your chosen AI platform.",
+        "Access passes and points are available only after the commercial gate launches."
       ]
     },
     "help": {
@@ -114,11 +110,11 @@ export default {
       "faqs": [
         {
           "question": "What are points?",
-          "answer": "They are like coins you spend to play inside the site."
+          "answer": "1 point equals 1 yen of in-service balance. The first 24-hour pass and 100P / 30-day access are not available until the commercial gate launches."
         },
         {
           "question": "Is payment secure?",
-          "answer": "We rely on trusted services such as PayPal."
+          "answer": "Sales are not active during PRELAUNCH. Payment handling is introduced only after server-side verification and operating safeguards are proven."
         },
         {
           "question": "Do I need advanced skills?",
@@ -149,16 +145,6 @@ export default {
           "Example: Slot1 (Main), Slot2 (Support), Slot3 (World)",
           "You can also try layouts like three characters at once",
           "More guides will be added over time"
-        ]
-      },
-      {
-        "id": "metacapture",
-        "title": "メタキャプチャーとは？",
-        "description": "URLやテキスト、画像などの素材から自動的にキャラクターカードを生成する仕組み。生成したカードはV2カードエディタで調整できます。",
-        "bullets": [
-          "ニュース記事やサイトのURLからキャラクター化",
-          "画像や資料を読み取り設定を抽出",
-          "会話ログから人物像をカード化して保存"
         ]
       },
       {
@@ -198,15 +184,7 @@ export default {
           "title": "Tavern Spec Compatibility",
           "body": [
             "We respect the community 'tavern spec', keeping editing and saving as close as possible.",
-            "IZAKAYA adds original systems such as points and MetaCapture integration."
-          ]
-        },
-        {
-          "id": "meta",
-          "title": "About MetaCapture",
-          "body": [
-            "Automatically generate characters from URLs or images, then refine them in the V2 editor.",
-            "Enjoyable because your character roster grows naturally as you play."
+            "IZAKAYA adds its own region settings and distribution guidance."
           ]
         },
         {
@@ -277,64 +255,8 @@ export default {
       "quickStart": "Start chatting"
     },
     "payments": {
-      "title": "Charge Points",
-      "description": "Scan a PayPal QR code to purchase points or send support. We'll reflect the balance after confirmation.",
-      "buyButton": "Pay with PayPal",
-      "supportButton": "Support",
-      "options": {
-        "jp1000": {
-          "title": "IZAKAYA 1000P",
-          "description": "Purchase 1000 points for IZAKAYAverse (JPY)",
-          "price": "¥1,000",
-          "paypalLink": "https://www.paypal.com/ncp/payment/SBPMPM8BFRQUW",
-          "caption": "Japan",
-          "localeTag": "JPY"
-        },
-        "jp5000": {
-          "title": "IZAKAYA 5000P",
-          "description": "Purchase 5000 points for IZAKAYAverse (JPY)",
-          "price": "¥5,000",
-          "paypalLink": "https://www.paypal.com/ncp/payment/WWLCPFUX2K2VA",
-          "caption": "Japan",
-          "localeTag": "JPY"
-        },
-        "usd1000": {
-          "title": "IZAKAYA 1000P (USD)",
-          "description": "Purchase 1000 points for IZAKAYAverse",
-          "price": "$10 USD",
-          "paypalLink": "https://www.paypal.com/ncp/payment/HTHQFN7EADLPC",
-          "caption": "Global",
-          "localeTag": "USD"
-        },
-        "usd5000": {
-          "title": "IZAKAYA 5000P (USD)",
-          "description": "Purchase 5000 points for IZAKAYAverse",
-          "price": "$50 USD",
-          "paypalLink": "https://www.paypal.com/ncp/payment/PKBQ6WBAGHVUW",
-          "caption": "Global",
-          "localeTag": "USD"
-        }
-      },
-      "support": {
-        "title": "IZAKAYA Support / Motoo Koyama",
-        "description": "Support ongoing IZAKAYAverse and MotooKoyama projects (no points granted).",
-        "price": "Flexible",
-        "paypalLink": "https://www.paypal.com/ncp/payment/YP4SEMBEH3AHQ",
-        "buttonLabel": "Contribute"
-      },
-      "notes": [
-        { "text": "📖 You can also purchase via Amazon booklets." },
-        {
-          "text": "🎮 Virtual Comic Market:",
-          "url": "https://www.amazon.co.jp/dp/B0CQQ3YNPR",
-          "urlLabel": "https://www.amazon.co.jp/dp/B0CQQ3YNPR"
-        },
-        {
-          "text": "🤖 Digital Fairy Avatar⭐︎Ekubo 2.0:",
-          "url": "https://www.amazon.co.jp/dp/B0CW1NBPTB",
-          "urlLabel": "https://www.amazon.co.jp/dp/B0CW1NBPTB"
-        }
-      ]
+      "title": "Point sales are preparing",
+      "description": "Payments, point grants, and access issuance are not active yet."
     }
   },
   "overlay": {
@@ -349,14 +271,13 @@ export default {
       "chat": "Open chat",
       "reincarnation": "Reincarnation Portal",
       "library": "Go to library",
-      "metacapture": "MetaCapture",
       "payments": "Point charge",
       "admin": "Admin console"
     },
     "help": [
-      "Chat requests go through the BFF. If responses stop, check the BFF status.",
-      "Cards generated via MetaCapture can be saved to the library with custom tags.",
-      "After PayPal checkout, remember to reflect the balance via the admin console."
+      "2.0 inherits the 1.6 content build while public release remains PRELAUNCH.",
+      "Bring cards and prompts to an AI environment you manage; IZAKAYA does not proxy inference.",
+      "Sales, points, and pass issuance remain disabled until the commercial gate is approved."
     ],
     "note": "During early access, review point balances and payment logs frequently."
   },

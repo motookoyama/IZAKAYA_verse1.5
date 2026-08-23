@@ -6,10 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "build:pages": "vue-tsc -b && vite build --base=/IZAKAYA_verse1.5/ --outDir docs --emptyOutDir false",
-    "build:pages:dry": "vue-tsc -b && vite build --base=/IZAKAYA_verse1.5/ --outDir output/github-pages-dry-run --emptyOutDir true",
+    "build:pages": "vue-tsc -b && env VITE_STATIC_PAGES=true VITE_ENABLE_REGION_POLLING=false VITE_BFF_URL=__STATIC_DISABLED__ VITE_REGION_BFF_URL=__STATIC_DISABLED__ VITE_GATE_KEY=__STATIC_DISABLED__ VITE_API_BASE=__STATIC_DISABLED__ VITE_API_GATE_KEY=__STATIC_DISABLED__ vite build --base=/IZAKAYA_verse1.5/ --outDir docs --emptyOutDir true && node tools/strip-static-pages-nonpublic.mjs docs",
+    "build:pages:dry": "vue-tsc -b && env VITE_STATIC_PAGES=true VITE_ENABLE_REGION_POLLING=false VITE_BFF_URL=__STATIC_DISABLED__ VITE_REGION_BFF_URL=__STATIC_DISABLED__ VITE_GATE_KEY=__STATIC_DISABLED__ VITE_API_BASE=__STATIC_DISABLED__ VITE_API_GATE_KEY=__STATIC_DISABLED__ vite build --base=/IZAKAYA_verse1.5/ --outDir output/github-pages-dry-run --emptyOutDir true && node tools/strip-static-pages-nonpublic.mjs output/github-pages-dry-run",
+    "build:firebase": "vue-tsc -b && env VITE_STATIC_PAGES=true VITE_ENABLE_REGION_POLLING=false VITE_BFF_URL=__STATIC_DISABLED__ VITE_REGION_BFF_URL=__STATIC_DISABLED__ VITE_GATE_KEY=__STATIC_DISABLED__ VITE_API_BASE=__STATIC_DISABLED__ VITE_API_GATE_KEY=__STATIC_DISABLED__ vite build --base=/ --outDir output/firebase-hosting --emptyOutDir true && node tools/strip-static-pages-nonpublic.mjs output/firebase-hosting",
+    "build:firebase:dry": "vue-tsc -b && env VITE_STATIC_PAGES=true VITE_ENABLE_REGION_POLLING=false VITE_BFF_URL=__STATIC_DISABLED__ VITE_REGION_BFF_URL=__STATIC_DISABLED__ VITE_GATE_KEY=__STATIC_DISABLED__ VITE_API_BASE=__STATIC_DISABLED__ VITE_API_GATE_KEY=__STATIC_DISABLED__ vite build --base=/ --outDir output/firebase-hosting-dry-run --emptyOutDir true && node tools/strip-static-pages-nonpublic.mjs output/firebase-hosting-dry-run",
     "preview": "vite preview",
-    "png2json": "node tools/png2json/index.mjs"
+    "png2json": "node tools/png2json/index.mjs",
+    "build:verse2-lineage": "node tools/narrative-forge/build-verse2-lineage.mjs --write",
+    "check:verse2-lineage": "node tools/narrative-forge/build-verse2-lineage.mjs --check",
+    "test:region-protocol-gate": "node --test services/region-protocol-gate/test/*.test.mjs",
+    "test:v2-prompt-manifest": "node --test tools/test-v2-prompt-manifest.mjs",
+    "test:region-dev-first": "node --test tools/narrative-forge/nodes/region-dev-first-node/test/*.test.mjs"
   },
   "dependencies": {
     "jszip": "^3.10.1",

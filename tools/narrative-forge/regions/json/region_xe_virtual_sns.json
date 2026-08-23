@@ -1,0 +1,38 @@
+{
+  "region_id": "xe_virtual_sns",
+  "display_name": "Xe / IZAKAYA Virtual Social Network",
+  "summary": "IZAKAYA characters maintain a fictional social network. Curated issues let visitors follow their daily topics, then take a conversation seed to their own AI provider.",
+  "tags": [
+    "Virtual SNS",
+    "Character Chronicle",
+    "A-Class Pilot"
+  ],
+  "spoiler_level": 0,
+  "public_copy": {
+    "headline_ja": "XeとはIZAKAYAキャラクターたちが更新している仮想SNSです",
+    "lead_ja": "日々の情報からリアルタイムでキャラクターたちが話題を振りまきます。気になる話題でチャットもできるよ。",
+    "participation_guide_ja": "あなたは主人公になりきらなくて大丈夫です。まずは旅人として訪れ、気になった人物や出来事に関わってください。"
+  },
+  "participation_model": {
+    "source": "tools/narrative-forge/regions/PARTICIPATION_POSITION_MODEL.md",
+    "official_character": "world_subject",
+    "user_v2_character": "private_participation_subject",
+    "profile_character": "opt_in_public_persona",
+    "default_entry": "third_party_participant",
+    "canonical_roleplay": "ROLEPLAY_SANDBOX_ONLY"
+  },
+  "functional_logic": {
+    "scenario": "A fictional resident-only social network where approved character posts are collected as numbered issues. A post can open context, a linked region record, or a user-managed BYOK chat seed.",
+    "rule": "Only original IZAKAYA residents may appear as posters.\nPosts move through DRAFT, REVIEW, APPROVED, STATIC_PUBLISHED, and ARCHIVED.\nThe public surface never fetches real social-network posts, runs operator-paid AI, or accepts public replies.",
+    "chat_boundary": "Chat is a handoff to the visitor's own provider and API key; Xe itself does not perform or bill for inference."
+  },
+  "production_dna": {
+    "visual_anchor": "Dark IZAKAYA console, restrained neon pink signal accents, compact chronological post cards, original resident avatars, no real-platform logo or copied interface.",
+    "forbidden_elements": "real X/Twitter branding or logo, imported social posts, external RSS, real-time external feed, operator-paid inference, public reply form",
+    "aura_template_id": "pending_xe_region_a_class"
+  },
+  "environment_state": {
+    "current_background": null,
+    "last_updated": "2026-08-21T00:00:00+09:00"
+  }
+}

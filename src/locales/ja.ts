@@ -7,25 +7,25 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase1.6",
-      "title": "IZAKAYA verse1.6",
+      "phase": "phase2.0 / PRELAUNCH",
+      "title": "IZAKAYA Verse 2.0",
       "slogans": [
         "ー冒険もー夢もー恋もー",
         "すべては手のひらの上から"
       ],
-      "welcome": "ようこそIZAKAYA verse1.6",
+      "welcome": "ようこそIZAKAYA Verse 2.0",
       "description": [
         "AIドリブンのストーリーテラー",
         "V2カード互換をベースにした総合コンテンツサイトです"
       ],
       "navLinks": [
         {
-          "id": "chat",
-          "label": "チャット"
+          "id": "region_guide",
+          "label": "遊び方"
         },
         {
-          "id": "metacapture",
-          "label": "メタキャプチャー"
+          "id": "chat",
+          "label": "チャット試遊"
         },
         {
           "id": "regions",
@@ -45,14 +45,14 @@ export default {
     "account": {
       "greeting": {
         "title": "いらっしゃいませ",
-        "welcome": "お好きな席へどうぞ。AI酒場がお待ちしています。",
-        "note": "今日の気分や遊びたいスタイルを決めて、すぐに物語へダイブできます。"
+        "welcome": "お好きなリージョンへどうぞ。世界とキャラクターを持ち出せます。",
+        "note": "今日の気分や遊びたいスタイルを決めて、自分のAI環境で物語を始められます。"
       },
       "policy": {
         "title": "ご利用ポリシー（抜粋）",
         "items": [
-          "ポイントはサイト内のみで利用できます。払い戻しはできません。",
-          "キャラクターとの会話はフィクションであり、ログは必要に応じて削除可能です。",
+          "ポイント/アクセス権は公開後の段階導入予定です。正式運用前の表示は予告なく変わる場合があります。",
+          "キャラクターとの会話はフィクションであり、利用するAI環境のログ管理は各サービスの設定に従ってください。",
           "IP作品やNSFW素材の共有は個人利用に留め、ライブラリ登録はお控えください。"
         ]
       },
@@ -73,8 +73,8 @@ export default {
         "items": [
           {
             "id": "addPoints",
-            "label": "ポイントを追加",
-            "description": "PayPalまたはコード入力で即チャージ"
+            "label": "配布予定を見る",
+            "description": "ポイント/アクセス権は低コスト運用を検証中"
           },
           {
             "id": "managePersona",
@@ -103,10 +103,10 @@ export default {
     "guide": {
       "title": "ガイドライン",
       "steps": [
-        "アカウントを作成し、ポイントを購入します。",
-        "好きなキャラクターカードを選んでチャット開始。",
-        "もっと遊びたい人は『シナリオキャンペーン』に挑戦。",
-        "気に入ったシナリオはライブラリでいつでも再プレイできます。"
+        "気になるリージョンを選びます。",
+        "V2カード、プロンプト、画像、遊び方を確認します。",
+        "好きなAIプラットフォームへ持ち込んで物語を始めます。",
+        "気に入ったリージョンは、更新や追加カードで広げていきます。"
       ]
     },
     "help": {
@@ -114,11 +114,11 @@ export default {
       "faqs": [
         {
           "question": "ポイントってなに？",
-          "answer": "サイト内で遊ぶためのコインのようなものです。"
+          "answer": "1Pは1円相当のサービス内残高です。商業ゲート成立後、初回24時間フリーパスと100P・30日利用権を扱います。現在は販売・付与を開始していません。"
         },
         {
           "question": "課金は安全？",
-          "answer": "PayPalなどの安全な仕組みを使っています。"
+          "answer": "正式な有料運用は、低コストで止められる仕組みを確認してから段階的に案内します。"
         },
         {
           "question": "難しい操作は必要？",
@@ -143,22 +143,12 @@ export default {
       {
         "id": "v2chat",
         "title": "V2 Chatbot とは？",
-        "description": "キャラクターカードを使って動くチャットAI。プロフィールや話し方のルールを読み込むと、そのキャラになりきって会話できます。",
+        "description": "キャラクターカードを好きなAI環境へ持ち込み、プロフィールや話し方のルールを読ませて会話を始めるための仕組みです。",
         "bullets": [
           "＊スロットごとにバイアスが違います＊",
           "例：Slot1（メイン）、Slot2（サブ）、Slot3（世界観）",
           "他の運用（キャラ3枚など）も可能です",
           "※他のガイドは今後追加"
-        ]
-      },
-      {
-        "id": "metacapture",
-        "title": "メタキャプチャーとは？",
-        "description": "URLやテキスト、画像などの素材から自動的にキャラクターカードを生成する仕組み。生成したカードはV2カードエディタで調整できます。",
-        "bullets": [
-          "ニュース記事やサイトのURLからキャラクター化",
-          "画像や資料を読み取り設定を抽出",
-          "会話ログから人物像をカード化して保存"
         ]
       },
       {
@@ -198,15 +188,7 @@ export default {
           "title": "酒場規格（Silly Tavernとの関係）",
           "body": [
             "Silly Tavernコミュニティで使われるV2カード規格を尊重し、可能な限り同仕様で編集・保存できます。",
-            "IZAKAYA独自のポイント制やメタキャプチャーとの連携が追加されています。"
-          ]
-        },
-        {
-          "id": "meta",
-          "title": "メタキャプチャーについて",
-          "body": [
-            "URLや画像から自動的にキャラクターを生成し、そのままV2カードエディタで調整できます。",
-            "遊びながら自然にキャラクター資産が増えていくのが魅力です。"
+            "IZAKAYA独自のリージョン設定と配布導線が追加されています。"
           ]
         },
         {
@@ -221,11 +203,11 @@ export default {
       "faq": [
         {
           "question": "難しい操作は必要ですか？",
-          "answer": "カードを選んでチャットするだけで遊べます。"
+          "answer": "カードとガイドを選び、普段使っているAI環境へ持ち込むだけで始められます。"
         },
         {
           "question": "Silly Tavernとの違いは？",
-          "answer": "Silly Tavernはオープンソース、IZAKAYA verseは互換性を保ちつつポイント制やシナリオモードを追加しています。"
+          "answer": "Silly Tavernはオープンソース、IZAKAYA verseは互換性を保ちつつリージョン、作者設定、配布導線を追加しています。"
         },
         {
           "question": "キャラクターカードはどう保存されますか？",
@@ -277,64 +259,8 @@ export default {
       "quickStart": "チャットを始める"
     },
     "payments": {
-      "title": "ポイントチャージ",
-      "description": "PayPalのQRコードからポイント購入や支援ができます。決済後は管理側で残高に反映します。",
-      "buyButton": "PayPalで購入",
-      "supportButton": "支援する",
-      "options": {
-        "jp1000": {
-          "title": "IZAKAYA 1000P",
-          "description": "IZAKAYAverseの利用ポイント1000Pを購入します",
-          "price": "¥1,000",
-          "paypalLink": "https://www.paypal.com/ncp/payment/SBPMPM8BFRQUW",
-          "caption": "国内向け",
-          "localeTag": "JPY"
-        },
-        "jp5000": {
-          "title": "IZAKAYA 5000P",
-          "description": "IZAKAYAverseの利用ポイント5000Pを購入します",
-          "price": "¥5,000",
-          "paypalLink": "https://www.paypal.com/ncp/payment/WWLCPFUX2K2VA",
-          "caption": "国内向け",
-          "localeTag": "JPY"
-        },
-        "usd1000": {
-          "title": "IZAKAYA 1000P (USD)",
-          "description": "Purchase 1000 points for IZAKAYAverse",
-          "price": "$10 USD",
-          "paypalLink": "https://www.paypal.com/ncp/payment/HTHQFN7EADLPC",
-          "caption": "Global",
-          "localeTag": "USD"
-        },
-        "usd5000": {
-          "title": "IZAKAYA 5000P (USD)",
-          "description": "Purchase 5000 points for IZAKAYAverse",
-          "price": "$50 USD",
-          "paypalLink": "https://www.paypal.com/ncp/payment/PKBQ6WBAGHVUW",
-          "caption": "Global",
-          "localeTag": "USD"
-        }
-      },
-      "support": {
-        "title": "IZAKAYA Support / Motoo Koyama",
-        "description": "IZAKAYAverseやMotooKoyama関連コンテンツの活動を支援するためのカンパです（ポイント付与はありません）。",
-        "price": "自由設定",
-        "paypalLink": "https://www.paypal.com/ncp/payment/YP4SEMBEH3AHQ",
-        "buttonLabel": "支援する"
-      },
-      "notes": [
-        { "text": "📖 Amazon冊子や配布物からも購入可能" },
-        {
-          "text": "🎮 バーチャルコミックマーケット:",
-          "url": "https://www.amazon.co.jp/dp/B0CQQ3YNPR",
-          "urlLabel": "https://www.amazon.co.jp/dp/B0CQQ3YNPR"
-        },
-        {
-          "text": "🤖 電子妖精アバタモ⭐︎エクボ2.0:",
-          "url": "https://www.amazon.co.jp/dp/B0CW1NBPTB",
-          "urlLabel": "https://www.amazon.co.jp/dp/B0CW1NBPTB"
-        }
-      ]
+      "title": "ポイント販売は準備中",
+      "description": "現時点では決済、ポイント付与、利用権発行を開始していません。"
     }
   },
   "overlay": {
@@ -346,33 +272,32 @@ export default {
     "themeTitle": "テーマ",
     "languageTitle": "言語",
     "links": {
-      "chat": "チャットを開く",
+      "chat": "遊び方を開く",
       "reincarnation": "転生ポータル",
       "library": "ライブラリへ",
-      "metacapture": "メタキャプチャー",
-      "payments": "ポイントチャージ",
+      "payments": "配布予定",
       "admin": "管理コンソール"
     },
     "help": [
-      "チャットは BFF を経由しています。応答が無い場合はBFFの状態を確認してください。",
-      "メタキャプチャーで生成したカードはライブラリに保存・タグ付けできます。",
-      "PayPal決済後は管理コンソールからポイント反映を行ってください。"
+      "2.0は1.6までのリージョン、V2カード、ガイドを継承して制作します。",
+      "商業ゲート成立まで販売、ポイント付与、利用権発行は開始しません。",
+      "ユーザーはカードやプロンプトを自分のAI環境へ持ち込んで遊べます。"
     ],
-    "note": "アーリーアクセス期間中はポイント残高と決済ログをこまめに確認してください。"
+    "note": "アーリーアクセス期間中は、公開済み機能と予定機能を分けて案内してください。"
   },
   "pages": {
     "chat": {
       "title": "IZAKAYA chat",
-      "quickHint": "すぐに会話できます",
+      "quickHint": "ローカル検証用",
       "lead": [
-        "キャラクターカードを読み込んで、LLMがキャラクターになりきる応答を提供する専用ビューです。",
-        "BFFを経由してローカル（Ollama 等）または外部APIと接続できます。"
+        "キャラクターカードの会話挙動を確認するための検証ビューです。",
+        "2.0では、カードとガイドを自分のAI環境へ持ち込む遊び方を優先します。運営側はAI推論を中継しません。"
       ],
       "workflowTitle": "基本操作",
       "workflow": [
         "左上のカードセレクタで利用したいキャラクターを選びます。",
-        "チャット欄にメッセージを入力し送信すると、BFF経由でLLMへリクエストが飛びます。",
-        "ポイント残高はホーム画面のクイック操作から確認・加算できます。"
+        "ローカル検証ではチャット欄から応答確認ができます。",
+        "公開運用ではV2カード、プロンプト、リージョン設定を外部AI環境へ持ち出して使います。"
       ],
       "notesTitle": "ヒント",
       "notes": [
@@ -395,14 +320,14 @@ export default {
     "metacapture": {
       "title": "メタキャプチャー",
       "lead": [
-        "URL・テキスト・画像からキャラクターを抽出してV2カードに整形するワークフローです。",
-        "生成されたカードはそのままチャット画面やライブラリに取り込めます。"
+        "URL・テキスト・画像からキャラクターを抽出してV2カードに整形する予定ワークフローです。",
+        "2.0では、V2カード作成ノウハウと持ち出し型の利用を優先します。"
       ],
       "workflowTitle": "作業の流れ",
       "workflow": [
         "取り込みたい資料をアップロードまたはURLで指定します。",
-        "抽出された設定を確認し、必要に応じて調整して保存します。",
-        "保存したカードはチャット画面へ送って即座に会話に利用できます。"
+        "抽出された設定を確認し、必要に応じて調整します。",
+        "完成したカードは自分のAI環境へ持ち込む素材として利用します。"
       ],
       "notesTitle": "注意事項",
       "notes": [
@@ -417,12 +342,12 @@ export default {
     "library": {
       "title": "ライブラリ",
       "lead": [
-        "遊んだシナリオや作成したカードを保管するアーカイブエリアです。",
-        "審査済みコンテンツを整理し、再プレイや共有の入り口として機能します。"
+        "公開カードやリージョン素材を確認するアーカイブエリアです。",
+        "審査済みコンテンツを整理し、外部AI環境へ持ち出す入口として機能します。"
       ],
       "workflowTitle": "基本操作",
       "workflow": [
-        "チャットやメタキャプチャーで作成したカードをスロット単位で保存します。",
+        "公開カードや制作済みカードをスロット単位で確認します。",
         "タグやカテゴリーでフィルタしながら目的のカードを探せます。",
         "公開カードは他の利用者と共有でき、非公開カードは自分専用に管理します。"
       ],
@@ -498,7 +423,7 @@ export default {
       "notesTitle": "こだわり",
       "notes": [
         "クリップボードの内容は、解析時以外は画面に表示されません（ネタバレ防止）。",
-        "V25の高密度なQRコードも、BFF側の特殊なフィルターで正確に読み取ります。"
+        "QR解析の高度な処理はBFF/ローカル機能として低コスト運用を確認中です。"
       ],
       "lensLabel": "LENS スキャン",
       "lensDesc": "カメラ撮影・画像アップロード",
@@ -516,7 +441,7 @@ export default {
       "backToMap": "ワールドマップへ戻る",
       "entryPortalTitle": "エントリーポータル稼働中",
       "scanHint": "意識をリンクするためにスキャンしてください",
-      "enterButton": "リージョンに入る (100pt)"
+      "enterButton": "リージョンを見る"
     }
   },
   "navigation": {

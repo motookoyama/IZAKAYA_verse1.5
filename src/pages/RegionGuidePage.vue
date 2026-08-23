@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { navigateTo } from '../constants/navigation'
+import { commercialGateNotice, releaseProfile } from '../core/releaseProfile'
 
 const platforms = [
   'ChatGPT / OpenAI',
   'Gemini',
   'Grok / xAI',
   'SillyTavern / V2カード互換環境',
-  'IZAKAYA Verse 内部チャット',
+  'ローカルLLM / 自分で管理するAI環境',
 ]
 
 const steps = [
@@ -15,17 +16,24 @@ const steps = [
     body: 'まずはリージョン一覧から、気になる世界を選びます。細かい仕様を読む必要はありません。',
   },
   {
-    title: 'キャラクターに話す',
-    body: 'V2カードやリージョンJSONを使い、キャラクターに一言話しかけると物語が始まります。',
+    title: 'カードと設定を持ち出す',
+    body: 'V2カード、リージョン設定、画像、導入プロンプトを使い、自分のAI環境で物語を始めます。',
   },
   {
     title: '好きな環境で遊ぶ',
-    body: '公式チャットだけでなく、対応プラットフォームへプロンプトやカードを持ち込んで遊べます。',
+    body: '対応プラットフォームへプロンプトやカードを持ち込み、ユーザー自身の計算コストで遊べます。',
   },
   {
     title: 'もっと遊びたくなったら進む',
-    body: '無料で入口を試し、深い進行・更新・追加制作が必要になったらポイント導線へ進みます。',
+    body: '商業ゲート成立後は、初回24時間フリーパスと100P・30日利用権を選べます。現在はPRELAUNCHです。',
   },
+]
+
+const v2BuildTips = [
+  'リージョン名、役割、プレイヤーとの距離を先に決める。',
+  '性格、口調、初回メッセージ、画像プロンプトを分けて書く。',
+  '既存キャストと混ざらないよう、所属リージョンと立ち位置を明記する。',
+  '完成後はV2カードJSONとして保存し、画像と一緒に確認する。',
 ]
 
 const playStyles = [
@@ -66,12 +74,12 @@ const playStyles = [
       <p class="kicker">First Guide</p>
       <h1>リージョンの遊び方</h1>
       <p>
-        IZAKAYA Verseは、好きな世界を選び、キャラクターと会話して物語を始めるための入口です。
-        まずは無料で雰囲気を見て、気に入った世界から入ってください。
+        IZAKAYA Verseは、好きな世界、キャラクター、V2カード、プロンプトを選び、
+        あなたのAI環境へ持ち込んで物語を始めるための入口です。
       </p>
       <div class="hero-actions">
         <button type="button" @click="navigateTo('regions')">リージョンを選ぶ</button>
-        <button type="button" class="secondary" @click="navigateTo('chat')">チャットを試す</button>
+        <button type="button" class="secondary" @click="navigateTo('library')">カードを見る</button>
       </div>
     </section>
 
@@ -108,11 +116,27 @@ const playStyles = [
         <h2>好きなプラットフォームで遊べます</h2>
         <p>
           リージョンは一つのアプリに閉じ込めるものではありません。
-          カード、プロンプト、QR、画像を使い、あなたの使いやすい環境へ持ち込めます。
+          カード、プロンプト、QR、画像を使い、あなたの使いやすいAI環境へ持ち込めます。
+          IZAKAYAは世界とキャラクターを提供し、AIの実行環境はユーザー自身が選びます。
         </p>
       </div>
       <ul class="platform-list">
         <li v-for="platform in platforms" :key="platform">{{ platform }}</li>
+      </ul>
+    </section>
+
+    <section class="wide-panel">
+      <div>
+        <p class="kicker">V2 Build Knowhow</p>
+        <h2>担当AIにV2カード作成を教える</h2>
+        <p>
+          リージョン所属のオリジナルキャラクターを作る場合は、ユーザー側のAIに
+          「どの世界の、どんな役割のカードを作るか」を先に教えます。
+          IZAKAYAは完成カードだけでなく、V2カードを組み立てるための作法もガイドとして提供します。
+        </p>
+      </div>
+      <ul class="platform-list">
+        <li v-for="tip in v2BuildTips" :key="tip">{{ tip }}</li>
       </ul>
     </section>
 
@@ -132,10 +156,10 @@ const playStyles = [
         </p>
       </article>
       <article>
-        <h2>無料とポイント</h2>
+        <h2>利用権とポイント</h2>
         <p>
-          無料版では入口と雰囲気を試せます。
-          長い対話、特別な更新、制作依頼、深い進行が必要な時だけポイントを使います。
+          {{ releaseProfile.accessModel.firstPass }}。{{ releaseProfile.accessModel.monthlyPass }}。
+          {{ commercialGateNotice() }}
         </p>
       </article>
     </section>
