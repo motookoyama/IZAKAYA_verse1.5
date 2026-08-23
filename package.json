@@ -15,6 +15,7 @@
     "build:verse2-lineage": "node tools/narrative-forge/build-verse2-lineage.mjs --write",
     "check:verse2-lineage": "node tools/narrative-forge/build-verse2-lineage.mjs --check",
     "test:region-protocol-gate": "node --test services/region-protocol-gate/test/*.test.mjs",
+    "test:legacy-beta-migration": "node --test services/region-protocol-gate/test/legacy-wallet-migration.test.mjs",
     "test:v2-prompt-manifest": "node --test tools/test-v2-prompt-manifest.mjs",
     "test:region-dev-first": "node --test tools/narrative-forge/nodes/region-dev-first-node/test/*.test.mjs"
   },
