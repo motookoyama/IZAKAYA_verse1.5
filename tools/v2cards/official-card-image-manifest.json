@@ -1,0 +1,122 @@
+{
+  "version": 2,
+  "imageProfile": {
+    "format": "jpeg",
+    "quality": 70,
+    "maxHeight": 960
+  },
+  "cards": [
+    {
+      "sourceFile": "エグゼ・マキナ.json",
+      "cardName": "エグゼ・マキナ",
+      "publicImageUrl": "/v2card-images/official/exe-machina.jpg",
+      "nonImageSha256": "477d32cc45cbce3a330b423979ab12be2c00cfb6e9cde0d197d677d8dcc576bc",
+      "imageSha256": "200555724ac136c196a5298a23493121b318fcecd588f96b750588a0946f971c",
+      "imageBytes": 91660,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "3ba678b7278e3382e545afc3b92429f931f6bbf0a078fb6ba90aff6d504f6c96",
+      "originalImageSha256": "e7883ec59ec1aff26e4a321d6a0c52f88f82526b52e9bc3c5e1ca87b2b2bf901",
+      "originalImageBytes": 1278060,
+      "convertedJsonBytes": 5999
+    },
+    {
+      "sourceFile": "ココロエ・ヨウマ.json",
+      "cardName": "ココロエ・ヨウマ",
+      "publicImageUrl": "/v2card-images/official/kokoroe-youma.jpg",
+      "nonImageSha256": "0d2f89f18ce81905fbb222704f61fbe287090bb82aac724e1c0c4682dd92d480",
+      "imageSha256": "a8941623a29d15b18d8bd50fbdbbb105e9a124be5cc048e6e48128bbc799e043",
+      "imageBytes": 127657,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "435bfa112106ae537705a87284610baa7b353eae1315545aea43dc66039958f3",
+      "originalImageSha256": "15a421096611c9979500fa8e13ebee02e8b063d22019e45521ebe4210020b218",
+      "originalImageBytes": 1500887,
+      "convertedJsonBytes": 6004
+    },
+    {
+      "sourceFile": "ダガミ・テンカイ.json",
+      "cardName": "ダガミ・テンカイ",
+      "publicImageUrl": "/v2card-images/official/dagami-tenkai.jpg",
+      "nonImageSha256": "13f5a9a0e972f2c2aeac3915246ad8847ef0864ea0b6171f190e0eab3950d4dc",
+      "imageSha256": "033b0856e57f9efdd3c3622af2f443e20538eba805b7c07f1047d5329e25a710",
+      "imageBytes": 131060,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "2c22bb98c04b70395fed00e4b32bec049d31dde70f7a88219d0a47f2e517109a",
+      "originalImageSha256": "449aa4fb1e4d241186b359aaca3829a564c6122ad6950aea75559959910a1474",
+      "originalImageBytes": 1505328,
+      "convertedJsonBytes": 5746
+    },
+    {
+      "sourceFile": "ハワタリ・ザン.json",
+      "cardName": "ハワタリ・ザン",
+      "publicImageUrl": "/v2card-images/official/hawatari-zan.jpg",
+      "nonImageSha256": "b37c4cfc29dee22cacf2b54576c6237638aaf3237dae867ed6202e061babaedd",
+      "imageSha256": "88a7b4edaf2c02e96c4b503089f30ce1164b328233c1e314eb669cb8b2b80bd9",
+      "imageBytes": 130262,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "c00faff224345d4c838e80d929d04b72287b0cc7021b6f10e2fa79a55409444d",
+      "originalImageSha256": "679a656d224aedd21a938cec9a7f7a66bf3caea71d158746d2ed9ac6950dff9d",
+      "originalImageBytes": 1471604,
+      "convertedJsonBytes": 3369
+    },
+    {
+      "sourceFile": "ハワワ.json",
+      "cardName": "ハワワ",
+      "publicImageUrl": "/v2card-images/official/hawawa.jpg",
+      "nonImageSha256": "2756d5aac5aae9f566b433f72dfa635735acfe06b74388a9d56ae37036221d36",
+      "imageSha256": "1d014236528511c23f4f3968cfc4fc545b707832df8f804a8a4e59a242a6b5d6",
+      "imageBytes": 102514,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "3ab4371fafa2062cbb5c3372f6cc3c5ef5a248afcd08782bb0fe6f50aab0b056",
+      "originalImageSha256": "e674abf435ebd50a6fc3b6653065c7c40a2ac6c58e593d20769289c6d51a23fd",
+      "originalImageBytes": 1333150,
+      "convertedJsonBytes": 3384
+    },
+    {
+      "sourceFile": "ミヤコ・スイム.json",
+      "cardName": "ミヤコ・スイム",
+      "publicImageUrl": "/v2card-images/official/miyako-swim.jpg",
+      "nonImageSha256": "cedc27482db1cc7439696513ab7f6eef0d0c0bb3eb8e670d1e099debf46d8430",
+      "imageSha256": "1e065ed84360f27c4cc79b484dce40344181dfa6bef36899f7918e5ee44254c2",
+      "imageBytes": 257586,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "a6883932ac79ec200021d5d9612c7e04e6f74aa93154ee837c2514039a33d7ca",
+      "originalImageSha256": "5ad26db8fa260b62126be5d541fb1aa25534436b5796094f594438ab5e20e7d0",
+      "originalImageBytes": 2146475,
+      "convertedJsonBytes": 3249
+    },
+    {
+      "sourceFile": "ヨリドコロ・ユイカ.json",
+      "cardName": "ヨリドコロ・ユイカ",
+      "publicImageUrl": "/v2card-images/official/yoridokoro-yuika.jpg",
+      "nonImageSha256": "4e610cee4d6b1425acc30a0213272ab844b502c6576f2c603498073e2cff16db",
+      "imageSha256": "70aef50fda2e0d93e78a85737fa1fed92ad859202e8f0861b7795d5c69b679cf",
+      "imageBytes": 170081,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "03e30d30c8a94137916d4e15646edf7fa95137bf083030571fdf08de6aa39860",
+      "originalImageSha256": "011bdd315feb15795cb580090748cfbb3b8cd85bd00efacf8cf937724d359a51",
+      "originalImageBytes": 1750555,
+      "convertedJsonBytes": 6032
+    },
+    {
+      "sourceFile": "株式会社オシマシ.json",
+      "cardName": "株式会社オシマシ",
+      "publicImageUrl": "/v2card-images/official/oshimashi-inc.jpg",
+      "nonImageSha256": "f28a67e0182752c5e37a0741e101bae4e876ef1a270687c5801e2a53fd8c3c07",
+      "imageSha256": "4304a3096e7b65dfd764fa13814ac9fbf3eebe91e9d87cb56526f00d213967f0",
+      "imageBytes": 166000,
+      "imageWidth": 700,
+      "imageHeight": 960,
+      "originalJsonSha256": "2997699fc98c8f4b00e8dfb1195ef8fc7ad1393bbb3ecde0751de5efd908bd2d",
+      "originalImageSha256": "9a83ca02f54a9ff4ce1af53a2ebf4311f9088305d907873f89f253efd07c78d4",
+      "originalImageBytes": 1572278,
+      "convertedJsonBytes": 3307
+    }
+  ]
+}
