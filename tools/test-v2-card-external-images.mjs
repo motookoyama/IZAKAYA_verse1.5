@@ -15,5 +15,5 @@ test('official V2 cards keep all non-image data while using external card images
   assert.equal(report.mode, 'verify')
   assert.equal(report.cards.length, 8)
   assert.ok(report.cards.every((card) => card.convertedJsonBytes < 10_000))
-  assert.ok(report.cards.every((card) => card.imageHeight <= 960 && card.imageBytes < 350_000))
+  assert.ok(report.cards.every((card) => card.imageHeight <= 960 && card.imageBytes <= 300_000))
 })

@@ -17,6 +17,7 @@
     "test:region-protocol-gate": "node --test services/region-protocol-gate/test/*.test.mjs",
     "test:legacy-beta-migration": "node --test services/region-protocol-gate/test/legacy-wallet-migration.test.mjs",
     "test:v2-card-external-images": "node --test tools/test-v2-card-external-images.mjs",
+    "check:v2-card-capacity": "node tools/v2cards/check-card-capacity.mjs",
     "test:v2-prompt-manifest": "node --test tools/test-v2-prompt-manifest.mjs",
     "test:region-dev-first": "node --test tools/narrative-forge/nodes/region-dev-first-node/test/*.test.mjs"
   },

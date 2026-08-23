@@ -26,10 +26,14 @@ Before adding, regenerating, bundling, or publishing region images or V2 cards, 
 
 `/Volumes/Yggdrasill/GitHub/IZAKAYA_verse1.5/codex-handoffs/IZAKAYA_VERSE_2_0_RELEASE_GATE_20260821.md`
 
+For every new or regenerated **public candidate V2 card**, also read and follow:
+
+`/Volumes/Yggdrasill/GitHub/IZAKAYA_verse1.5/codex-handoffs/V2_CARD_CAPACITY_STANDARD_V1.md`
+
 This is a distribution rule, not a creative restriction.
 
 - World context, region text, and branching ideas may expand. Keep each public context manifest within the stated packaging budget and send only selected context to external AI.
-- Do not add base64/data-URI images, source images, or chat logs to new public V2 JSON. Split the V2 text body, thumbnail, and optional original download.
+- Do not add base64/data-URI images, source images, or chat logs to new public V2 JSON. Split the V2 text body, thumbnail, and optional original download. New public V2 cards must pass the V1 capacity check before release.
 - Lists and first views use lightweight thumbnails. Large key visuals load only after the user enters or selects the relevant region.
 - Existing owner-approved assets are grandfathered: do not delete, recompress, replace, or redesign them merely to meet a new budget.
 - New region bundles and new card additions must report their measured asset sizes before public deployment. A budget exception requires the owner's visible approval.
