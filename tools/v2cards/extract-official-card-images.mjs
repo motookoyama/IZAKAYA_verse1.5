@@ -47,6 +47,42 @@ function parseDataUri(value, sourceFile) {
   return { mimeType: match[1], image: Buffer.from(match[2], 'base64') }
 }
 
+function readJpegDimensions(image, sourceFile) {
+  if (image.length < 4 || image[0] !== 0xff || image[1] !== 0xd8) {
+    throw new Error(`${sourceFile}: optimized card image is not a JPEG`)
+  }
+
+  const sofMarkers = new Set([
+    0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7,
+    0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf,
+  ])
+
+  let offset = 2
+  while (offset < image.length) {
+    while (offset < image.length && image[offset] === 0xff) offset += 1
+    const marker = image[offset]
+    offset += 1
+
+    if (marker === 0xd9 || marker === 0xda) break
+    if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue
+    if (offset + 1 >= image.length) break
+
+    const segmentLength = image.readUInt16BE(offset)
+    if (segmentLength < 2 || offset + segmentLength > image.length) break
+
+    if (sofMarkers.has(marker)) {
+      if (segmentLength < 7) break
+      return {
+        width: image.readUInt16BE(offset + 5),
+        height: image.readUInt16BE(offset + 3),
+      }
+    }
+    offset += segmentLength
+  }
+
+  throw new Error(`${sourceFile}: JPEG dimensions could not be read`)
+}
+
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, 'utf8'))
 }
@@ -125,10 +161,8 @@ async function main() {
     const persistedImage = await readFile(imagePath)
     imageSha256 = sha256(persistedImage)
     imageBytes = persistedImage.length
-    const imageInfo = await execFile('sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', imagePath])
-    const widthMatch = /pixelWidth: (\d+)/.exec(imageInfo.stdout)
-    const heightMatch = /pixelHeight: (\d+)/.exec(imageInfo.stdout)
-    if (!widthMatch || !heightMatch || Number(heightMatch[1]) > imageProfile.maxHeight) {
+    const dimensions = readJpegDimensions(persistedImage, sourceFile)
+    if (Math.max(dimensions.width, dimensions.height) > imageProfile.maxHeight) {
       throw new Error(`${sourceFile}: optimized image dimensions are invalid`)
     }
 
@@ -139,8 +173,8 @@ async function main() {
       nonImageSha256,
       imageSha256,
       imageBytes,
-      imageWidth: Number(widthMatch[1]),
-      imageHeight: Number(heightMatch[1]),
+      imageWidth: dimensions.width,
+      imageHeight: dimensions.height,
       originalJsonSha256,
       originalImageSha256,
       originalImageBytes,
