@@ -1,27 +1,30 @@
 export const POINTS_PRICING = {
-  welcomeBonus: 500,
+  pointValueYen: 10,
+  pointPack: {
+    amountYen: 1000,
+    points: 100,
+  },
+  region: {
+    level1MonthlyPass: 10,
+    aClassMonthlyPasses: [20, 30],
+  },
   library: {
-    baseDownload: 10,
+    standardDownload: 1,
+    premiumDownload: 3,
   },
-  chat: {
-    baseCost: 0,
-    slotAdditional: 10,
-  },
-  metacapture: {
-    creation: 100,
-  },
-  misc: {
-    minimumCharge: 10,
+  comics: {
+    ebookPack: 60,
   },
 } as const
 
 export type PointsPricing = typeof POINTS_PRICING
 
 export const describePointsPricing = () => [
-  `初回APIキー登録ボーナス: ${POINTS_PRICING.welcomeBonus.toLocaleString()}P`,
-  `カードお試しDL: 基本 ${POINTS_PRICING.library.baseDownload}P（タイトル/セットで調整可）`,
-  `シングルチャット: ${POINTS_PRICING.chat.baseCost}P`,
-  `スロット追加（カード1枚ごと）: ${POINTS_PRICING.chat.slotAdditional}P`,
-  `MetaCapture生成: ${POINTS_PRICING.metacapture.creation}P`,
-  `その他サービス: ${POINTS_PRICING.misc.minimumCharge}P〜`,
+  `ポイント換算: 1P = ¥${POINTS_PRICING.pointValueYen}`,
+  `初期購入単位: ¥${POINTS_PRICING.pointPack.amountYen.toLocaleString()} = ${POINTS_PRICING.pointPack.points}P`,
+  `レベル1リージョン30日券: ${POINTS_PRICING.region.level1MonthlyPass}P`,
+  `AクラスMMOリージョン30日券: ${POINTS_PRICING.region.aClassMonthlyPasses.join('P / ')}P（個別SKU）`,
+  `公式V2カードDL: 標準 ${POINTS_PRICING.library.standardDownload}P / レア・小パック ${POINTS_PRICING.library.premiumDownload}P`,
+  `コミックス電子書籍パック: ${POINTS_PRICING.comics.ebookPack}P（¥600相当）`,
+  'AIチャット・画像生成・MetaCapture生成はBYOK案内であり、ポイント販売しない',
 ]
