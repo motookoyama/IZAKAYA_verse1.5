@@ -6,7 +6,7 @@
  * these functions later, but must not change the rules encoded here.
  */
 
-export const POINTS_PER_MONTHLY_PASS = 100
+export const POINTS_PER_MONTHLY_PASS = 10
 export const FIRST_PASS_DURATION_MS = 24 * 60 * 60 * 1000
 export const MONTHLY_PASS_DURATION_MS = 30 * 24 * 60 * 60 * 1000
 
@@ -185,15 +185,15 @@ export class RegionProtocolGate {
    * Accepts only the *result* of a future PayPal verification adapter. Raw
    * webhook bodies and credentials are intentionally outside this contract.
    */
-  ingestPaymentVerification({ providerEventId, paypalCaptureId, accountId, verified, points = 1000, auditId, now = this.clock() }) {
+  ingestPaymentVerification({ providerEventId, paypalCaptureId, accountId, verified, points = 100, auditId, now = this.clock() }) {
     assertString(providerEventId, 'providerEventId', { max: 160 })
     assertString(paypalCaptureId, 'paypalCaptureId', { max: 160 })
     assertAccountId(accountId)
     this.#requireAccount(accountId)
     const duplicate = this.paymentEvents.find((event) => event.providerEventId === providerEventId || event.paypalCaptureId === paypalCaptureId)
     if (duplicate) return { status: 'DUPLICATE_IGNORED', paymentEvent: clone(duplicate) }
-    if (!Number.isInteger(points) || points !== 1000) {
-      error('UNSUPPORTED_PURCHASE_AMOUNT', 'Phase A accepts only the initial 1,000P purchase unit')
+    if (!Number.isInteger(points) || points !== 100) {
+      error('UNSUPPORTED_PURCHASE_AMOUNT', 'Phase A accepts only the initial 100P purchase unit')
     }
     const event = {
       id: this.#nextId('payment'),
@@ -213,7 +213,7 @@ export class RegionProtocolGate {
       accountId,
       deltaPoints: points,
       kind: 'PURCHASE',
-      reason: 'PAYPAL_VERIFIED_1000P',
+      reason: 'PAYPAL_VERIFIED_100P',
       sourceId: event.id,
       occurredAt: event.receivedAt,
     })
@@ -225,11 +225,11 @@ export class RegionProtocolGate {
     return this.#balanceFor(account.accountId)
   }
 
-  purchaseMonthlyPass({ subject, scopeKey, now = this.clock(), issuanceReason = 'MONTHLY_100P' }) {
+  purchaseMonthlyPass({ subject, scopeKey, now = this.clock(), issuanceReason = 'MONTHLY_10P' }) {
     const account = this.#accountFor(subject)
     const balance = this.#balanceFor(account.accountId)
     if (balance < POINTS_PER_MONTHLY_PASS) {
-      error('INSUFFICIENT_POINTS', '100P is required for a 30-day monthly pass', { balance, required: POINTS_PER_MONTHLY_PASS })
+      error('INSUFFICIENT_POINTS', '10P is required for a 30-day monthly pass', { balance, required: POINTS_PER_MONTHLY_PASS })
     }
     const issuedAt = asTimestamp(now)
     const ledgerEntry = this.#appendLedger({
@@ -260,7 +260,7 @@ export class RegionProtocolGate {
     if (balance < POINTS_PER_MONTHLY_PASS) {
       return { status: 'AUTO_RENEW_SKIPPED_INSUFFICIENT_POINTS', balance, required: POINTS_PER_MONTHLY_PASS }
     }
-    return { status: 'AUTO_RENEWED', ...this.purchaseMonthlyPass({ subject, scopeKey, now, issuanceReason: 'AUTO_RENEW_MONTHLY_100P' }) }
+    return { status: 'AUTO_RENEWED', ...this.purchaseMonthlyPass({ subject, scopeKey, now, issuanceReason: 'AUTO_RENEW_MONTHLY_10P' }) }
   }
 
   getAccessStatus({ subject, scopeKey, now = this.clock() }) {

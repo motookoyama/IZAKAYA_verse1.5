@@ -50,7 +50,7 @@ function credit(gateInstance, { eventId = 'evt_001', captureId = 'cap_001', veri
     paypalCaptureId: captureId,
     accountId: USER.accountId,
     verified,
-    points: 1000,
+    points: 100,
     auditId: `audit_${eventId}`,
     now: T0,
   })
@@ -65,13 +65,13 @@ test('24-hour first pass is issued once and expires exactly after 24 hours', () 
   expectCode('FIRST_PASS_ALREADY_ISSUED', () => subject.issueFirstPass({ subject: USER, scopeKey: SCOPE, now: T0 }))
 })
 
-test('verified 1,000P payment appends one ledger entry and ignores duplicate webhooks', () => {
+test('verified 100P payment appends one ledger entry and ignores duplicate webhooks', () => {
   const subject = gate()
   assert.equal(credit(subject).status, 'VERIFIED_CREDITED')
-  assert.equal(subject.getPointBalance({ subject: USER }), 1000)
+  assert.equal(subject.getPointBalance({ subject: USER }), 100)
   const duplicate = credit(subject)
   assert.equal(duplicate.status, 'DUPLICATE_IGNORED')
-  assert.equal(subject.getPointBalance({ subject: USER }), 1000)
+  assert.equal(subject.getPointBalance({ subject: USER }), 100)
   assert.equal(subject.snapshot().ledgerEntries.length, 1)
 })
 
@@ -82,12 +82,12 @@ test('unverified payments are recorded without granting points', () => {
   assert.equal(subject.snapshot().ledgerEntries.length, 0)
 })
 
-test('monthly pass spends 100P, lasts 30 days, and refuses insufficient balance', () => {
+test('monthly pass spends 10P, lasts 30 days, and refuses insufficient balance', () => {
   const subject = gate()
   expectCode('INSUFFICIENT_POINTS', () => subject.purchaseMonthlyPass({ subject: USER, scopeKey: SCOPE, now: T0 }))
   credit(subject)
   const purchase = subject.purchaseMonthlyPass({ subject: USER, scopeKey: SCOPE, now: T0 })
-  assert.equal(purchase.balance, 900)
+  assert.equal(purchase.balance, 90)
   assert.equal(new Date(purchase.entitlement.expiresAt).valueOf() - T0.valueOf(), MONTHLY_PASS_DURATION_MS)
   assert.equal(subject.getAccessStatus({ subject: USER, scopeKey: SCOPE, now: new Date(T0.valueOf() + MONTHLY_PASS_DURATION_MS) }).status, 'ENTITLEMENT_EXPIRED')
 })
@@ -98,12 +98,12 @@ test('auto renewal never charges PayPal and skips safely when points are insuffi
   assert.deepEqual(subject.attemptAutoRenew({ subject: USER, scopeKey: SCOPE, now: T0 }), {
     status: 'AUTO_RENEW_SKIPPED_INSUFFICIENT_POINTS',
     balance: 0,
-    required: 100,
+    required: 10,
   })
   credit(subject)
   const renewed = subject.attemptAutoRenew({ subject: USER, scopeKey: SCOPE, now: T0 })
   assert.equal(renewed.status, 'AUTO_RENEWED')
-  assert.equal(subject.getPointBalance({ subject: USER }), 900)
+  assert.equal(subject.getPointBalance({ subject: USER }), 90)
 })
 
 test('submission contract excludes raw V2, logs, API keys, source images, and CORE writes', () => {
@@ -143,7 +143,7 @@ test('snapshot reload reproduces ledger, entitlement, and submission state witho
   first.submitSubmission({ subject: USER, submissionId: draft.id, now: T0 })
   const snapshot = first.snapshot()
   const reloaded = new RegionProtocolGate({ clock: () => T0, snapshot })
-  assert.equal(reloaded.getPointBalance({ subject: USER }), 900)
+  assert.equal(reloaded.getPointBalance({ subject: USER }), 90)
   assert.equal(reloaded.getAccessStatus({ subject: USER, scopeKey: SCOPE, now: T0 }).entitlement.id, purchase.entitlement.id)
   assert.equal(reloaded.listSubmissions({ subject: USER })[0].state, SubmissionState.SUBMITTED)
   assert.equal(JSON.stringify(snapshot).includes('v2json'), false)

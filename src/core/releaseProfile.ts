@@ -20,7 +20,7 @@ export const releaseProfile = Object.freeze({
   },
   accessModel: {
     firstPass: '一アカウントにつき一回の24時間フリーパス（商業ゲート成立後）',
-    monthlyPass: '100Pで発行時から30日（商業ゲート成立後）',
+    monthlyPass: '10Pで発行時から30日（商業ゲート成立後）',
   },
   externalAi: {
     responsibility: 'AI推論・画像生成・各社API利用料はユーザー自身が管理する',

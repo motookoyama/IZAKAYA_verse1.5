@@ -5,10 +5,10 @@ This is the isolated Phase-A core for IZAKAYA Verse 2.0's commercial gate and re
 ## What is fixed here
 
 - authenticated account subject boundary (adapter supplied)
-- append-only point ledger with a 1,000P verified-payment unit
+- append-only point ledger with a 100P verified-payment unit (1,000 JPY)
 - PayPal verification result ingestion and duplicate event/capture suppression
 - one 24-hour first pass per account
-- 100P, 30-day entitlement issuance and optional *point-only* auto renewal
+- 10P, 30-day entitlement issuance and optional *point-only* auto renewal
 - deterministic access/expiry results
 - minimum-public-data region-protocol drafts and the exact state machine:
   `DRAFT → SUBMITTED → REVISION_REQUESTED | REJECTED | APPROVED`
@@ -27,7 +27,7 @@ The only payment method exposed by the domain is `ingestPaymentVerification`: a 
 npm run test:region-protocol-gate
 ```
 
-The tests replay the required Phase-A paths: 24-hour issue/expiry/repeat refusal, verified and unverified payment handling, duplicate webhook suppression, 100P/30-day issuance, insufficient balance, point-only auto renewal, submission consent/ownership/reviewer checks, and snapshot reload.
+The tests replay the required Phase-A paths: 24-hour issue/expiry/repeat refusal, verified and unverified payment handling, duplicate webhook suppression, 10P/30-day issuance, insufficient balance, point-only auto renewal, submission consent/ownership/reviewer checks, and snapshot reload.
 
 ## Decisions intentionally still outside the code
 

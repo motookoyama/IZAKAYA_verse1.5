@@ -20,7 +20,7 @@ The current `snapshot()` data is the local replay serialization. A production ad
 | --- | --- | --- | --- |
 | `issueFirstPass` | authenticated submitting account | one `FIRST_24H` entitlement; permanent account marker | none |
 | `ingestPaymentVerification` | trusted future webhook adapter after PayPal verification | immutable `payment_events`; one purchase ledger entry only if verified | none in this core |
-| `purchaseMonthlyPass` | authenticated submitting account | one -100P ledger entry and `MONTHLY_30D` entitlement | none |
+| `purchaseMonthlyPass` | authenticated submitting account | one -10P ledger entry and `MONTHLY_30D` entitlement | none |
 | `attemptAutoRenew` | authenticated account with explicit preference | same as monthly purchase only if enough stored points | never calls PayPal |
 | `createSubmissionDraft` / `updateSubmissionDraft` / `submitSubmission` | authenticated owning account | exact protocol state transition | none |
 | `reviewSubmission` | authenticated account with `PROTOCOL_REVIEWER` role | `SUBMITTED` to review result | no auto-publication or region change |

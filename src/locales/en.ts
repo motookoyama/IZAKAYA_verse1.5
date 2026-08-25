@@ -110,7 +110,7 @@ export default {
       "faqs": [
         {
           "question": "What are points?",
-          "answer": "1 point equals 1 yen of in-service balance. The first 24-hour pass and 100P / 30-day access are not available until the commercial gate launches."
+          "answer": "1 point equals 10 JPY of in-service balance. The first 24-hour pass and 10P / 30-day access are not available until the commercial gate launches."
         },
         {
           "question": "Is payment secure?",
@@ -436,7 +436,7 @@ export default {
       "backToMap": "BACK TO WORLD MAP",
       "entryPortalTitle": "ENTRY PORTAL ACTIVE",
       "scanHint": "Scan to link consciousness",
-      "enterButton": "ENTER REGION (100pt)"
+      "enterButton": "ENTER REGION (10pt)"
     }
   },
   "navigation": {
