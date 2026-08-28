@@ -7,7 +7,7 @@ export default {
   },
   "home": {
     "hero": {
-      "phase": "phase2.0 / PRELAUNCH",
+      "phase": "PHASE2.0 / ONLINE",
       "title": "IZAKAYA Verse 2.0",
       "slogans": [
         "Adventure, dreams, and love—",

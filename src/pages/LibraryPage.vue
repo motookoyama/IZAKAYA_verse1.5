@@ -87,7 +87,7 @@ function nextPage() { pageIndex.value = Math.min(totalPages.value - 1, pageIndex
   <main class="library">
     <header class="library__hero">
       <img class="library__icon" :src="libraryIcon" alt="Library" />
-      <p class="library__eyebrow">V2 CATALOG · PRELAUNCH</p>
+      <p class="library__eyebrow">V2 CATALOG · ONLINE</p>
       <h1>ライブラリー</h1>
       <p>公開済み・審査状態のカードを、外部AIへ持ち出す前に確認する一覧です。ユーザー登録・共有・ダウンロードはまだ開始していません。</p>
     </header>
@@ -105,13 +105,13 @@ function nextPage() { pageIndex.value = Math.min(totalPages.value - 1, pageIndex
       <article v-for="product in visibleProducts" :key="product.id" class="product-card" :class="{ 'is-selected': selectedProduct?.id === product.id }" tabindex="0" @click="selectProduct(product)" @keydown.enter="selectProduct(product)">
         <div class="product-card__thumb"><img :src="product.thumbnail" :alt="product.title" /><span class="badge badge--type">{{ typeLabels[product.type] }}</span><span class="badge" :class="product.official ? 'badge--official' : 'badge--community'">{{ product.official ? 'Official' : 'Community' }}</span></div>
         <div class="product-card__body"><h2>{{ product.title }}</h2><p>{{ product.author }}</p><p class="product-card__summary">{{ product.summary }}</p></div>
-        <footer><span>PRELAUNCH</span><button type="button" @click.stop="selectProduct(product)">詳細</button></footer>
+        <footer><span>CATALOG</span><button type="button" @click.stop="selectProduct(product)">詳細</button></footer>
       </article>
     </section>
 
     <nav v-if="totalPages > 1" class="pagination" aria-label="ページ送り"><button type="button" :disabled="pageIndex === 0" @click="previousPage">前へ</button><span>{{ pageIndex + 1 }} / {{ totalPages }}</span><button type="button" :disabled="pageIndex + 1 === totalPages" @click="nextPage">次へ</button></nav>
 
-    <teleport to="body"><div v-if="overlayOpen && selectedProduct" class="product-overlay" @click.self="closeOverlay"><article class="product-detail"><button class="product-detail__close" type="button" aria-label="閉じる" @click="closeOverlay">×</button><img :src="selectedProduct.thumbnail" :alt="selectedProduct.title" /><div><p class="library__eyebrow">{{ typeLabels[selectedProduct.type] }} · {{ selectedProduct.official ? 'OFFICIAL' : 'COMMUNITY' }}</p><h2>{{ selectedProduct.title }}</h2><p>{{ selectedProduct.author }}</p><p>{{ selectedProduct.summary }}</p><ul><li v-for="tag in selectedProduct.tags" :key="tag">{{ tag }}</li></ul><p class="product-detail__notice">このカードはPRELAUNCHの閲覧用です。ダウンロード、住民カタログ登録、共有は商業・審査プロトコルの成立後に別途案内します。</p></div></article></div></teleport>
+    <teleport to="body"><div v-if="overlayOpen && selectedProduct" class="product-overlay" @click.self="closeOverlay"><article class="product-detail"><button class="product-detail__close" type="button" aria-label="閉じる" @click="closeOverlay">×</button><img :src="selectedProduct.thumbnail" :alt="selectedProduct.title" /><div><p class="library__eyebrow">{{ typeLabels[selectedProduct.type] }} · {{ selectedProduct.official ? 'OFFICIAL' : 'COMMUNITY' }}</p><h2>{{ selectedProduct.title }}</h2><p>{{ selectedProduct.author }}</p><p>{{ selectedProduct.summary }}</p><ul><li v-for="tag in selectedProduct.tags" :key="tag">{{ tag }}</li></ul><p class="product-detail__notice">このカードは公開カタログ用です。ダウンロード、住民カタログ登録、共有の扱いは個別の案内に従ってください。</p></div></article></div></teleport>
   </main>
 </template>
 

@@ -90,7 +90,7 @@ async function copyPrompt() {
     <header class="byok-play__hero">
       <img :src="chatIcon" alt="Chat" class="byok-play__icon" />
       <div>
-        <p class="byok-play__eyebrow">DIRECT BYOK · PRELAUNCH</p>
+        <p class="byok-play__eyebrow">DIRECT BYOK · ONLINE</p>
         <h1>チャットボット試遊</h1>
         <p>カードを選び、あなた自身のAI環境で試遊するためのプロンプトを作ります。</p>
       </div>

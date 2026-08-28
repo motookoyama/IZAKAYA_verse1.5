@@ -96,10 +96,10 @@ onMounted(async () => {
       </article>
       <article class="value-panel">
         <p class="panel-kicker">ACCESS PASSES</p>
-        <h3>利用権は商業ゲート成立後に扱う</h3>
+        <h3>利用権はAccessGATEで扱う</h3>
         <p>
           {{ releaseProfile.accessModel.firstPass }}。{{ releaseProfile.accessModel.monthlyPass }}。
-          現在はPRELAUNCHのため、販売やポイント配布は開始していません。
+          初回の24時間フリーパスと100P購入は、AccessGATEから利用できます。
         </p>
       </article>
     </section>
