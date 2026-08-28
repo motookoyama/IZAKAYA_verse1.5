@@ -2,23 +2,30 @@
 import { navigateTo } from '../constants/navigation'
 import { releaseBadge } from '../core/releaseProfile'
 
+const publicAssetPath = (path: string) => {
+  const base = import.meta.env.BASE_URL || '/'
+  return `${base.replace(/\/$/, '')}${path}`
+}
+
+const verseIntroUrl = 'https://motookoyama.github.io/IZAKAYA_verse1.5/#/verse'
+
 const regions = [
   {
     title: 'メタチューバー',
     copy: '配信の熱、ステージの光、画面越しに交わるキャストたち。',
-    image: '/assets/regions/mtuber_region/selected/sub2.png',
+    image: publicAssetPath('/assets/regions/mtuber_region/selected/sub2.png'),
     path: '#/region/mtuber_region',
   },
   {
     title: 'よいどれ',
     copy: '夜の居酒屋で、誰かの物語にふと居合わせる。',
-    image: '/assets/regions/yoidore_region/selected/sub2.png',
+    image: publicAssetPath('/assets/regions/yoidore_region/selected/sub2.png'),
     path: '#/region/yoidore_region',
   },
   {
     title: 'モビリティ',
     copy: '移動体と未来の風景をめぐる、もうひとつの入口。',
-    image: '/assets/regions/mobility_region/selected/sub1.png',
+    image: publicAssetPath('/assets/regions/mobility_region/selected/sub1.png'),
     path: '#/region/mobility_region',
   },
 ]
@@ -84,8 +91,8 @@ function go(path: string) {
       <h2>好きな世界を、<br />あなたの手元から始めよう。</h2>
       <div class="closing__cta">
         <button class="button button--primary" type="button" @click="go('#/regions')">IZAKAYA Verseへ入る</button>
-        <a class="qr-link" href="https://motookoyama.github.io/IZAKAYA_verse1.5/verse/" aria-label="IZAKAYA Verse紹介ページを開く">
-          <img src="/assets/izakaya/qr_verse_intro.png" alt="IZAKAYA Verse紹介ページへのQRコード" />
+        <a class="qr-link" :href="verseIntroUrl" aria-label="IZAKAYA Verse紹介ページを開く">
+          <img :src="publicAssetPath('/assets/izakaya/qr_verse_intro.png')" alt="IZAKAYA Verse紹介ページへのQRコード" />
           <span>スマホで開く</span>
         </a>
       </div>

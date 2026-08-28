@@ -10,6 +10,7 @@ export const PAGE_PATHS = {
   region_detail: '#/region/:id',
   region_guide: '#/region-guide',
   verse_intro: '#/verse',
+  tools: '#/tools',
 } as const
 
 export type PageKey = keyof typeof PAGE_PATHS

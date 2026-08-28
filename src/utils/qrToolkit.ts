@@ -1,5 +1,6 @@
 import QRCode from 'qrcode'
 import pako from 'pako'
+import jsQR from 'jsqr'
 
 const textEncoder = new TextEncoder()
 const textDecoder = new TextDecoder()
@@ -111,4 +112,59 @@ export async function generateQrAssets(payload: string) {
   const embedded = embedITxtChunk(base64, 'chara', encoded)
   const size = Math.round((payload.length / 1024) * 100) / 100
   return { raw: baseDataUrl, embedded, sizeKb: size }
+}
+
+export async function generateShareQrDataUrl(payload: string): Promise<string> {
+  return QRCode.toDataURL(payload, {
+    errorCorrectionLevel: 'M',
+    margin: 2,
+    width: 512,
+  })
+}
+
+const MAX_QR_IMAGE_BYTES = 8 * 1024 * 1024
+const MAX_QR_EDGE = 2048
+
+async function loadImageElement(file: File): Promise<HTMLImageElement> {
+  const objectUrl = URL.createObjectURL(file)
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const element = new Image()
+      element.onload = () => resolve(element)
+      element.onerror = () => reject(new Error('画像を読み込めませんでした。'))
+      element.src = objectUrl
+    })
+    return image
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+
+/**
+ * Decode a QR image entirely in the browser.
+ * The image is never posted to an IZAKAYA server or an external API.
+ */
+export async function decodeQrImageFile(file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) {
+    throw new Error('PNG、JPEG、WebPなどの画像を選択してください。')
+  }
+  if (file.size > MAX_QR_IMAGE_BYTES) {
+    throw new Error('画像は8MB以下にしてください。')
+  }
+
+  const image = await loadImageElement(file)
+  const scale = Math.min(1, MAX_QR_EDGE / Math.max(image.naturalWidth, image.naturalHeight))
+  const width = Math.max(1, Math.round(image.naturalWidth * scale))
+  const height = Math.max(1, Math.round(image.naturalHeight * scale))
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+  if (!context) throw new Error('QR画像を読み取る準備ができませんでした。')
+
+  context.drawImage(image, 0, 0, width, height)
+  const pixels = context.getImageData(0, 0, width, height)
+  const result = jsQR(pixels.data, width, height, { inversionAttempts: 'attemptBoth' })
+  if (!result?.data) throw new Error('QRコードを読み取れませんでした。明るい画像か、余白を含むQR画像を試してください。')
+  return result.data.trim()
 }

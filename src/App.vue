@@ -10,6 +10,7 @@ import RegionSelectPage from './pages/RegionSelectPage.vue'
 import RegionDetailPage from './pages/RegionDetailPage.vue'
 import RegionGuidePage from './pages/RegionGuidePage.vue'
 import VerseIntroPage from './pages/VerseIntroPage.vue'
+import ToolsPage from './pages/ToolsPage.vue'
 import { useTheme } from './composables/useTheme'
 import { isSupported, persistLocale, type Locale } from './plugins/i18n'
 import type { HeroContent, HelpContent } from './types/home'
@@ -25,6 +26,7 @@ const ROUTES: Partial<Record<PageKey, Component>> = {
   region_detail: RegionDetailPage,
   region_guide: RegionGuidePage,
   verse_intro: VerseIntroPage,
+  tools: ToolsPage,
 }
 
 // These are retained as local/backstage tools. They are intentionally absent
@@ -106,6 +108,7 @@ const overlayLinks = computed<OverlayLink[]>(() => [
   { id: 'library', label: t('overlay.links.library'), path: PAGE_PATHS.library },
   { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.home },
   { id: 'region_guide', label: '遊び方', path: PAGE_PATHS.region_guide },
+  { id: 'tools', label: '共有ツール', path: PAGE_PATHS.tools },
 ])
 
 function onThemeChange(input: string | Event) {
@@ -141,6 +144,9 @@ function resolvePageFromHash(hash: string): PageKey {
   const cleaned = hash.replace(/^#\/?/, '')
   if (cleaned.startsWith('region/')) return 'region_detail'
   const routeKey = cleaned.replace(/-/g, '_')
+  // Keep the original short QR destination (#/verse) while also accepting
+  // the descriptive route spelling used by the static surface (#/verse-intro).
+  if (routeKey === 'verse' || routeKey === 'verse_intro') return 'verse_intro'
   const candidate = routeKey.length > 0 ? (routeKey as PageKey) : 'home'
   return (candidate in ROUTES ? candidate : 'home') as PageKey
 }

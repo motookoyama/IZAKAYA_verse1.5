@@ -22,6 +22,7 @@
     "test:region-dev-first": "node --test tools/narrative-forge/nodes/region-dev-first-node/test/*.test.mjs"
   },
   "dependencies": {
+    "jsqr": "^1.4.0",
     "jszip": "^3.10.1",
     "pako": "^2.1.0",
     "qrcode": "^1.5.4",

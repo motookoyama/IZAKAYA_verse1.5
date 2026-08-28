@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { findShowcaseRegion } from '../data/regions_v3'
 import { PAGE_PATHS, navigateTo } from '../constants/navigation'
 import { commercialGateNotice, releaseBadge } from '../core/releaseProfile'
+import { buildRegionHelpPrompt } from '../core/regionHelpProtocol'
 
 type RegionScene = {
   label: string
@@ -39,6 +40,7 @@ type RegionPageSpec = {
 }
 
 const currentHash = ref(typeof window !== 'undefined' ? window.location.hash : PAGE_PATHS.regions)
+const helpCopyStatus = ref('')
 
 const publicAssetPath = (path: string) => {
   if (!path || /^(https?:|data:|blob:)/.test(path) || !path.startsWith('/')) return path
@@ -283,6 +285,19 @@ const page = computed(() => {
 const activeScenes = computed(() => page.value?.scenes ?? [])
 const heroVisual = computed(() => page.value?.logo || page.value?.heroImage || activeScenes.value[0]?.image || '')
 const cards = computed(() => page.value?.cards ?? [])
+const regionHelpPrompt = computed(() => {
+  const currentPage = page.value
+  const currentRegion = region.value
+  if (!currentPage || !currentRegion) return ''
+
+  return buildRegionHelpPrompt({
+    regionId: currentPage.id,
+    regionName: currentPage.title,
+    version: currentRegion.version,
+    entryScene: activeScenes.value[0]?.title || currentPage.flow[0]?.title || 'リージョンの入口',
+    castNames: cards.value.map((card) => card.name),
+  })
+})
 
 const onHash = () => {
   currentHash.value = window.location.hash || PAGE_PATHS.regions
@@ -291,6 +306,15 @@ const onHash = () => {
 const goBack = () => navigateTo(PAGE_PATHS.regions)
 const goGuide = () => navigateTo(PAGE_PATHS.region_guide)
 const goCreate = () => navigateTo(PAGE_PATHS.region_guide)
+
+async function copyRegionHelpPrompt() {
+  try {
+    await navigator.clipboard.writeText(regionHelpPrompt.value)
+    helpCopyStatus.value = '補助プロンプトをコピーしました。必要な時だけ、ご自身のAIの新規チャットへ貼り付けてください。'
+  } catch {
+    helpCopyStatus.value = 'コピーできませんでした。下の本文を手動でコピーしてください。'
+  }
+}
 
 onMounted(() => {
   window.addEventListener('hashchange', onHash)
@@ -400,6 +424,21 @@ onUnmounted(() => {
         <button type="button" @click="goGuide">詳しい解説を見る</button>
         <button type="button" class="secondary" @click="goBack">リージョン一覧へ戻る</button>
       </div>
+    </section>
+
+    <section class="protocol-exit" aria-label="迷った時のリージョン補助">
+      <details>
+        <summary>迷ったときの補助：外部AIに遊び方を聞く</summary>
+        <div class="protocol-exit__body">
+          <p>
+            遊び始めるためにこの操作は必要ありません。世界やキャストへそのまま話しかけてください。外部AIで迷った時だけ、
+            <code>IZK: HELP</code> または下の補助プロンプトを使えます。
+          </p>
+          <button type="button" @click="copyRegionHelpPrompt">AI用の補助プロンプトをコピー</button>
+          <textarea :value="regionHelpPrompt" rows="14" readonly aria-label="リージョン共通ヘルプ用プロンプト" />
+          <p v-if="helpCopyStatus" class="protocol-exit__status" role="status">{{ helpCopyStatus }}</p>
+        </div>
+      </details>
     </section>
   </div>
 </template>
@@ -756,6 +795,62 @@ button.secondary {
   border-radius: 14px;
   padding: 18px;
   background: rgba(255, 84, 180, 0.12);
+}
+
+.protocol-exit {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(8, 11, 20, 0.72);
+  padding: 0;
+  overflow: hidden;
+}
+
+.protocol-exit details {
+  padding: 0;
+}
+
+.protocol-exit summary {
+  cursor: pointer;
+  padding: 18px 22px;
+  color: rgba(245, 248, 255, 0.88);
+  font-weight: 800;
+}
+
+.protocol-exit__body {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 18px 22px 22px;
+}
+
+.protocol-exit__body p {
+  margin: 0;
+  color: rgba(245, 248, 255, 0.72);
+  line-height: 1.65;
+}
+
+.protocol-exit code {
+  border-radius: 5px;
+  padding: 2px 5px;
+  background: rgba(114, 215, 255, 0.13);
+  color: #b6edff;
+}
+
+.protocol-exit textarea {
+  box-sizing: border-box;
+  width: 100%;
+  resize: vertical;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(3, 7, 16, 0.75);
+  color: rgba(245, 248, 255, 0.86);
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.protocol-exit__status {
+  color: #9effb8 !important;
+  font-size: 14px;
 }
 
 .price-panel strong {
