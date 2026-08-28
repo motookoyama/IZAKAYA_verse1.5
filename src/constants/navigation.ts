@@ -11,6 +11,7 @@ export const PAGE_PATHS = {
   region_guide: '#/region-guide',
   verse_intro: '#/verse',
   tools: '#/tools',
+  access: '#/access',
 } as const
 
 export type PageKey = keyof typeof PAGE_PATHS

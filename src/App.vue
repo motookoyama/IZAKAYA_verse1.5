@@ -11,6 +11,7 @@ import RegionDetailPage from './pages/RegionDetailPage.vue'
 import RegionGuidePage from './pages/RegionGuidePage.vue'
 import VerseIntroPage from './pages/VerseIntroPage.vue'
 import ToolsPage from './pages/ToolsPage.vue'
+import AccessGatePage from './pages/AccessGatePage.vue'
 import { useTheme } from './composables/useTheme'
 import { isSupported, persistLocale, type Locale } from './plugins/i18n'
 import type { HeroContent, HelpContent } from './types/home'
@@ -27,6 +28,7 @@ const ROUTES: Partial<Record<PageKey, Component>> = {
   region_guide: RegionGuidePage,
   verse_intro: VerseIntroPage,
   tools: ToolsPage,
+  access: AccessGatePage,
 }
 
 // These are retained as local/backstage tools. They are intentionally absent
@@ -106,7 +108,7 @@ type OverlayLink = { id: string; label: string; path: string }
 const overlayLinks = computed<OverlayLink[]>(() => [
   { id: 'regions', label: t('navigation.regions'), path: PAGE_PATHS.regions },
   { id: 'library', label: t('overlay.links.library'), path: PAGE_PATHS.library },
-  { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.home },
+  { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.access },
   { id: 'region_guide', label: '遊び方', path: PAGE_PATHS.region_guide },
   { id: 'tools', label: '共有ツール', path: PAGE_PATHS.tools },
 ])
@@ -129,14 +131,6 @@ function toggleOverlay() {
 
 function handleOverlayLink(link: OverlayLink) {
   overlayOpen.value = false
-  if (link.id === 'payments') {
-    navigateTo(PAGE_PATHS.home)
-    requestAnimationFrame(() => {
-      const el = document.getElementById('payments')
-      el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
-    return
-  }
   navigateTo(link.path)
 }
 

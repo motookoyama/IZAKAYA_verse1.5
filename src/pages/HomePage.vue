@@ -236,7 +236,7 @@ function toggleAdvancedHub() {
       <div class="advanced-entry__copy">
         <p>More</p>
         <h2>詳しい機能と配布予定</h2>
-        <span>ライブラリー、利用ポリシー、配布予定を確認できます。ポイント販売とアカウント利用は準備中です。</span>
+        <span>ライブラリー、利用ポリシー、24Hフリーパス、ポイント利用を確認できます。</span>
       </div>
       <button type="button" class="advanced-entry__button" @click="toggleAdvancedHub">
         {{ showAdvancedHub ? '閉じる' : '詳しく見る' }}
@@ -245,10 +245,11 @@ function toggleAdvancedHub() {
 
     <transition name="advanced-panel">
       <div v-if="showAdvancedHub" class="advanced-hub">
-        <section id="payments" class="prelaunch-sales-notice" aria-label="ポイント販売とアカウント利用の状態">
-          <p class="prelaunch-sales-notice__eyebrow">COMMERCIAL GATE · PREPARING</p>
-          <h2>ポイント販売とアカウント利用は準備中です</h2>
-          <p>現在は、リージョン紹介、V2カードの確認、利用者自身のAIを使う試遊ガイドを公開しています。決済、ポイント付与、利用権発行はまだ開始していません。</p>
+        <section id="payments" class="prelaunch-sales-notice" aria-label="ポイント販売とアカウント利用">
+          <p class="prelaunch-sales-notice__eyebrow">IZAKAYA2.0 ACCESSGATE</p>
+          <h2>24Hフリーパスとポイント</h2>
+          <p>最初の24時間を試した後、必要に応じて100Pを購入できます。AIの推論・画像生成費用は利用者自身のAI環境で管理します。</p>
+          <a href="#/access">AccessGATEを開く</a>
         </section>
 
         <section class="features">

@@ -8,19 +8,19 @@ export type ReleaseLifecycle = 'development' | 'prelaunch' | 'released'
 export const releaseProfile = Object.freeze({
   productName: 'IZAKAYA Verse',
   productVersion: '2.0',
-  lifecycle: 'prelaunch' as ReleaseLifecycle,
+  lifecycle: 'released' as ReleaseLifecycle,
   predecessor: {
     productVersion: '1.6',
     policy: 'inherit_only',
   },
   commercialGate: {
-    status: 'not_available',
-    salesEnabled: false,
-    accessPassesEnabled: false,
+    status: 'available',
+    salesEnabled: true,
+    accessPassesEnabled: true,
   },
   accessModel: {
-    firstPass: '一アカウントにつき一回の24時間フリーパス（商業ゲート成立後）',
-    monthlyPass: '10Pで発行時から30日（商業ゲート成立後）',
+    firstPass: '一アカウントにつき一回の24時間フリーパス',
+    monthlyPass: '10Pで発行時から30日',
   },
   externalAi: {
     responsibility: 'AI推論・画像生成・各社API利用料はユーザー自身が管理する',
@@ -33,4 +33,4 @@ export const releaseBadge = () =>
   `${releaseProfile.productName.toUpperCase()} ${releaseProfile.productVersion} / ${releaseProfile.lifecycle.toUpperCase()}`
 
 export const commercialGateNotice = () =>
-  '商業ゲートは準備中です。販売、ポイント付与、利用権発行はまだ開始していません。'
+  'IZAKAYA2.0 AccessGATEで、ポイント購入と利用権発行を受け付けています。'
