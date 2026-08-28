@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { navigateTo, PAGE_PATHS } from '../constants/navigation'
+import { SHOWCASE_REGIONS } from '../data/regions_v3'
 
 type Account = { id: string; balance: number; initialPassIssued: boolean; createdAt: string }
 type LocalAccount = { accountId: string; recoveryCode: string }
@@ -13,6 +14,7 @@ const recoveryCode = ref('')
 const status = ref(gateUrl ? '登録すると、最初の24時間フリーパスを一度だけ発行できます。' : '接続先を確認しています。少し時間を置いて再度開いてください。')
 const busy = ref(false)
 const passExpiresAt = ref('')
+const selectedRegionId = ref(SHOWCASE_REGIONS[0]?.id || '')
 
 const ready = computed(() => Boolean(gateUrl))
 const accountId = computed(() => account.value?.id || '')
@@ -110,6 +112,25 @@ async function beginPurchase() {
   }
 }
 
+async function issue30DayPass() {
+  if (!account.value || !selectedRegionId.value) return
+  busy.value = true
+  try {
+    const data = await request<{ pass: { expiresAt: string } }>('/passes/30d', 'POST', {
+      accountId: account.value.id,
+      regionId: selectedRegionId.value,
+      idempotencyKey: crypto.randomUUID(),
+    })
+    passExpiresAt.value = data.pass.expiresAt
+    await loadAccount()
+    status.value = '10Pを使い、選択したリージョンの30日利用権を発行しました。'
+  } catch (error) {
+    status.value = `30日利用権を発行できませんでした: ${error instanceof Error ? error.message : 'unknown_error'}`
+  } finally {
+    busy.value = false
+  }
+}
+
 async function captureReturnedPayment() {
   const token = new URLSearchParams(window.location.search).get('token')
   const pendingOrder = window.sessionStorage.getItem(pendingOrderKey)
@@ -176,6 +197,14 @@ onMounted(async () => {
       <button type="button" :disabled="busy || !accountId || !ready" @click="beginPurchase">PayPalで100Pを購入</button>
     </section>
 
+    <section class="access-card" aria-labelledby="monthly-title">
+      <p class="eyebrow">04 · 30 DAYS</p>
+      <h2 id="monthly-title">10Pで30日利用権を発行する</h2>
+      <p>ポイントを購入した後、遊びたいリージョンを選んで発行します。</p>
+      <label class="region-select"><span>対象リージョン</span><select v-model="selectedRegionId" :disabled="busy || !accountId"><option v-for="region in SHOWCASE_REGIONS" :key="region.id" :value="region.id">{{ region.label_jp }}</option></select></label>
+      <button type="button" :disabled="busy || !accountId || (account?.balance ?? 0) < 10" @click="issue30DayPass">10Pで30日利用権を発行</button>
+    </section>
+
     <p class="status" role="status">{{ status }}</p>
     <button type="button" class="back-link" @click="navigateTo(PAGE_PATHS.regions)">リージョン一覧へ戻る</button>
   </main>
@@ -190,4 +219,5 @@ onMounted(async () => {
 button { width: fit-content; min-height: 42px; border: 1px solid rgba(114, 215, 255, .5); border-radius: 999px; padding: 0 16px; background: #72d7ff; color: #06121d; font: inherit; font-weight: 900; cursor: pointer; } button:disabled { cursor: not-allowed; opacity: .5; }.access-card--purchase button { background: #ffcf72; border-color: #ffcf72; }
 .account-state, .recovery-code { display: grid; gap: 6px; border-left: 3px solid #72d7ff; padding-left: 12px; color: rgba(245, 248, 255, .85); }.recovery-code { border-color: #ffcf72; }.recovery-code code, .account-state code { overflow-wrap: anywhere; color: #fff5ce; }
 .expiry, .status { margin: 0; border-left: 3px solid #9effb8; padding-left: 12px; color: #d9ffe6; line-height: 1.6; }.back-link { background: transparent; color: #bdefff; }
+.region-select { display: grid; gap: 6px; max-width: 420px; color: rgba(245, 248, 255, .88); font-weight: 800; }.region-select select { border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; padding: 10px 12px; background: rgba(3, 7, 16, .78); color: #f5f8ff; font: inherit; }
 </style>
