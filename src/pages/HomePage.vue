@@ -186,28 +186,27 @@ function toggleAdvancedHub() {
 
     <section class="cta-strip">
       <div class="cta-strip__text">
-        <h2>まずは世界を選ぶ</h2>
-        <p>説明はあとからで大丈夫です。気になるリージョンを選び、V2カードやガイドを自分のAI環境へ持ち込んで始めてください。</p>
+        <h2>まずは、気になる景色を選ぶ</h2>
+        <p>説明はあとからで大丈夫です。4つの新しいリージョンから、世界、V2カード、開始テキストを受け取れます。</p>
       </div>
       <a
         class="cta-strip__button"
-        href="#/regions"
-        @click.prevent="goTo('regions')"
+        href="adventures/index.html"
       >
-        リージョンを選ぶ
+        4作品を見る
       </a>
     </section>
 
     <section class="beginner-path">
       <article class="beginner-card beginner-card--lead">
         <p class="beginner-kicker">First Step</p>
-        <h2>リージョンを選ぶ入口として使う</h2>
+        <h2>物語は、まず景色から選ぶ</h2>
         <p>トップでは仕組みを説明しすぎず、世界、キャラクター、V2カード、持ち出しガイドの入口を見せます。</p>
       </article>
-      <a class="beginner-card" href="#/regions" @click.prevent="goTo('regions')">
+      <a class="beginner-card" href="adventures/index.html">
         <span>01</span>
-        <h3>世界を選ぶ</h3>
-        <p>海賊酒場、転生裁判、配信スタジオ、癒しの旅から入れます。</p>
+        <h3>4つの世界を見る</h3>
+        <p>日常、ファンタジー、推理、怪異。気になる景色から入れます。</p>
       </a>
       <a class="beginner-card" href="#/region-guide" @click.prevent="goTo('region_guide')">
         <span>02</span>
