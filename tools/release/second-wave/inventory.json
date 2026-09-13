@@ -1,0 +1,86 @@
+{
+  "schema": "izakaya.public-adventures.v1",
+  "files": [
+    {
+      "path": "adventures/spirit-appliances/start.md",
+      "bytes": 4373,
+      "sha256": "35ad956227e2519a51468b5d5f3f224d0b4790da61223a847bd12a1e95088053"
+    },
+    {
+      "path": "adventures/spirit-appliances/novel.md",
+      "bytes": 3113,
+      "sha256": "b1463c08b74a23e5ea6add97847646bc65f8309a4d691f3ba6a563985c0b888c"
+    },
+    {
+      "path": "adventures/spirit-appliances/pomo.jpg",
+      "bytes": 19781,
+      "sha256": "99e4682ee9569937238c3c5b6c2d75d49741a4ef4d4b4c14890f85798cb0bdee"
+    },
+    {
+      "path": "adventures/spirit-appliances/reiko.jpg",
+      "bytes": 19678,
+      "sha256": "9130c2de5bb9ccf65f38aeeceecae0200197986ccb83da2347c3da4837925496"
+    },
+    {
+      "path": "adventures/spirit-appliances/soyo.jpg",
+      "bytes": 18136,
+      "sha256": "c3df588708714cafc3ddae03c5d44684bffb87ca7675d6a690bea854aa11174f"
+    },
+    {
+      "path": "adventures/spirit-appliances/index.html",
+      "bytes": 6674,
+      "sha256": "5fbd0f4f9bdec481a4405b3a2c63fcebbffdaaa0583d566406160c7a8a81a6d7"
+    },
+    {
+      "path": "adventures/dear-karma/start.md",
+      "bytes": 3855,
+      "sha256": "0597b7f5e805de52c1b738d88ba31b3d780f65f6ffb5efa4eef2342d293cb9ba"
+    },
+    {
+      "path": "adventures/dear-karma/novel.md",
+      "bytes": 1955,
+      "sha256": "57b9a910584637a7bf65c17c3fd8a60829b0fe8b47b5917b91e9b3f30d8c8fc5"
+    },
+    {
+      "path": "adventures/dear-karma/index.html",
+      "bytes": 5274,
+      "sha256": "c42bef1b7a6cca6454fe74a9f049099c649b008c33ac80add67159e8141e92b5"
+    },
+    {
+      "path": "adventures/battle-ai-colosseum/start.md",
+      "bytes": 11815,
+      "sha256": "31b4689a62162533df694bd006616713b0db5d5c8eb31631c4b077cc27e4f925"
+    },
+    {
+      "path": "adventures/battle-ai-colosseum/novel.md",
+      "bytes": 2668,
+      "sha256": "0f2af6da4cd69cae432134352ee8a4364348f5a8041c547cfc7d60f1e5f2b281"
+    },
+    {
+      "path": "adventures/battle-ai-colosseum/index.html",
+      "bytes": 6239,
+      "sha256": "aedc66b658b87956c78d0bd3dcfc09e79c307863dfb61363e42eadb3f2483341"
+    },
+    {
+      "path": "adventures/chronicle-soul/start.md",
+      "bytes": 4031,
+      "sha256": "8efd95f96b42ff49ef512fa290d9526dfdb5428eb778a92c0f89a4dd058a1707"
+    },
+    {
+      "path": "adventures/chronicle-soul/novel.md",
+      "bytes": 2359,
+      "sha256": "c693273a7315f2a6981254ef57f33abda5be16a2aecc860f647f705fb0df48f9"
+    },
+    {
+      "path": "adventures/chronicle-soul/index.html",
+      "bytes": 5757,
+      "sha256": "60002f4b8c7c606f00aaf1e449b3b2e00032bde90d3a508ad72bc3405dfd6e31"
+    },
+    {
+      "path": "adventures/index.html",
+      "bytes": 3128,
+      "sha256": "5259313e4304ec235bad1cc6624f3beace38c56cd9a1712a2616995c5acb5961"
+    }
+  ],
+  "total_bytes": 118836
+}

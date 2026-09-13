@@ -8,6 +8,7 @@ import { commercialGateNotice, releaseBadge, releaseProfile } from '../core/rele
 const navigateToRegion = (id: string) => {
   navigateTo(`region/${id}`)
 }
+const adventuresUrl = `${import.meta.env.BASE_URL}adventures/index.html`
 
 const gateState = reactive<Record<string, ImageGateResult>>({})
 const displayRegions = computed(() => [...SHOWCASE_REGIONS].sort((left, right) => {
@@ -40,6 +41,14 @@ onMounted(async () => {
       <h1>REGION CATALOG</h1>
       <p class="subtitle">2.0へ継承するリージョン候補を確認し、遊び方とV2制作ガイドへ進みます。</p>
     </header>
+
+    <section class="hero-card">
+      <div class="hero-copy">
+        <h2>一言から、4つの物語へ</h2>
+        <p>おやつの支度、小さな手助け、AIと推理、霧の街の観測。気になった世界を少しだけ。</p>
+        <a :href="adventuresUrl">最初の一話を選ぶ →</a>
+      </div>
+    </section>
 
     <section class="hero-card">
       <div class="hero-copy">

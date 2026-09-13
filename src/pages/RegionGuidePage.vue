@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { navigateTo } from '../constants/navigation'
 import { commercialGateNotice, releaseProfile } from '../core/releaseProfile'
+const adventuresUrl = `${import.meta.env.BASE_URL}adventures/index.html`
 
 const platforms = [
   'ChatGPT / OpenAI',
@@ -78,6 +79,7 @@ const playStyles = [
         あなたのAI環境へ持ち込んで物語を始めるための入口です。
       </p>
       <div class="hero-actions">
+        <a :href="adventuresUrl">一言から遊べる4作品へ →</a>
         <button type="button" @click="navigateTo('regions')">リージョンを選ぶ</button>
         <button type="button" class="secondary" @click="navigateTo('library')">カードを見る</button>
       </div>
