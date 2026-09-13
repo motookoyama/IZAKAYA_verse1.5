@@ -15,6 +15,8 @@ const props = withDefaults(defineProps<{
     title: string; 
     subtitle: string;
     align?: 'left' | 'right' | 'center' | 'top-left' | 'bottom-right' // New: Alignment options
+    /** CSS object-position. Use this when wide crops must keep a face visible. */
+    focus?: string
   }>
   interval?: number
   fullPage?: boolean
@@ -27,6 +29,8 @@ const timer = ref<ReturnType<typeof setInterval> | null>(null)
 
 const currentImage = ref<string | null>(null)
 const prevImage = ref<string | null>(null)
+const currentFocus = ref('50% 50%')
+const prevFocus = ref('50% 50%')
 const currentCaption = ref<{ title: string; subtitle: string; align: string } | null>(null)
 const prevCaption = ref<{ title: string; subtitle: string; align: string } | null>(null)
 
@@ -64,6 +68,13 @@ const captionList = computed(() => {
   return []
 })
 
+const focusList = computed(() => {
+  if (props.slides && props.slides.length > 0) {
+    return props.slides.map((slide) => slide.focus || '50% 50%')
+  }
+  return imageList.value.map(() => '50% 50%')
+})
+
 function triggerFade() {
   isTransitioning.value = true
   setTimeout(() => {
@@ -78,9 +89,11 @@ function updateSlide() {
   
   prevImage.value = currentImage.value
   prevCaption.value = currentCaption.value
+  prevFocus.value = currentFocus.value
   
   currentImage.value = imageList.value[currentIdx.value] ?? null
   currentCaption.value = captionList.value[currentIdx.value] ?? null
+  currentFocus.value = focusList.value[currentIdx.value] ?? '50% 50%'
   
   if (prevImage.value) triggerFade()
 }
@@ -150,7 +163,7 @@ function goToSlide(idx: number) {
       :class="{ 'ken-burns': !isPaused && !isVideo(prevImage) }"
       v-show="isTransitioning"
     >
-      <img v-if="prevImage && !isVideo(prevImage)" :src="prevImage" alt="Background Previous" />
+      <img v-if="prevImage && !isVideo(prevImage)" :src="prevImage" :style="{ objectPosition: prevFocus }" alt="Background Previous" />
       <video 
         v-else-if="prevImage && isVideo(prevImage)"
         ref="videoRef2"
@@ -171,7 +184,7 @@ function goToSlide(idx: number) {
         'fade-in': isTransitioning 
       }"
     >
-      <img v-if="currentImage && !isVideo(currentImage)" :src="currentImage" alt="Background Current" />
+      <img v-if="currentImage && !isVideo(currentImage)" :src="currentImage" :style="{ objectPosition: currentFocus }" alt="Background Current" />
       <video 
         v-else-if="currentImage && isVideo(currentImage)"
         ref="videoRef1"

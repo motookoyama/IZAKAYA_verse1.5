@@ -8,6 +8,8 @@ export type TopSlide = {
   title: string
   subtitle: string
   align: 'left' | 'right' | 'center' | 'top-left' | 'bottom-right'
+  /** CSS object-position. Keep a character's face inside the wide hero crop. */
+  focus: string
   cta: string
   route: string
 }
@@ -18,6 +20,7 @@ export const TOP_SLIDES_TAKE1: TopSlide[] = [
     title: '精霊家電',
     subtitle: 'おやつの支度から始まる、精霊たちとの小さな午後。',
     align: 'left',
+    focus: '50% 36%',
     cta: '精霊家電へ',
     route: 'adventures/spirit-appliances/index.html',
   },
@@ -26,6 +29,7 @@ export const TOP_SLIDES_TAKE1: TopSlide[] = [
     title: 'ディア・カルマ',
     subtitle: '旅人として、最初の手助けを。古街道の先に物語が待っている。',
     align: 'left',
+    focus: '50% 18%',
     cta: 'ディア・カルマへ',
     route: 'adventures/dear-karma/index.html',
   },
@@ -34,6 +38,7 @@ export const TOP_SLIDES_TAKE1: TopSlide[] = [
     title: 'AIコロシアム',
     subtitle: 'あなたのAIと、王冠消失事件の最初の一問へ。',
     align: 'right',
+    focus: '50% 40%',
     cta: 'AIコロシアムへ',
     route: 'adventures/battle-ai-colosseum/index.html',
   },
@@ -42,6 +47,7 @@ export const TOP_SLIDES_TAKE1: TopSlide[] = [
     title: 'クロニクル・ソウル',
     subtitle: '霧の街で、時計と影のずれを一つ確かめる。',
     align: 'right',
+    focus: '50% 24%',
     cta: 'クロニクル・ソウルへ',
     route: 'adventures/chronicle-soul/index.html',
   },

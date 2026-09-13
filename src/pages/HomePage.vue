@@ -99,6 +99,7 @@ const activeSlides = computed(() => {
         title: slide.title,
         subtitle: slide.subtitle,
         align: (slide.align || 'left') as 'left' | 'right' | 'center' | 'top-left' | 'bottom-right',
+        focus: slide.focus || '50% 50%',
       }))
       .filter((slide) => slide.image.length > 0)
     if (resolved.length > 0) return resolved
@@ -114,7 +115,7 @@ function goTo(path?: string, fallbackId?: string) {
 }
 
 const richSlidesArray = [
-  ...TOP_SLIDES_TAKE1.map(({ image, title, subtitle, align }) => ({ image, title, subtitle, align })),
+  ...TOP_SLIDES_TAKE1.map(({ image, title, subtitle, align, focus }) => ({ image, title, subtitle, align, focus })),
 ]
 
 const isOverlayVisible = ref(true)

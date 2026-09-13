@@ -16,7 +16,7 @@ export interface RegionV3 {
     connected_regions: string[];
     level: number;
     version: string;
-    slides?: Array<{ image: string; title: string; subtitle: string; align?: string }>;
+    slides?: Array<{ image: string; title: string; subtitle: string; align?: string; focus?: string }>;
 }
 
 // Global State (Singleton pattern suitable for basic app-wide context)
