@@ -9,6 +9,7 @@
 - `public/adventures/` の16ファイル
 - 合計: `118,836 bytes`
 - 台帳: `tools/release/second-wave/inventory.json`
+- タイトル別の納品内訳: `tools/release/second-wave/DELIVERY_MANIFEST_20260914.md`
 - Pages / Firebase のdry build出力で、16ファイル全てについてバイト数とSHA-256が台帳と一致した。
 - `HOLD`、内部シーンID、制作原稿参照は公開物・配備出力から検出されなかった。
 
