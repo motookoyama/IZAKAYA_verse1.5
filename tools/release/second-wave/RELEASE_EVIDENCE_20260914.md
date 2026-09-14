@@ -6,11 +6,11 @@
 
 ## 配布物
 
-- `public/adventures/` の29ファイル
-- 合計: `1,948,777 bytes`
+- `public/adventures/` の30ファイル
+- 合計: `2,558,317 bytes`
 - 台帳: `tools/release/second-wave/inventory.json`
 - タイトル別の納品内訳: `tools/release/second-wave/DELIVERY_MANIFEST_20260914.md`
-- Pages / Firebase のdry build出力で、29ファイル全てについてバイト数とSHA-256が台帳と一致することを確認する。
+- Pages / Firebase のdry build出力で、30ファイル全てについてバイト数とSHA-256が台帳と一致することを確認する。
 - `HOLD`、内部シーンID、制作原稿参照は公開物・配備出力から検出されなかった。
 
 ## 検証
@@ -22,8 +22,8 @@
 | `npm run build:firebase:dry` | PASS |
 | 内部素材プリフライト | PASS: 5/5。`sharp` は一時検証環境でのみ利用し、実装元・公開候補の依存定義を変更していない |
 | V2カード容量 | 4枚とも PASS。本文 1,688〜2,047 bytes、画像 149,288〜244,273 bytes、長辺960px以下、Base64なし |
-| ブラウザ | トップの第2期スライド4枚、トップ→4作品入口、4作品入口→AIコロシアム、主ビジュアル、V2カード導線、開始テキスト・ノベル・戻り先を確認 |
-| 開始テキスト・V2 | 4作品ともMarkdown本文とV2 JSONをHTTP 200で返却。ブラウザconsole error 0 |
+| ブラウザ | トップの第2期スライド4枚、精霊家電の集合絵、トップ→4作品入口、4作品入口→AIコロシアム、主ビジュアル、V2カード導線、開始テキスト・ノベル・戻り先を確認 |
+| 開始テキスト・V2 | 4作品ともMarkdown本文とV2 JSONをHTTP 200で返却。開始テキストへ `IZK: HELP` と続き用メモ指示を追加。ブラウザconsole error 0（アプリ面） |
 
 Viteは既存V2プレビューSVGについて解決時警告を出す。これは今回追加した4作品ファイルではない。ライブラリは実ブラウザで14件の画像カードを表示し、console error 0を確認した。
 

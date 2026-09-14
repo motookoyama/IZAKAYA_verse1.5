@@ -28,8 +28,8 @@
     },
     {
       "path": "adventures/battle-ai-colosseum/start.md",
-      "bytes": 11815,
-      "sha256": "31b4689a62162533df694bd006616713b0db5d5c8eb31631c4b077cc27e4f925"
+      "bytes": 12108,
+      "sha256": "1fbb8135bf219827a1d33ca4da46abb332ddf37aad84db91ba30022e4b5b3e58"
     },
     {
       "path": "adventures/battle-ai-colosseum/white-challenger.v2.json",
@@ -63,8 +63,8 @@
     },
     {
       "path": "adventures/chronicle-soul/start.md",
-      "bytes": 4031,
-      "sha256": "8efd95f96b42ff49ef512fa290d9526dfdb5428eb778a92c0f89a4dd058a1707"
+      "bytes": 4324,
+      "sha256": "f54b4f56c82a5ecbfaa0bb5470e7034cb785651ba75ecb8f1ed526e46861255d"
     },
     {
       "path": "adventures/dear-karma/index.html",
@@ -93,8 +93,8 @@
     },
     {
       "path": "adventures/dear-karma/start.md",
-      "bytes": 3855,
-      "sha256": "0597b7f5e805de52c1b738d88ba31b3d780f65f6ffb5efa4eef2342d293cb9ba"
+      "bytes": 4148,
+      "sha256": "8f1d156c7084a1e6ef9425f6c6f0eee28088da2dfd8c5ce670d79dd91a5f4832"
     },
     {
       "path": "adventures/index.html",
@@ -105,6 +105,11 @@
       "path": "adventures/spirit-appliances/index.html",
       "bytes": 2818,
       "sha256": "53a87983edfd3ba7cc47f8e7e2c20b33f519e3804cabccf8285cf8f1fdf03a3a"
+    },
+    {
+      "path": "adventures/spirit-appliances/media/group-hero.jpg",
+      "bytes": 608368,
+      "sha256": "5fe8dbad296951e4c1a2e77638809ce7538f43252ee770149e7e21043a65c14d"
     },
     {
       "path": "adventures/spirit-appliances/media/hero.jpg",
@@ -143,9 +148,9 @@
     },
     {
       "path": "adventures/spirit-appliances/start.md",
-      "bytes": 4373,
-      "sha256": "35ad956227e2519a51468b5d5f3f224d0b4790da61223a847bd12a1e95088053"
+      "bytes": 4666,
+      "sha256": "5fa8c24dbc8517f7be0b47d969fe4dbbf5393ed416890b83e4b6a3861f7571c7"
     }
   ],
-  "total_bytes": 1948777
+  "total_bytes": 2558317
 }

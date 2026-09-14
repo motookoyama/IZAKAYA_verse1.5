@@ -16,11 +16,11 @@ export type TopSlide = {
 
 export const TOP_SLIDES_TAKE1: TopSlide[] = [
   {
-    image: publicAssetPath('/adventures/spirit-appliances/media/hero.jpg'),
+    image: publicAssetPath('/adventures/spirit-appliances/media/group-hero.jpg'),
     title: '精霊家電',
     subtitle: 'おやつの支度から始まる、精霊たちとの小さな午後。',
     align: 'left',
-    focus: '50% 36%',
+    focus: '50% 35%',
     cta: '精霊家電へ',
     route: 'adventures/spirit-appliances/index.html',
   },
