@@ -3,7 +3,7 @@
 更新: 2026-09-14  
 状態: `READY_FOR_EXTERNAL_GENERATION`（この文書自体は生成・公開の実行を含まない）
 
-外部へ渡す実画像を含む自己完結パッケージ: `/Volumes/Yggdrasill/yggdrasill_workspace/handoff/IZAKAYA_EXTERNAL_VISUAL_PACK_20260914_REV2/`。この文書のローカルパス表記だけを外部担当者へ渡さず、必ず当該パッケージ内の `README.md` と `references/` を一緒に渡す。REV2にはオーナー原スケッチ・原画も同梱する。
+外部へ渡す実画像を含む自己完結パッケージ: `/Volumes/Yggdrasill/yggdrasill_workspace/handoff/IZAKAYA_EXTERNAL_VISUAL_PACK_20260914_REV3/`。この文書のローカルパス表記だけを外部担当者へ渡さず、必ず当該パッケージ内の `README.md` と `references/` を一緒に渡す。REV3にはオーナー原スケッチ・原画も同梱し、表示破綻のあったディア・カルマ地図は除外済みである。
 
 ## 0. この発注の目的
 
