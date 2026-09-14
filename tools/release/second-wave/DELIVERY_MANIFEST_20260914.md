@@ -1,5 +1,7 @@
 # 第二波4作品 — 納品内訳
 
+> 看板絵を外部クラウドで派生生成する場合の参照画像・コピーペースト発注書は、[EXTERNAL_CLOUD_VISUAL_DIRECTION_20260914.md](EXTERNAL_CLOUD_VISUAL_DIRECTION_20260914.md) に固定した。現時点で新規生成・公開は行っていない。
+
 更新日: 2026-09-14  
 対象候補: `codex/second-wave-release` / `e2fe2ea` を基点とする静的公開候補
 
