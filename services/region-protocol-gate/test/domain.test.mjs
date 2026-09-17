@@ -92,6 +92,16 @@ test('monthly pass spends 10P, lasts 30 days, and refuses insufficient balance',
   assert.equal(subject.getAccessStatus({ subject: USER, scopeKey: SCOPE, now: new Date(T0.valueOf() + MONTHLY_PASS_DURATION_MS) }).status, 'ENTITLEMENT_EXPIRED')
 })
 
+test('MMO1 and MMO2 monthly passes spend 20P while other region scopes spend 10P', () => {
+  for (const [scopeKey, expectedBalance] of [['dear-karma', 80], ['chronicle-soul', 80], ['spirit-appliances', 90]]) {
+    const subject = gate()
+    credit(subject)
+    const issued = subject.purchaseMonthlyPass({ subject: USER, scopeKey, now: T0 })
+    assert.equal(issued.balance, expectedBalance)
+    assert.equal(issued.ledgerEntry.deltaPoints, expectedBalance - 100)
+  }
+})
+
 test('auto renewal never charges PayPal and skips safely when points are insufficient', () => {
   const subject = gate()
   subject.setAutoRenewMonthly({ subject: USER, enabled: true })

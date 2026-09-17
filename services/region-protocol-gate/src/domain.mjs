@@ -7,8 +7,14 @@
  */
 
 export const POINTS_PER_MONTHLY_PASS = 10
+export const POINTS_PER_MMO_MONTHLY_PASS = 20
+export const MMO_REGION_IDS = Object.freeze(['dear-karma', 'chronicle-soul'])
 export const FIRST_PASS_DURATION_MS = 24 * 60 * 60 * 1000
 export const MONTHLY_PASS_DURATION_MS = 30 * 24 * 60 * 60 * 1000
+
+export function pointsForMonthlyPass(scopeKey) {
+  return MMO_REGION_IDS.includes(scopeKey) ? POINTS_PER_MMO_MONTHLY_PASS : POINTS_PER_MONTHLY_PASS
+}
 
 export const SubmissionState = Object.freeze({
   DRAFT: 'DRAFT',
@@ -225,28 +231,31 @@ export class RegionProtocolGate {
     return this.#balanceFor(account.accountId)
   }
 
-  purchaseMonthlyPass({ subject, scopeKey, now = this.clock(), issuanceReason = 'MONTHLY_10P' }) {
+  purchaseMonthlyPass({ subject, scopeKey, now = this.clock(), issuanceReason }) {
     const account = this.#accountFor(subject)
+    const normalizedScopeKey = assertString(scopeKey, 'scopeKey', { max: 128 })
+    const requiredPoints = pointsForMonthlyPass(normalizedScopeKey)
+    const reason = issuanceReason ?? `MONTHLY_${requiredPoints}P`
     const balance = this.#balanceFor(account.accountId)
-    if (balance < POINTS_PER_MONTHLY_PASS) {
-      error('INSUFFICIENT_POINTS', '10P is required for a 30-day monthly pass', { balance, required: POINTS_PER_MONTHLY_PASS })
+    if (balance < requiredPoints) {
+      error('INSUFFICIENT_POINTS', `${requiredPoints}P is required for a 30-day monthly pass`, { balance, required: requiredPoints })
     }
     const issuedAt = asTimestamp(now)
     const ledgerEntry = this.#appendLedger({
       accountId: account.accountId,
-      deltaPoints: -POINTS_PER_MONTHLY_PASS,
+      deltaPoints: -requiredPoints,
       kind: 'SPEND',
-      reason: issuanceReason,
+      reason,
       sourceId: null,
       occurredAt: issuedAt,
     })
     const entitlement = this.#appendEntitlement({
       accountId: account.accountId,
-      scopeKey: assertString(scopeKey, 'scopeKey', { max: 128 }),
+      scopeKey: normalizedScopeKey,
       kind: 'MONTHLY_30D',
       issuedAt,
       expiresAt: new Date(millis(issuedAt) + MONTHLY_PASS_DURATION_MS).toISOString(),
-      issuanceReason,
+      issuanceReason: reason,
     })
     return { ledgerEntry: clone(ledgerEntry), entitlement: clone(entitlement), balance: this.#balanceFor(account.accountId) }
   }
@@ -256,11 +265,12 @@ export class RegionProtocolGate {
     if (!account.autoRenewMonthly) return { status: 'AUTO_RENEW_DISABLED' }
     const access = this.getAccessStatus({ subject, scopeKey, now })
     if (access.allowed) return { status: 'AUTO_RENEW_NOT_DUE', access }
+    const requiredPoints = pointsForMonthlyPass(scopeKey)
     const balance = this.#balanceFor(account.accountId)
-    if (balance < POINTS_PER_MONTHLY_PASS) {
-      return { status: 'AUTO_RENEW_SKIPPED_INSUFFICIENT_POINTS', balance, required: POINTS_PER_MONTHLY_PASS }
+    if (balance < requiredPoints) {
+      return { status: 'AUTO_RENEW_SKIPPED_INSUFFICIENT_POINTS', balance, required: requiredPoints }
     }
-    return { status: 'AUTO_RENEWED', ...this.purchaseMonthlyPass({ subject, scopeKey, now, issuanceReason: 'AUTO_RENEW_MONTHLY_10P' }) }
+    return { status: 'AUTO_RENEWED', ...this.purchaseMonthlyPass({ subject, scopeKey, now, issuanceReason: `AUTO_RENEW_MONTHLY_${requiredPoints}P` }) }
   }
 
   getAccessStatus({ subject, scopeKey, now = this.clock() }) {

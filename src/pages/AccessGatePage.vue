@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { navigateTo, PAGE_PATHS } from '../constants/navigation'
-import { SHOWCASE_REGIONS } from '../data/regions_v3'
+import { regionMonthlyPassPoints } from '../constants/points'
+import { ACCESS_PASS_REGIONS } from '../data/accessPassRegions'
 
 type Account = { id: string; balance: number; initialPassIssued: boolean; createdAt: string }
 type LocalAccount = { accountId: string; recoveryCode: string }
@@ -14,10 +15,11 @@ const recoveryCode = ref('')
 const status = ref(gateUrl ? '登録すると、最初の24時間フリーパスを一度だけ発行できます。' : '接続先を確認しています。少し時間を置いて再度開いてください。')
 const busy = ref(false)
 const passExpiresAt = ref('')
-const selectedRegionId = ref(SHOWCASE_REGIONS[0]?.id || '')
+const selectedRegionId = ref(ACCESS_PASS_REGIONS[0]?.id || '')
 
 const ready = computed(() => Boolean(gateUrl))
 const accountId = computed(() => account.value?.id || '')
+const selectedRegionPrice = computed(() => regionMonthlyPassPoints(selectedRegionId.value))
 
 function storedAccount(): LocalAccount | null {
   try {
@@ -116,14 +118,15 @@ async function issue30DayPass() {
   if (!account.value || !selectedRegionId.value) return
   busy.value = true
   try {
-    const data = await request<{ pass: { expiresAt: string } }>('/passes/30d', 'POST', {
+    const data = await request<{ pass: { expiresAt: string }; token: string }>('/passes/30d', 'POST', {
       accountId: account.value.id,
       regionId: selectedRegionId.value,
       idempotencyKey: crypto.randomUUID(),
     })
+    window.localStorage.setItem(`izakaya2.accessgate.region-pass.v1:${selectedRegionId.value}`, data.token)
     passExpiresAt.value = data.pass.expiresAt
     await loadAccount()
-    status.value = '10Pを使い、選択したリージョンの30日利用権を発行しました。'
+    status.value = `${selectedRegionPrice.value}Pを使い、選択したリージョンの30日利用権を発行しました。`
   } catch (error) {
     status.value = `30日利用権を発行できませんでした: ${error instanceof Error ? error.message : 'unknown_error'}`
   } finally {
@@ -193,16 +196,17 @@ onMounted(async () => {
     <section class="access-card access-card--purchase" aria-labelledby="purchase-title">
       <p class="eyebrow">03 · PAYPAL</p>
       <h2 id="purchase-title">100Pを購入する</h2>
-      <p>¥1,000で100P。レベル1リージョンの30日利用権は10Pです。支払いはPayPalの公式画面で行われます。</p>
+      <p>¥1,000で100P。MMO1・MMO2は20P／30日、その他のリージョンは10P／30日です。支払いはPayPalの公式画面で行われます。</p>
       <button type="button" :disabled="busy || !accountId || !ready" @click="beginPurchase">PayPalで100Pを購入</button>
     </section>
 
     <section class="access-card" aria-labelledby="monthly-title">
       <p class="eyebrow">04 · 30 DAYS</p>
-      <h2 id="monthly-title">10Pで30日利用権を発行する</h2>
+      <h2 id="monthly-title">リージョンの30日利用権を発行する</h2>
       <p>ポイントを購入した後、遊びたいリージョンを選んで発行します。</p>
-      <label class="region-select"><span>対象リージョン</span><select v-model="selectedRegionId" :disabled="busy || !accountId"><option v-for="region in SHOWCASE_REGIONS" :key="region.id" :value="region.id">{{ region.label_jp }}</option></select></label>
-      <button type="button" :disabled="busy || !accountId || (account?.balance ?? 0) < 10" @click="issue30DayPass">10Pで30日利用権を発行</button>
+      <label class="region-select"><span>対象リージョン</span><select v-model="selectedRegionId" :disabled="busy || !accountId"><option v-for="region in ACCESS_PASS_REGIONS" :key="region.id" :value="region.id">{{ region.label_jp }} · {{ regionMonthlyPassPoints(region.id) }}P／30日</option></select></label>
+      <p class="selected-price">選択中の値札: {{ selectedRegionPrice }}P／30日</p>
+      <button type="button" :disabled="busy || !accountId || (account?.balance ?? 0) < selectedRegionPrice" @click="issue30DayPass">{{ selectedRegionPrice }}Pで30日利用権を発行</button>
     </section>
 
     <p class="status" role="status">{{ status }}</p>
@@ -220,4 +224,5 @@ button { width: fit-content; min-height: 42px; border: 1px solid rgba(114, 215, 
 .account-state, .recovery-code { display: grid; gap: 6px; border-left: 3px solid #72d7ff; padding-left: 12px; color: rgba(245, 248, 255, .85); }.recovery-code { border-color: #ffcf72; }.recovery-code code, .account-state code { overflow-wrap: anywhere; color: #fff5ce; }
 .expiry, .status { margin: 0; border-left: 3px solid #9effb8; padding-left: 12px; color: #d9ffe6; line-height: 1.6; }.back-link { background: transparent; color: #bdefff; }
 .region-select { display: grid; gap: 6px; max-width: 420px; color: rgba(245, 248, 255, .88); font-weight: 800; }.region-select select { border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; padding: 10px 12px; background: rgba(3, 7, 16, .78); color: #f5f8ff; font: inherit; }
+.selected-price { margin: 0; color: #fff5ce !important; font-weight: 900; }
 </style>

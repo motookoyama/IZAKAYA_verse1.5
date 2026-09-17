@@ -20,7 +20,7 @@ export const releaseProfile = Object.freeze({
   },
   accessModel: {
     firstPass: '一アカウントにつき一回の24時間フリーパス',
-    monthlyPass: '10Pで発行時から30日',
+    monthlyPass: 'MMO1・MMO2は20P、その他は10Pで発行時から30日',
   },
   externalAi: {
     responsibility: 'AI推論・画像生成・各社API利用料はユーザー自身が管理する',
