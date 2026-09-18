@@ -10,6 +10,7 @@ type LocalAccount = { accountId: string; recoveryCode: string }
 const gateUrl = (import.meta.env.VITE_ACCESS_GATE_URL || '').replace(/\/$/, '')
 const storageKey = 'izakaya2.accessgate.account.v1'
 const pendingOrderKey = 'izakaya2.accessgate.pending-order.v1'
+const measurementPrefix = 'izakaya2.measurement.v1'
 const account = ref<Account | null>(null)
 const recoveryCode = ref('')
 const status = ref(gateUrl ? '登録すると、最初の24時間フリーパスを一度だけ発行できます。' : '接続先を確認しています。少し時間を置いて再度開いてください。')
@@ -42,6 +43,28 @@ async function request<T>(path: string, method = 'GET', body?: Record<string, un
   const data = await response.json().catch(() => ({})) as T & { error?: string }
   if (!response.ok) throw new Error(data.error || `http_${response.status}`)
   return data
+}
+
+function dayKey() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+/** Measurement must never interrupt registration, ticketing, or payment. */
+function trackMarketingEvent(event: 'access_gate_viewed' | 'trial_cta_clicked' | 'ticket_issued' | 'purchase_cta_clicked', regionId?: string) {
+  if (!gateUrl) return
+  const key = `${measurementPrefix}:${dayKey()}:${event}:${regionId || '_'}`
+  try {
+    if (window.sessionStorage.getItem(key)) return
+    window.sessionStorage.setItem(key, '1')
+    void fetch(`${gateUrl}/marketing/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, campaignId: 'second-wave-launch', ...(regionId ? { regionId } : {}) }),
+      keepalive: true,
+    }).catch(() => undefined)
+  } catch {
+    // Private browsing/storage restrictions must not affect the primary action.
+  }
 }
 
 async function loadAccount() {
@@ -85,10 +108,12 @@ async function issueInitialPass() {
   if (!account.value) return
   busy.value = true
   try {
+    trackMarketingEvent('trial_cta_clicked')
     const data = await request<{ pass: { expiresAt: string }; token: string }>('/passes/initial', 'POST', { accountId: account.value.id, regionId: '*' })
     window.localStorage.setItem('izakaya2.accessgate.initial-pass.v1', data.token)
     passExpiresAt.value = data.pass.expiresAt
     await loadAccount()
+    trackMarketingEvent('ticket_issued', 'all-regions')
     status.value = '24時間フリーパスを発行しました。好きなリージョンから遊び始めてください。'
   } catch (error) {
     status.value = `発行できませんでした: ${error instanceof Error ? error.message : 'unknown_error'}`
@@ -104,6 +129,7 @@ async function beginPurchase() {
   }
   busy.value = true
   try {
+    trackMarketingEvent('purchase_cta_clicked', selectedRegionId.value)
     const data = await request<{ order: { id: string }; paypal: { approveUrl: string | null } }>('/orders', 'POST', { accountId: account.value.id, sku: 'points_100' })
     if (!data.paypal.approveUrl) throw new Error('paypal_approval_url_missing')
     window.sessionStorage.setItem(pendingOrderKey, data.order.id)
@@ -126,6 +152,7 @@ async function issue30DayPass() {
     window.localStorage.setItem(`izakaya2.accessgate.region-pass.v1:${selectedRegionId.value}`, data.token)
     passExpiresAt.value = data.pass.expiresAt
     await loadAccount()
+    trackMarketingEvent('ticket_issued', selectedRegionId.value)
     status.value = `${selectedRegionPrice.value}Pを使い、選択したリージョンの30日利用権を発行しました。`
   } catch (error) {
     status.value = `30日利用権を発行できませんでした: ${error instanceof Error ? error.message : 'unknown_error'}`
@@ -153,6 +180,7 @@ async function captureReturnedPayment() {
 }
 
 onMounted(async () => {
+  trackMarketingEvent('access_gate_viewed')
   await loadAccount()
   await captureReturnedPayment()
 })
@@ -210,6 +238,7 @@ onMounted(async () => {
     </section>
 
     <p class="status" role="status">{{ status }}</p>
+    <p class="measurement-note">運用改善のため、匿名のボタン操作数を日ごとに集計します。会話内容・AIキー・個人ID・決済情報は取得しません。</p>
     <button type="button" class="back-link" @click="navigateTo(PAGE_PATHS.regions)">リージョン一覧へ戻る</button>
   </main>
 </template>
@@ -223,6 +252,7 @@ onMounted(async () => {
 button { width: fit-content; min-height: 42px; border: 1px solid rgba(114, 215, 255, .5); border-radius: 999px; padding: 0 16px; background: #72d7ff; color: #06121d; font: inherit; font-weight: 900; cursor: pointer; } button:disabled { cursor: not-allowed; opacity: .5; }.access-card--purchase button { background: #ffcf72; border-color: #ffcf72; }
 .account-state, .recovery-code { display: grid; gap: 6px; border-left: 3px solid #72d7ff; padding-left: 12px; color: rgba(245, 248, 255, .85); }.recovery-code { border-color: #ffcf72; }.recovery-code code, .account-state code { overflow-wrap: anywhere; color: #fff5ce; }
 .expiry, .status { margin: 0; border-left: 3px solid #9effb8; padding-left: 12px; color: #d9ffe6; line-height: 1.6; }.back-link { background: transparent; color: #bdefff; }
+.measurement-note { margin: 0; color: rgba(245, 248, 255, .62); font-size: .82rem; line-height: 1.6; }
 .region-select { display: grid; gap: 6px; max-width: 420px; color: rgba(245, 248, 255, .88); font-weight: 800; }.region-select select { border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; padding: 10px 12px; background: rgba(3, 7, 16, .78); color: #f5f8ff; font: inherit; }
 .selected-price { margin: 0; color: #fff5ce !important; font-weight: 900; }
 </style>
