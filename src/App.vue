@@ -135,7 +135,7 @@ function handleOverlayLink(link: OverlayLink) {
 }
 
 function resolvePageFromHash(hash: string): PageKey {
-  const cleaned = hash.replace(/^#\/?/, '')
+  const cleaned = hash.replace(/^#\/?/, '').split('?')[0] ?? ''
   if (cleaned.startsWith('region/')) return 'region_detail'
   const routeKey = cleaned.replace(/-/g, '_')
   // Keep the original short QR destination (#/verse) while also accepting
