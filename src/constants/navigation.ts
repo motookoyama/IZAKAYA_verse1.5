@@ -12,6 +12,7 @@ export const PAGE_PATHS = {
   verse_intro: '#/verse',
   tools: '#/tools',
   access: '#/access',
+  promo: '#/promo',
 } as const
 
 export type PageKey = keyof typeof PAGE_PATHS

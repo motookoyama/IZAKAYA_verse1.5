@@ -12,6 +12,7 @@ import RegionGuidePage from './pages/RegionGuidePage.vue'
 import VerseIntroPage from './pages/VerseIntroPage.vue'
 import ToolsPage from './pages/ToolsPage.vue'
 import AccessGatePage from './pages/AccessGatePage.vue'
+import MusePromoPage from './pages/MusePromoPage.vue'
 import { useTheme } from './composables/useTheme'
 import { isSupported, persistLocale, type Locale } from './plugins/i18n'
 import type { HeroContent, HelpContent } from './types/home'
@@ -29,6 +30,7 @@ const ROUTES: Partial<Record<PageKey, Component>> = {
   verse_intro: VerseIntroPage,
   tools: ToolsPage,
   access: AccessGatePage,
+  promo: MusePromoPage,
 }
 
 // These are retained as local/backstage tools. They are intentionally absent
@@ -111,6 +113,7 @@ const overlayLinks = computed<OverlayLink[]>(() => [
   { id: 'payments', label: t('overlay.links.payments'), path: PAGE_PATHS.access },
   { id: 'region_guide', label: '遊び方', path: PAGE_PATHS.region_guide },
   { id: 'tools', label: '共有ツール', path: PAGE_PATHS.tools },
+  { id: 'promo', label: 'ミューズ公式フリーパス', path: `${PAGE_PATHS.promo}?campaign=muse-official-202611` },
 ])
 
 function onThemeChange(input: string | Event) {

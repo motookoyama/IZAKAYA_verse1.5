@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { navigateTo, PAGE_PATHS } from '../constants/navigation'
 import { regionMonthlyPassPoints } from '../constants/points'
 import { ACCESS_PASS_REGIONS } from '../data/accessPassRegions'
+import { findPromotionCampaign, promotionCampaignIdFromHash } from '../data/promotionCampaigns'
 
 type ModeratorEvaluation = { expiresAt: string; testPointsRemaining: number }
 type Account = { id: string; balance: number; initialPassIssued: boolean; createdAt: string; moderatorEvaluation: ModeratorEvaluation | null }
@@ -13,6 +14,7 @@ const storageKey = 'izakaya2.accessgate.account.v1'
 const pendingOrderKey = 'izakaya2.accessgate.pending-order.v1'
 const measurementPrefix = 'izakaya2.measurement.v1'
 const moderatorSessionKey = 'izakaya2.moderator-evaluation.v1'
+const promotionCampaign = findPromotionCampaign(promotionCampaignIdFromHash(window.location.hash))
 const account = ref<Account | null>(null)
 const recoveryCode = ref('')
 const status = ref(gateUrl ? '登録すると、最初の24時間フリーパスを一度だけ発行できます。' : '接続先を確認しています。少し時間を置いて再度開いてください。')
@@ -78,7 +80,7 @@ function trackMarketingEvent(event: 'access_gate_viewed' | 'trial_cta_clicked' |
     void fetch(`${gateUrl}/marketing/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event, campaignId: 'second-wave-launch', ...(regionId ? { regionId } : {}) }),
+      body: JSON.stringify({ event, campaignId: promotionCampaign?.id || 'second-wave-launch', ...(regionId ? { regionId } : {}) }),
       keepalive: true,
     }).catch(() => undefined)
   } catch {
@@ -160,7 +162,9 @@ async function issueInitialPass() {
     passExpiresAt.value = data.pass.expiresAt
     await loadAccount()
     trackMarketingEvent('ticket_issued', 'all-regions')
-    status.value = '24時間フリーパスを発行しました。好きなリージョンから遊び始めてください。'
+    status.value = promotionCampaign
+      ? '24時間フリーパスを発行しました。ミューズ公式プロモーションへ戻り、外部AI用の開始パケットを作れます。'
+      : '24時間フリーパスを発行しました。好きなリージョンから遊び始めてください。'
   } catch (error) {
     status.value = `発行できませんでした: ${error instanceof Error ? error.message : 'unknown_error'}`
   } finally {
@@ -236,6 +240,9 @@ onMounted(async () => {
   if (!claimed) await loadAccount()
   if (!claimToken) trackMarketingEvent('access_gate_viewed')
   await captureReturnedPayment()
+  if (promotionCampaign && !account.value) {
+    status.value = `${promotionCampaign.title}から来場しました。アカウントを用意し、0Pの24時間フリーパスを発行してください。`
+  }
 })
 </script>
 
@@ -304,6 +311,7 @@ onMounted(async () => {
     <p class="status" role="status">{{ status }}</p>
     <p v-if="!moderatorEvaluation" class="measurement-note">運用改善のため、匿名のボタン操作数を日ごとに集計します。会話内容・AIキー・個人ID・決済情報は取得しません。</p>
     <p v-else class="measurement-note">評価用セッションは一般利用者向けの匿名マーケティング集計から除外されます。</p>
+    <button v-if="promotionCampaign && !moderatorEvaluation" type="button" class="promo-return" @click="navigateTo(`${PAGE_PATHS.promo}?campaign=${promotionCampaign.id}`)">ミューズ公式プロモーションへ戻る</button>
     <button type="button" class="back-link" @click="navigateTo(PAGE_PATHS.regions)">リージョン一覧へ戻る</button>
   </main>
 </template>
@@ -321,4 +329,5 @@ button { width: fit-content; min-height: 42px; border: 1px solid rgba(114, 215, 
 .measurement-note { margin: 0; color: rgba(245, 248, 255, .62); font-size: .82rem; line-height: 1.6; }
 .region-select { display: grid; gap: 6px; max-width: 420px; color: rgba(245, 248, 255, .88); font-weight: 800; }.region-select select { border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; padding: 10px 12px; background: rgba(3, 7, 16, .78); color: #f5f8ff; font: inherit; }
 .selected-price { margin: 0; color: #fff5ce !important; font-weight: 900; }
+.promo-return { background: #ffcf72; border-color: #ffcf72; }
 </style>

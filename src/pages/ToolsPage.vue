@@ -62,6 +62,12 @@ function selectRegion(regionId: string) {
         <p>一度だけの24時間フリーパスを発行し、必要になったらポイントを購入します。</p>
         <button type="button" @click="navigateTo(PAGE_PATHS.access)">AccessGATEを開く</button>
       </article>
+      <article class="tool-card tool-card--active">
+        <p class="tool-card__status">MUSE OFFICIAL</p>
+        <h2>AI体験フリーパス</h2>
+        <p>公開QR、0P・24時間パス、ChatGPT・Gemini・Claude・Grok等へ渡す開始パケットを一つの導線で発行します。</p>
+        <button type="button" @click="navigateTo(`${PAGE_PATHS.promo}?campaign=muse-official-202611`)">ミューズ公式入口を開く</button>
+      </article>
       <article class="tool-card"><p class="tool-card__status">PLANNED</p><h2>V2カード作成プロンプト</h2><p>ユーザー自身のAIでV2カードを確実に作るための、入力補助とプロンプト出力を準備中です。</p></article>
       <article class="tool-card"><p class="tool-card__status">PLANNED</p><h2>記録・リージョン申請</h2><p>公開してよいクエスト記録、サムネイル、プロフィールを分けて提出する窓口です。</p></article>
     </section>
